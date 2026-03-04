@@ -1,0 +1,23 @@
+<div class="auth-shell">
+  <!-- Fondo decorativo -->
+  <div class="auth-shell__bg" aria-hidden="true">
+    <div class="auth-shell__glow auth-shell__glow--blue"></div>
+    <div class="auth-shell__glow auth-shell__glow--green"></div>
+  </div>
+
+  <!-- Panel central -->
+  <main class="auth-shell__center">
+    <!-- Marca -->
+    <a class="auth-shell__brand" routerLink="/">
+      Vita<span>Link</span>
+    </a>
+
+    <!-- Contenido de la ruta hija (login / register) -->
+    <router-outlet />
+  </main>
+
+  <!-- Footer mínimo -->
+  <footer class="auth-shell__footer">
+    <p>© {{ year }} VitaLink — Identidad Inteligente para Emergencias</p>
+  </footer>
+</div>

@@ -1,0 +1,494 @@
+<div class="app-shell" [class.sidebar-open]="sidebarOpen">
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
+  <aside class="sidebar" [class.is-open]="sidebarOpen">
+
+    <div class="sidebar__brand">
+      <a routerLink="/" (click)="closeSidebar()">
+        Vita<span>Link</span>
+      </a>
+    </div>
+
+    <nav class="sidebar__nav" aria-label="Navegación principal">
+
+      <!-- General -->
+      <ul>
+        <li>
+          <a class="sidebar__link"
+             routerLink="/perfil"
+             routerLinkActive="is-active"
+             (click)="closeSidebar()">
+            <span class="sidebar__icon" aria-hidden="true">👤</span>
+            Mi Perfil
+          </a>
+        </li>
+      </ul>
+
+      <!-- Usos del QR -->
+      <p class="sidebar__section-label">Usos del QR</p>
+      <ul>
+        <li>
+          <button class="sidebar__link sidebar__link--btn"
+                  (click)="openModal('medica')">
+            <span class="sidebar__icon" aria-hidden="true">🆔</span>
+            ID Médica
+          </button>
+        </li>
+        <li>
+          <button class="sidebar__link sidebar__link--btn"
+                  (click)="openModal('objetos')">
+            <span class="sidebar__icon" aria-hidden="true">🔑</span>
+            Objetos perdidos
+          </button>
+        </li>
+        <li>
+          <button class="sidebar__link sidebar__link--btn"
+                  (click)="openModal('mascotas')">
+            <span class="sidebar__icon" aria-hidden="true">🐾</span>
+            Mascotas
+          </button>
+        </li>
+        <li>
+          <button class="sidebar__link sidebar__link--btn"
+                  (click)="openModal('equipaje')">
+            <span class="sidebar__icon" aria-hidden="true">🧳</span>
+            Equipaje y viajes
+          </button>
+        </li>
+        <li>
+          <button class="sidebar__link sidebar__link--btn"
+                  (click)="openModal('activos')">
+            <span class="sidebar__icon" aria-hidden="true">🏢</span>
+            Activos corporativos
+          </button>
+        </li>
+      </ul>
+
+      <ul>
+        <li>
+          <div class="sidebar__link sidebar__link--info">
+            <span class="sidebar__icon" aria-hidden="true">✨</span>
+            Pronto nuevas funcionalidades
+          </div>
+        </li>
+        <li>
+          <div class="sidebar__link sidebar__link--info">
+            <span class="sidebar__icon" aria-hidden="true">🤝</span>
+            Pronto nuevos convenios
+          </div>
+        </li>
+      </ul>
+
+      <!-- Herramientas -->
+      <p class="sidebar__section-label">Herramientas</p>
+      <ul>
+        <li>
+          <a class="sidebar__link"
+             routerLink="/imprimir"
+             routerLinkActive="is-active"
+             (click)="closeSidebar()">
+            <span class="sidebar__icon" aria-hidden="true">🖨️</span>
+            Imprimir QR
+          </a>
+        </li>
+      </ul>
+
+      <!-- Administración — solo visible para ADMIN -->
+      @if (isAdmin()) {
+        <p class="sidebar__section-label">Administración</p>
+        <ul>
+          <li>
+            <a class="sidebar__link"
+               routerLink="/admin"
+               routerLinkActive="is-active"
+               (click)="closeSidebar()">
+              <span class="sidebar__icon" aria-hidden="true">⚙️</span>
+              Gestión de cuentas
+            </a>
+          </li>
+        </ul>
+      }
+
+    </nav>
+
+    <div class="sidebar__user">
+      <div class="sidebar__avatar" aria-hidden="true">
+        {{ user()?.email?.charAt(0)?.toUpperCase() }}
+      </div>
+      <div class="sidebar__user-info">
+        <p class="sidebar__user-email">{{ user()?.email }}</p>
+        <span class="badge" [class.badge--admin]="isAdmin()" [class.badge--user]="!isAdmin()">
+          {{ user()?.role }}
+        </span>
+      </div>
+    </div>
+
+    <button class="sidebar__logout btn btn--ghost" (click)="logout()">
+      <span aria-hidden="true">🚪</span> Cerrar sesión
+    </button>
+  </aside>
+
+  <!-- Overlay móvil -->
+  <div class="sidebar-overlay"
+       [class.is-visible]="sidebarOpen"
+       (click)="closeSidebar()"
+       aria-hidden="true">
+  </div>
+
+  <!-- ── CONTENIDO PRINCIPAL ──────────────────────────────────── -->
+  <div class="app-content">
+
+    <header class="app-header">
+      <button class="app-header__burger"
+              (click)="toggleSidebar()"
+              [attr.aria-expanded]="sidebarOpen"
+              aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+      <a class="app-header__brand" routerLink="/">
+        Vita<span>Link</span>
+      </a>
+      <button class="app-header__logout btn btn--ghost btn--sm"
+              (click)="logout()"
+              title="Cerrar sesión">
+        🚪
+      </button>
+    </header>
+
+    <main class="app-main">
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODALES — Usos del QR
+══════════════════════════════════════════════════════════════ -->
+@if (activeModal()) {
+  <div class="qr-modal-overlay" (click)="closeModal()" role="dialog" aria-modal="true">
+    <div class="qr-modal" (click)="$event.stopPropagation()">
+
+      <button class="qr-modal__close" (click)="closeModal()" aria-label="Cerrar">✕</button>
+
+      <!-- ── ID MÉDICA ─────────────────────────────────────── -->
+      @if (activeModal() === 'medica') {
+        <div class="qr-modal__icon">🆔</div>
+        <h2 class="qr-modal__title">ID Médica de Emergencia</h2>
+        <p class="qr-modal__desc">
+          Tu QR personal contiene toda la información crítica que los socorristas necesitan
+          en el <strong>Minuto de Oro</strong> — el tiempo decisivo tras un accidente donde
+          tener datos médicos inmediatos puede salvar una vida.
+        </p>
+
+        <div class="qr-modal__steps">
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">1</span>
+            <div>
+              <strong>Registra tu perfil</strong>
+              <p>Completa tu grupo sanguíneo, alergias, enfermedades crónicas y contactos de emergencia en tu cuenta VitaLink.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">2</span>
+            <div>
+              <strong>Obtén tu QR único</strong>
+              <p>Tu código QR con token criptográfico de 32 caracteres es generado automáticamente. Descárgalo e imprímelo.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">3</span>
+            <div>
+              <strong>Pégalo donde sea visible</strong>
+              <p>En tu billetera, casco, correa de reloj, mochila o tarjeta PVC. Cualquier smartphone lo lee sin instalar apps.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">4</span>
+            <div>
+              <strong>Socorrista escanea → información inmediata</strong>
+              <p>En 3 segundos ven: tipo de sangre, alergias, medicamentos, enfermedades y contactos de emergencia. Sin login, sin esperas.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-modal__scenarios">
+          <div class="qr-modal__scenario">🚗 <span>Accidente de tráfico — inconsciente</span></div>
+          <div class="qr-modal__scenario">🏃 <span>Desmayo en maratón o deporte extremo</span></div>
+          <div class="qr-modal__scenario">💊 <span>Reacción alérgica severa en lugar público</span></div>
+          <div class="qr-modal__scenario">👴 <span>Adulto mayor con Alzheimer fuera de casa</span></div>
+        </div>
+
+        <div class="qr-modal__benefits">
+          <h4>¿Cómo te beneficia VitaLink?</h4>
+          <ul>
+            <li>🔐 Token único e irrepetible — tu privacidad está protegida</li>
+            <li>📵 Funciona sin internet del rescatista (carga en segundos)</li>
+            <li>🔄 Datos actualizables en tiempo real desde tu perfil</li>
+            <li>📞 Notifica automáticamente a tus contactos al ser escaneado</li>
+          </ul>
+        </div>
+
+        <button class="btn btn--primary qr-modal__cta" (click)="goToPerfil()">
+          Ir a mi perfil y configurar →
+        </button>
+      }
+
+      <!-- ── OBJETOS PERDIDOS ──────────────────────────────── -->
+      @if (activeModal() === 'objetos') {
+        <div class="qr-modal__soon-tag">Próximamente</div>
+        <div class="qr-modal__icon">🔑</div>
+        <h2 class="qr-modal__title">Objetos Perdidos</h2>
+        <p class="qr-modal__desc">
+          Pega un sticker QR VitaLink en tus objetos de valor. Quien lo encuentre
+          podrá contactarte al instante — sin ver tus datos personales directamente.
+          Tú recibes una notificación con la ubicación aproximada del hallazgo.
+        </p>
+
+        <div class="qr-modal__steps">
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">1</span>
+            <div>
+              <strong>Registra tu objeto</strong>
+              <p>Dale un nombre, descripción y foto. VitaLink genera un QR único para ese objeto específico.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">2</span>
+            <div>
+              <strong>Pega el sticker QR</strong>
+              <p>Stickers resistentes al agua para llaves, laptops, mochilas, paraguas, instrumentos musicales y más.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">3</span>
+            <div>
+              <strong>Si alguien lo encuentra...</strong>
+              <p>Escanea el QR → ve una página con el mensaje que dejaste ("Si encontraste esto…") y un botón "Encontré este objeto".</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">4</span>
+            <div>
+              <strong>Tú recibes la alerta</strong>
+              <p>Notificación inmediata con la hora y ubicación del escaneo. Coordinas la devolución de forma segura y anónima.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-modal__scenarios">
+          <div class="qr-modal__scenario">🔑 <span>Llaveros y accesorios del día a día</span></div>
+          <div class="qr-modal__scenario">💻 <span>Laptops, tablets y auriculares</span></div>
+          <div class="qr-modal__scenario">🎒 <span>Mochilas, bolsos y carteras</span></div>
+          <div class="qr-modal__scenario">🚲 <span>Bicicletas, patinetes y cascos</span></div>
+        </div>
+
+        <div class="qr-modal__benefits">
+          <h4>¿Cómo te beneficia VitaLink?</h4>
+          <ul>
+            <li>🙈 Anonimato total — el que encuentra no ve tu nombre ni teléfono</li>
+            <li>📍 Geolocalización aproximada del hallazgo</li>
+            <li>📊 Historial de escaneos de cada objeto</li>
+            <li>🏷️ Stickers impermeables disponibles en kit físico</li>
+          </ul>
+        </div>
+
+        <button class="btn btn--outline qr-modal__cta" (click)="closeModal()">
+          Entendido — avisame cuando esté disponible
+        </button>
+      }
+
+      <!-- ── MASCOTAS ──────────────────────────────────────── -->
+      @if (activeModal() === 'mascotas') {
+        <div class="qr-modal__soon-tag">Próximamente</div>
+        <div class="qr-modal__icon">🐾</div>
+        <h2 class="qr-modal__title">Mascotas</h2>
+        <p class="qr-modal__desc">
+          Si tu perro o gato se escapa, el QR en su collar es la forma más rápida
+          de que quien lo encuentre te contacte — incluyendo información veterinaria
+          crítica en caso de que la mascota necesite atención de urgencia.
+        </p>
+
+        <div class="qr-modal__steps">
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">1</span>
+            <div>
+              <strong>Crea el perfil de tu mascota</strong>
+              <p>Nombre, foto, raza, edad, condiciones médicas, medicamentos y nombre del veterinario.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">2</span>
+            <div>
+              <strong>Placa QR en el collar</strong>
+              <p>Placa de acero inoxidable grabada con QR resistente a todo clima. No se borra, no se despega.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">3</span>
+            <div>
+              <strong>Quien la encuentra escanea</strong>
+              <p>Ve el nombre de la mascota, tu contacto de emergencia y si tiene condiciones médicas especiales.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">4</span>
+            <div>
+              <strong>Reunión segura y rápida</strong>
+              <p>Tú recibes la alerta, coordinas el lugar de entrega. La mascota vuelve a casa sana y salva.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-modal__scenarios">
+          <div class="qr-modal__scenario">🐕 <span>Perros que escapan en paseos o fuegos artificiales</span></div>
+          <div class="qr-modal__scenario">🐈 <span>Gatos callejeros con dueño que salen de casa</span></div>
+          <div class="qr-modal__scenario">🏥 <span>Mascota hallada inconsciente — datos vet inmediatos</span></div>
+          <div class="qr-modal__scenario">✈️ <span>Mascotas en viaje o con cuidadores temporales</span></div>
+        </div>
+
+        <div class="qr-modal__benefits">
+          <h4>¿Cómo te beneficia VitaLink?</h4>
+          <ul>
+            <li>🌍 Soporte multilingüe — si la encuentran turistas, también funciona</li>
+            <li>💉 Info veterinaria visible en caso de emergencia médica</li>
+            <li>📸 Foto de la mascota en la página pública para confirmar identidad</li>
+            <li>🔔 Notificación inmediata al escanear el QR del collar</li>
+          </ul>
+        </div>
+
+        <button class="btn btn--outline qr-modal__cta" (click)="closeModal()">
+          Entendido — avisame cuando esté disponible
+        </button>
+      }
+
+      <!-- ── EQUIPAJE Y VIAJES ─────────────────────────────── -->
+      @if (activeModal() === 'equipaje') {
+        <div class="qr-modal__soon-tag">Próximamente</div>
+        <div class="qr-modal__icon">🧳</div>
+        <h2 class="qr-modal__title">Equipaje y Viajes</h2>
+        <p class="qr-modal__desc">
+          ¿Maleta extraviada en el aeropuerto? ¿Mochila olvidada en un bus?
+          El QR en tu equipaje permite que cualquier persona o aerolínea te
+          contacte de inmediato — con tus datos de destino, hotel y seguro de viaje.
+        </p>
+
+        <div class="qr-modal__steps">
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">1</span>
+            <div>
+              <strong>Crea un perfil de viaje</strong>
+              <p>Destino, fechas, hotel, número de vuelo, seguro de viaje y contacto de emergencia en el país de destino.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">2</span>
+            <div>
+              <strong>Etiqueta tu equipaje</strong>
+              <p>Tag colgante con QR + código de barras para tus maletas, mochila de mano y bolso de viaje.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">3</span>
+            <div>
+              <strong>Aerolínea o persona escanea</strong>
+              <p>Ven tus datos de contacto, vuelo, hotel y en qué idioma comunicarse contigo. Todo sin exponer tu pasaporte.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">4</span>
+            <div>
+              <strong>Recuperas tu equipaje más rápido</strong>
+              <p>Coordinación directa y trazada. Historial de dónde y cuándo fue escaneada tu maleta.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-modal__scenarios">
+          <div class="qr-modal__scenario">✈️ <span>Maleta extraviada por la aerolínea en escala</span></div>
+          <div class="qr-modal__scenario">🚌 <span>Mochila olvidada en transporte público o bus turístico</span></div>
+          <div class="qr-modal__scenario">🏨 <span>Equipaje dejado en hotel o sala de espera</span></div>
+          <div class="qr-modal__scenario">🌎 <span>Viaje internacional — datos en el idioma local</span></div>
+        </div>
+
+        <div class="qr-modal__benefits">
+          <h4>¿Cómo te beneficia VitaLink?</h4>
+          <ul>
+            <li>🌐 Información multilingüe automática (español, inglés, portugués)</li>
+            <li>🛡️ No expones tu dirección de casa ni pasaporte al público</li>
+            <li>📋 Incluye número de seguro de viaje para reclamaciones rápidas</li>
+            <li>📍 Historial de escaneos con ubicación para rastrear la ruta del equipaje</li>
+          </ul>
+        </div>
+
+        <button class="btn btn--outline qr-modal__cta" (click)="closeModal()">
+          Entendido — avisame cuando esté disponible
+        </button>
+      }
+
+      <!-- ── ACTIVOS CORPORATIVOS ──────────────────────────── -->
+      @if (activeModal() === 'activos') {
+        <div class="qr-modal__soon-tag">Próximamente</div>
+        <div class="qr-modal__icon">🏢</div>
+        <h2 class="qr-modal__title">Activos Corporativos</h2>
+        <p class="qr-modal__desc">
+          Gestiona la seguridad de tu personal y el control de activos empresariales
+          con QR VitaLink. Ideal para minería, construcción, logística y cualquier
+          empresa donde la seguridad laboral es crítica.
+        </p>
+
+        <div class="qr-modal__steps">
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">1</span>
+            <div>
+              <strong>Perfil de empleado + activo</strong>
+              <p>Cada trabajador tiene su ID QR con datos médicos de emergencia y protocolos de seguridad de su puesto.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">2</span>
+            <div>
+              <strong>QR en equipos y herramientas</strong>
+              <p>Laptops, vehículos, maquinaria, cascos y herramientas tienen QR para identificación instantánea del responsable.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">3</span>
+            <div>
+              <strong>Accidente en obra o mina</strong>
+              <p>El médico de emergencia escanea el casco del trabajador → ve grupo sanguíneo, alergias, contacto familiar y seguro médico.</p>
+            </div>
+          </div>
+          <div class="qr-modal__step">
+            <span class="qr-modal__step-num">4</span>
+            <div>
+              <strong>Activo extraviado o robado</strong>
+              <p>Si un equipo corporativo aparece en otro lugar, quien lo encuentre puede reportarlo directamente a la empresa.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-modal__scenarios">
+          <div class="qr-modal__scenario">⛏️ <span>Accidente en minería — datos médicos del trabajador</span></div>
+          <div class="qr-modal__scenario">🏗️ <span>Obra de construcción — protocolo de emergencia en casco</span></div>
+          <div class="qr-modal__scenario">🚛 <span>Flota de vehículos — control de activos y conductor</span></div>
+          <div class="qr-modal__scenario">💻 <span>Equipos TI corporativos — recuperación ante extravío</span></div>
+        </div>
+
+        <div class="qr-modal__benefits">
+          <h4>¿Cómo beneficia a tu empresa?</h4>
+          <ul>
+            <li>⚖️ Cumplimiento normativo de seguridad laboral (SUNAFIL, ISO 45001)</li>
+            <li>📊 Dashboard centralizado de todos los QR activos de la empresa</li>
+            <li>🔗 API para integración con sistemas ERP y RRHH existentes</li>
+            <li>💼 Licencias B2B con volumen — costo por empleado reducido</li>
+          </ul>
+        </div>
+
+        <button class="btn btn--outline qr-modal__cta" (click)="closeModal()">
+          Entendido — avisame cuando esté disponible
+        </button>
+      }
+
+    </div>
+  </div>
+}

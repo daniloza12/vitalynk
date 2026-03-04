@@ -1,0 +1,409 @@
+<div class="perfil-page">
+
+  <!-- ── Encabezado ─────────────────────────────────────────────── -->
+  <header class="page-header">
+    <div>
+      <h1 class="page-header__title">Mi Perfil</h1>
+      <p class="page-header__sub">Mantén tus datos actualizados para emergencias</p>
+    </div>
+    <button class="btn btn--primary"
+            (click)="onSubmit()"
+            [disabled]="saving">
+      @if (saving) {
+        <span class="btn-spin" aria-hidden="true"></span> Guardando…
+      } @else {
+        💾 Guardar cambios
+      }
+    </button>
+  </header>
+
+  @if (errorMsg) {
+    <div class="alert alert--error" role="alert">⚠️ {{ errorMsg }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="perfil-form">
+
+    <!-- ══════════════════════════════════════════════════════
+         FILA 1: Datos personales | QR de emergencia
+    ══════════════════════════════════════════════════════ -->
+    <div class="perfil-top-row">
+
+      <!-- Datos personales + visibilidad QR -->
+      <section class="card" formGroupName="personal">
+        <div class="card__header vis-grid-header">
+          <div class="card__header-left">
+            <div class="card__icon card__icon--primary">👤</div>
+            <h2>Datos personales</h2>
+          </div>
+          <span class="vis-col-label" title="Visible en ficha QR pública">👁 QR</span>
+        </div>
+
+        <div class="field-vis-row">
+          <div class="field">
+            <label class="field__label" for="fullName">Nombre completo *</label>
+            <input id="fullName" type="text" class="field__input"
+                   [class.is-invalid]="fieldOf(personal,'fullName').invalid && fieldOf(personal,'fullName').touched"
+                   formControlName="fullName" placeholder="Ej. Juan Pérez García" />
+            @if (fieldOf(personal,'fullName').hasError('required') && fieldOf(personal,'fullName').touched) {
+              <span class="field__error">Campo obligatorio.</span>
+            } @else if (fieldOf(personal,'fullName').hasError('minlength') && fieldOf(personal,'fullName').touched) {
+              <span class="field__error">Mínimo 3 caracteres.</span>
+            }
+          </div>
+          <label class="vis-toggle" title="Mostrar en ficha QR">
+            <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('fullName')" />
+            <span class="vis-toggle__label">QR</span>
+          </label>
+        </div>
+
+        <div class="field-vis-row">
+          <div class="field">
+            <label class="field__label" for="sex">Sexo *</label>
+            <select id="sex" class="field__select"
+                    [class.is-invalid]="fieldOf(personal,'sex').invalid && fieldOf(personal,'sex').touched"
+                    formControlName="sex">
+              <option value="" disabled>Seleccionar…</option>
+              <option value="M">Masculino</option>
+              <option value="F">Femenino</option>
+              <option value="OTHER">Otro / No especificar</option>
+            </select>
+            @if (fieldOf(personal,'sex').invalid && fieldOf(personal,'sex').touched) {
+              <span class="field__error">Campo obligatorio.</span>
+            }
+          </div>
+          <label class="vis-toggle" title="Mostrar en ficha QR">
+            <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('sex')" />
+            <span class="vis-toggle__label">QR</span>
+          </label>
+        </div>
+
+        <div class="field-vis-row">
+          <div class="field">
+            <label class="field__label" for="birthDate">Fecha de nacimiento *</label>
+            <input id="birthDate" type="date" class="field__input"
+                   [class.is-invalid]="fieldOf(personal,'birthDate').invalid && fieldOf(personal,'birthDate').touched"
+                   formControlName="birthDate" />
+            @if (fieldOf(personal,'birthDate').invalid && fieldOf(personal,'birthDate').touched) {
+              <span class="field__error">Campo obligatorio.</span>
+            }
+          </div>
+          <label class="vis-toggle" title="Mostrar en ficha QR">
+            <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('birthDate')" />
+            <span class="vis-toggle__label">QR</span>
+          </label>
+        </div>
+
+        <div class="field-vis-row">
+          <div class="field">
+            <label class="field__label" for="phone">Teléfono *</label>
+            <input id="phone" type="tel" class="field__input"
+                   [class.is-invalid]="fieldOf(personal,'phone').invalid && fieldOf(personal,'phone').touched"
+                   formControlName="phone" placeholder="+51 999 999 999" />
+            @if (fieldOf(personal,'phone').invalid && fieldOf(personal,'phone').touched) {
+              <span class="field__error">Campo obligatorio.</span>
+            }
+          </div>
+          <label class="vis-toggle" title="Mostrar en ficha QR">
+            <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('phone')" />
+            <span class="vis-toggle__label">QR</span>
+          </label>
+        </div>
+
+        <div class="field-vis-row">
+          <div class="field">
+            <label class="field__label" for="personalEmail">Correo personal</label>
+            <input id="personalEmail" type="email" class="field__input"
+                   [class.is-invalid]="fieldOf(personal,'personalEmail').invalid && fieldOf(personal,'personalEmail').touched"
+                   formControlName="personalEmail" placeholder="correo@personal.com" />
+            @if (fieldOf(personal,'personalEmail').hasError('email') && fieldOf(personal,'personalEmail').touched) {
+              <span class="field__error">Correo inválido.</span>
+            }
+          </div>
+          <label class="vis-toggle" title="Mostrar en ficha QR">
+            <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('personalEmail')" />
+            <span class="vis-toggle__label">QR</span>
+          </label>
+        </div>
+
+        <div class="field-vis-row">
+          <div class="field">
+            <label class="field__label" for="workEmail">Correo de trabajo</label>
+            <input id="workEmail" type="email" class="field__input"
+                   [class.is-invalid]="fieldOf(personal,'workEmail').invalid && fieldOf(personal,'workEmail').touched"
+                   formControlName="workEmail" placeholder="correo@empresa.com" />
+            @if (fieldOf(personal,'workEmail').hasError('email') && fieldOf(personal,'workEmail').touched) {
+              <span class="field__error">Correo inválido.</span>
+            }
+          </div>
+          <label class="vis-toggle" title="Mostrar en ficha QR">
+            <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('workEmail')" />
+            <span class="vis-toggle__label">QR</span>
+          </label>
+        </div>
+
+        <div class="field-vis-row">
+          <div class="field">
+            <label class="field__label" for="city">Ciudad *</label>
+            <input id="city" type="text" class="field__input"
+                   [class.is-invalid]="fieldOf(personal,'city').invalid && fieldOf(personal,'city').touched"
+                   formControlName="city" placeholder="Lima" />
+            @if (fieldOf(personal,'city').invalid && fieldOf(personal,'city').touched) {
+              <span class="field__error">Campo obligatorio.</span>
+            }
+          </div>
+          <label class="vis-toggle" title="Mostrar en ficha QR">
+            <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('city')" />
+            <span class="vis-toggle__label">QR</span>
+          </label>
+        </div>
+
+        <div class="field-vis-row">
+          <div class="field">
+            <label class="field__label" for="district">Distrito *</label>
+            <input id="district" type="text" class="field__input"
+                   [class.is-invalid]="fieldOf(personal,'district').invalid && fieldOf(personal,'district').touched"
+                   formControlName="district" placeholder="Miraflores" />
+            @if (fieldOf(personal,'district').invalid && fieldOf(personal,'district').touched) {
+              <span class="field__error">Campo obligatorio.</span>
+            }
+          </div>
+          <label class="vis-toggle" title="Mostrar en ficha QR">
+            <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('district')" />
+            <span class="vis-toggle__label">QR</span>
+          </label>
+        </div>
+
+      </section>
+
+      <!-- QR de emergencia -->
+      @if (account?.qrDataUrl) {
+        <aside class="perfil-qr">
+          <div class="qr-card">
+            <h3 class="qr-card__title">🔐 QR de emergencia</h3>
+
+            <div class="qr-card__img-wrap">
+              <img [src]="account!.qrDataUrl"
+                   alt="Código QR de tu ficha VitaLink"
+                   width="180" height="180" />
+            </div>
+
+            <p class="qr-card__desc">
+              Escanea o comparte este QR para acceder a tu ficha médica sin iniciar sesión.
+            </p>
+
+            <div class="qr-card__url">
+              <span class="qr-card__url-label">URL pública</span>
+              <a class="qr-card__url-link" (click)="openPublicProfile()">
+                {{ publicUrl }}
+              </a>
+            </div>
+
+            <div class="qr-card__code">
+              <span class="qr-card__code-label">Security Account</span>
+              <code>{{ account!.securityAccount }}</code>
+            </div>
+
+            <button class="btn btn--secondary btn--sm qr-card__download"
+                    (click)="downloadQr()">
+              ⬇️ Descargar QR
+            </button>
+          </div>
+        </aside>
+      }
+
+    </div><!-- /perfil-top-row -->
+
+    <!-- ══════════════════════════════════════════════════════
+         FILA 2: Datos médicos | Contactos de emergencia
+    ══════════════════════════════════════════════════════ -->
+    <div class="perfil-bottom-row">
+
+      <!-- Datos médicos -->
+      <section class="card" formGroupName="medical">
+        <div class="card__header">
+          <div class="card__icon card__icon--secondary">🏥</div>
+          <h2>Datos médicos</h2>
+        </div>
+
+        <div class="form-grid form-grid--single">
+          <div class="field">
+            <label class="field__label" for="diseases">Enfermedades</label>
+            <textarea id="diseases" class="field__textarea"
+                      formControlName="diseases"
+                      placeholder="Ej. Diabetes tipo 2, hipertensión…"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="allergies">Alergias</label>
+            <textarea id="allergies" class="field__textarea"
+                      formControlName="allergies"
+                      placeholder="Ej. Penicilina, mariscos…"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="others">Otros (medicamentos, notas)</label>
+            <textarea id="others" class="field__textarea"
+                      formControlName="others"
+                      placeholder="Ej. Toma 10mg de Metformina diaria…"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contactos de emergencia -->
+      <section class="card" formArrayName="contacts">
+        <div class="card__header vis-grid-header">
+          <div class="card__header-left">
+            <div class="card__icon card__icon--accent">📞</div>
+            <h2>Contactos de emergencia</h2>
+            <button type="button" class="btn btn--secondary btn--sm contact-add-btn"
+                    (click)="addContact()">
+              + Agregar contacto
+            </button>
+          </div>
+          <span class="vis-col-label" title="Visible en ficha QR pública">👁 QR</span>
+        </div>
+
+        @if (contacts.length === 0) {
+          <p class="contacts-empty">
+            Sin contactos registrados.
+            <button type="button" class="btn btn--outline btn--sm" (click)="addContact()">
+              Agregar primero
+            </button>
+          </p>
+        }
+
+        <div class="contacts-list">
+          @for (contact of contacts.controls; track $index) {
+            <div class="contact-card" [formGroupName]="$index">
+              <div class="contact-card__header">
+                <span class="contact-card__num">Contacto #{{ $index + 1 }}</span>
+                <button type="button" class="btn btn--danger btn--sm"
+                        (click)="requestDeleteContact($index)"
+                        [attr.aria-label]="'Eliminar contacto ' + ($index + 1)">
+                  🗑️ Eliminar
+                </button>
+              </div>
+
+              <div class="field-vis-row">
+                <div class="field">
+                  <label class="field__label">Nombre completo *</label>
+                  <input type="text" class="field__input"
+                         [class.is-invalid]="fieldOf(contact,'fullName').invalid && fieldOf(contact,'fullName').touched"
+                         formControlName="fullName" placeholder="Nombre completo" />
+                  @if (fieldOf(contact,'fullName').invalid && fieldOf(contact,'fullName').touched) {
+                    <span class="field__error">Campo obligatorio.</span>
+                  }
+                </div>
+                <label class="vis-toggle" title="Mostrar en ficha QR">
+                  <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'fullName')" />
+                  <span class="vis-toggle__label">QR</span>
+                </label>
+              </div>
+
+              <div class="field-vis-row">
+                <div class="field">
+                  <label class="field__label">Teléfono *</label>
+                  <input type="tel" class="field__input"
+                         [class.is-invalid]="fieldOf(contact,'phone').invalid && fieldOf(contact,'phone').touched"
+                         formControlName="phone" placeholder="+51 999 000 000" />
+                  @if (fieldOf(contact,'phone').invalid && fieldOf(contact,'phone').touched) {
+                    <span class="field__error">Campo obligatorio.</span>
+                  }
+                </div>
+                <label class="vis-toggle" title="Mostrar en ficha QR">
+                  <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'phone')" />
+                  <span class="vis-toggle__label">QR</span>
+                </label>
+              </div>
+
+              <div class="field-vis-row">
+                <div class="field">
+                  <label class="field__label">Correo personal</label>
+                  <input type="email" class="field__input"
+                         [class.is-invalid]="fieldOf(contact,'personalEmail').invalid && fieldOf(contact,'personalEmail').touched"
+                         formControlName="personalEmail" placeholder="correo@personal.com" />
+                  @if (fieldOf(contact,'personalEmail').hasError('email') && fieldOf(contact,'personalEmail').touched) {
+                    <span class="field__error">Correo inválido.</span>
+                  }
+                </div>
+                <label class="vis-toggle" title="Mostrar en ficha QR">
+                  <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'personalEmail')" />
+                  <span class="vis-toggle__label">QR</span>
+                </label>
+              </div>
+
+              <div class="field-vis-row">
+                <div class="field">
+                  <label class="field__label">Correo de trabajo</label>
+                  <input type="email" class="field__input"
+                         [class.is-invalid]="fieldOf(contact,'workEmail').invalid && fieldOf(contact,'workEmail').touched"
+                         formControlName="workEmail" placeholder="correo@empresa.com" />
+                  @if (fieldOf(contact,'workEmail').hasError('email') && fieldOf(contact,'workEmail').touched) {
+                    <span class="field__error">Correo inválido.</span>
+                  }
+                </div>
+                <label class="vis-toggle" title="Mostrar en ficha QR">
+                  <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'workEmail')" />
+                  <span class="vis-toggle__label">QR</span>
+                </label>
+              </div>
+
+            </div>
+          }
+        </div>
+
+      </section>
+
+    </div><!-- /perfil-bottom-row -->
+
+  </form>
+
+  <div class="perfil-actions">
+    <button class="btn btn--primary"
+            (click)="onSubmit()"
+            [disabled]="saving">
+      @if (saving) {
+        <span class="btn-spin" aria-hidden="true"></span> Guardando…
+      } @else {
+        💾 Guardar cambios
+      }
+    </button>
+  </div>
+
+</div>
+
+<!-- ── Modal: confirmar eliminación de contacto ───────────────── -->
+@if (confirmDeleteIndex !== null) {
+  <div class="delete-modal" role="dialog" aria-modal="true" aria-labelledby="del-modal-title">
+    <div class="delete-modal__backdrop" (click)="cancelDeleteContact()"></div>
+    <div class="delete-modal__box">
+      <div class="delete-modal__icon">🗑️</div>
+      <h2 class="delete-modal__title" id="del-modal-title">¿Eliminar contacto?</h2>
+      <p class="delete-modal__msg">
+        Se eliminará <strong>Contacto #{{ confirmDeleteIndex + 1 }}</strong> de tu perfil de emergencia.
+        Esta acción no se puede deshacer.
+      </p>
+      <div class="delete-modal__actions">
+        <button class="btn btn--ghost" (click)="cancelDeleteContact()">Cancelar</button>
+        <button class="btn btn--danger" (click)="confirmDeleteContact()">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal de éxito al guardar ─────────────────────────────── -->
+@if (saved) {
+  <div class="success-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="success-modal__backdrop" (click)="closeModal()"></div>
+    <div class="success-modal__box">
+      <div class="success-modal__icon">✅</div>
+      <h2 class="success-modal__title" id="modal-title">¡Perfil guardado!</h2>
+      <p class="success-modal__msg">
+        Tus datos de emergencia han sido actualizados correctamente.
+      </p>
+      <button class="btn btn--primary success-modal__btn" (click)="closeModal()">
+        Aceptar
+      </button>
+    </div>
+  </div>
+}

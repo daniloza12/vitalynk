@@ -1,0 +1,526 @@
+/* ── Perfil Page ───────────────────────────────────────────── */
+.perfil-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 1100px;
+}
+
+/* ── Page Header ───────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+
+  &__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-extrabold);
+    color: var(--color-dark);
+    letter-spacing: -0.02em;
+  }
+
+  &__sub {
+    font-size: var(--text-sm);
+    color: var(--color-gray-500);
+    margin-top: var(--space-1);
+  }
+}
+
+/* ── Form layout ───────────────────────────────────────────── */
+.perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── FILA 1: personal (izq) + QR (der) ────────────────────── */
+.perfil-top-row {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: var(--space-4);
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── QR lateral (sticky en desktop) ───────────────────────── */
+.perfil-qr {
+  position: sticky;
+  top: var(--space-4);
+
+  @media (max-width: 900px) {
+    position: static;
+  }
+}
+
+/* ── FILA 2: médicos (izq) + contactos (der) ──────────────── */
+.perfil-bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  /* sin align-items: start → stretch por defecto (ambas columnas misma altura) */
+
+  > section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Textareas del bloque médico se expanden para llenar la altura */
+.perfil-bottom-row .form-grid--single {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  .field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field__textarea {
+    flex: 1;
+    min-height: 80px;
+    resize: vertical;
+  }
+}
+
+/* ── Grid original (datos médicos) ────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5) var(--space-6);
+
+  &--single {
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+/* ── Header de sección con columna alineada al toggle ──────── */
+.vis-grid-header {
+  display: grid;
+  grid-template-columns: 1fr 52px;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.card__header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* ── Etiqueta "👁 QR" alineada con la columna toggle ──────── */
+.vis-col-label {
+  width: 52px;
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--font-semibold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Fila campo + toggle de visibilidad ────────────────────── */
+.field-vis-row {
+  display: grid;
+  grid-template-columns: 1fr 52px;
+  gap: var(--space-3);
+  align-items: end;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+
+  &:last-child { border-bottom: none; }
+}
+
+/* ── Toggle switch de visibilidad QR ──────────────────────── */
+.vis-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  width: 52px;
+  flex-shrink: 0;
+  margin-bottom: 8px;
+
+  &__input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 36px;
+    height: 20px;
+    background: var(--color-gray-300);
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    flex-shrink: 0;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color-white);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      transition: transform var(--transition-fast);
+    }
+
+    &:checked {
+      background: var(--color-primary);
+
+      &::after {
+        transform: translateX(16px);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+      border-radius: 10px;
+    }
+  }
+
+  &__label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-gray-400);
+    font-weight: var(--font-semibold);
+    user-select: none;
+  }
+}
+
+/* ── Modal: confirmar eliminación ──────────────────────────── */
+.delete-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  &__box {
+    position: relative;
+    z-index: 1;
+    background: var(--color-white);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8) var(--space-6) var(--space-6);
+    box-shadow: var(--shadow-xl);
+    max-width: 360px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    text-align: center;
+    animation: modal-in 0.2s var(--transition-spring) both;
+  }
+
+  &__icon { font-size: 2.5rem; line-height: 1; }
+
+  &__title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-extrabold);
+    color: var(--color-dark);
+    letter-spacing: -0.02em;
+  }
+
+  &__msg {
+    font-size: var(--text-sm);
+    color: var(--color-gray-500);
+    line-height: var(--leading-relaxed);
+    max-width: none;
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    width: 100%;
+
+    .btn { flex: 1; }
+  }
+}
+
+/* ── Contact card ──────────────────────────────────────────── */
+.contact-card {
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  margin-top: var(--space-4);
+  background: var(--color-gray-50);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+  }
+
+  &__num {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+/* ── Lista de contactos (columna, sin grid) ────────────────── */
+.contacts-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Contacts empty ────────────────────────────────────────── */
+.contacts-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+  color: var(--color-gray-500);
+  padding: var(--space-5) 0;
+}
+
+/* ── Add btn alineado a la derecha en el header ────────────── */
+.contact-add-btn {
+  margin-left: auto;
+}
+
+/* ── Card header override para contactos ───────────────────── */
+.card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* ── Actions bar inferior ──────────────────────────────────── */
+.perfil-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+
+/* ── Spinner ───────────────────────────────────────────────── */
+.btn-spin {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── QR Card (sidebar vertical) ────────────────────────────── */
+.qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  background: linear-gradient(160deg, var(--color-dark) 0%, #1a2a4a 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-glow-blue);
+  text-align: center;
+
+  &__title {
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--color-white);
+    font-family: var(--font-display);
+    align-self: stretch;
+  }
+
+  &__img-wrap {
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    box-shadow: var(--shadow-md);
+
+    img { display: block; border-radius: var(--radius-sm); }
+  }
+
+  &__desc {
+    font-size: var(--text-xs);
+    color: rgba(255, 255, 255, 0.55);
+    line-height: var(--leading-relaxed);
+    align-self: stretch;
+  }
+
+  &__url {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    align-self: stretch;
+  }
+
+  &__url-label,
+  &__code-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  &__url-link {
+    font-size: var(--text-xs);
+    color: var(--color-secondary);
+    word-break: break-all;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+    text-align: left;
+
+    &:hover { color: #fff; text-decoration: underline; }
+  }
+
+  &__code {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    align-self: stretch;
+
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: var(--text-xs);
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 0.04em;
+      word-break: break-all;
+      text-align: left;
+    }
+  }
+
+  &__download { width: 100%; }
+}
+
+/* ── Modal de éxito ────────────────────────────────────────── */
+.success-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+  }
+
+  &__box {
+    position: relative;
+    z-index: 1;
+    background: var(--color-white);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8) var(--space-8) var(--space-6);
+    box-shadow: var(--shadow-xl);
+    max-width: 380px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    text-align: center;
+    animation: modal-in 0.25s var(--transition-spring) both;
+  }
+
+  &__icon {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  &__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-extrabold);
+    color: var(--color-dark);
+    letter-spacing: -0.02em;
+  }
+
+  &__msg {
+    font-size: var(--text-sm);
+    color: var(--color-gray-500);
+    line-height: var(--leading-relaxed);
+    max-width: none;
+  }
+
+  &__btn {
+    margin-top: var(--space-2);
+    min-width: 140px;
+  }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.92) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .page-header {
+    flex-direction: column;
+    .btn { width: 100%; }
+  }
+  .perfil-actions .btn { width: 100%; }
+
+  .qr-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    &__url-link { text-align: center; }
+    &__code code { text-align: center; }
+    &__download { width: 100%; }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header__title { font-size: var(--text-2xl); }
+  .contact-card { padding: var(--space-4); }
+}

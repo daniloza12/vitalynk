@@ -1,0 +1,104 @@
+.auth-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+  position: relative;
+  background: var(--color-dark);
+  overflow: hidden;
+
+  /* ── Fondo con glows ─────────────────────────────────── */
+  &__bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &__glow {
+    position: absolute;
+    border-radius: var(--radius-full);
+    filter: blur(80px);
+    opacity: 0.35;
+    transform: translateZ(0); /* promueve a capa GPU, evita repaint en el resto de la página */
+
+    &--blue {
+      width: 480px;
+      height: 480px;
+      top: -120px;
+      left: -120px;
+      background: var(--color-primary);
+    }
+
+    &--green {
+      width: 320px;
+      height: 320px;
+      bottom: -80px;
+      right: -60px;
+      background: var(--color-secondary);
+    }
+  }
+
+  /* ── Centro ──────────────────────────────────────────── */
+  &__center {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  /* ── Marca ───────────────────────────────────────────── */
+  &__brand {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-extrabold);
+    color: var(--color-white);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+
+    span { color: var(--color-secondary); }
+  }
+
+  /* ── Footer ──────────────────────────────────────────── */
+  &__footer {
+    position: relative;
+    z-index: 1;
+    margin-top: var(--space-8);
+    font-size: var(--text-xs);
+    color: rgba(255, 255, 255, 0.35);
+    text-align: center;
+  }
+}
+
+/* ── Responsive 480px ──────────────────────────────────────── */
+@media (max-width: 480px) {
+  .auth-shell {
+    padding: var(--space-4);
+    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+
+    &__glow--blue {
+      width: 260px;
+      height: 260px;
+    }
+
+    &__glow--green {
+      width: 180px;
+      height: 180px;
+    }
+
+    &__brand {
+      font-size: var(--text-2xl);
+    }
+
+    &__center {
+      gap: var(--space-6);
+    }
+  }
+}

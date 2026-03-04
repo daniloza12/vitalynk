@@ -1,0 +1,90 @@
+<div class="admin-page">
+
+  <!-- ── Encabezado ────────────────────────────────────────── -->
+  <header class="page-header">
+    <div>
+      <h1 class="page-header__title">🛡️ Administrador</h1>
+      <p class="page-header__sub">Gestión de cuentas del sistema VitaLink</p>
+    </div>
+    <div class="admin-stats">
+      <div class="stat-chip">
+        <span class="stat-chip__num">{{ accounts().length }}</span>
+        <span class="stat-chip__label">Cuentas registradas</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Card tabla ────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card__header">
+      <div class="card__icon card__icon--primary">📋</div>
+      <h2>Lista de cuentas</h2>
+      <!-- Buscador -->
+      <div class="table-search">
+        <input
+          type="search"
+          class="field__input"
+          placeholder="Buscar por email o rol…"
+          [value]="search()"
+          (input)="onSearch($event)"
+          aria-label="Buscar cuentas"
+        />
+      </div>
+    </div>
+
+    @if (accounts().length === 0) {
+      <div class="empty-state">
+        <p>🔍 No hay cuentas registradas.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Security Account</th>
+              <th>Creado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (account of filtered(); track account.id; let i = $index) {
+              <tr>
+                <td class="col-idx">{{ i + 1 }}</td>
+                <td class="col-email">
+                  <div class="user-cell">
+                    <div class="user-avatar">{{ account.email.charAt(0).toUpperCase() }}</div>
+                    <span>{{ account.email }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge"
+                        [class.badge--admin]="account.role === 'ADMIN'"
+                        [class.badge--user]="account.role === 'USER'">
+                    {{ account.role }}
+                  </span>
+                </td>
+                <td class="col-security">
+                  <code class="security-code">{{ account.securityAccount }}</code>
+                </td>
+                <td class="col-date">{{ account.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <a class="btn btn--outline btn--sm"
+                     [routerLink]="['/admin/account', account.id]">
+                    Ver detalle
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (filtered().length === 0 && search()) {
+        <p class="no-results">Sin resultados para "{{ search() }}"</p>
+      }
+    }
+  </div>
+</div>

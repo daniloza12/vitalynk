@@ -1,0 +1,210 @@
+<div class="login-wrapper">
+
+  <!-- ── Panel izquierdo: branding + features ──────────────────── -->
+  <div class="login-panel">
+    <p class="lp-tagline">Plataforma de Identidad Inteligente para Emergencias</p>
+
+    <ul class="lp-features">
+      <li class="lp-features__item">
+        <span class="lp-features__icon" aria-hidden="true">🔐</span>
+        <span>Perfil digital con información médica en segundos</span>
+      </li>
+      <li class="lp-features__item">
+        <span class="lp-features__icon" aria-hidden="true">📱</span>
+        <span>QR universal — funciona en cualquier smartphone</span>
+      </li>
+      <li class="lp-features__item">
+        <span class="lp-features__icon" aria-hidden="true">📞</span>
+        <span>Mostramos y notificamos a tus contactos para notificar una emergencia</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ── Panel derecho: formulario de login ───────────────────── -->
+  <div class="auth-card">
+    <div class="auth-card__header">
+      <h1 class="auth-card__title">Iniciar sesión</h1>
+      <p class="auth-card__subtitle">Accede a tu cuenta VitaLink</p>
+    </div>
+
+    @if (errorMsg) {
+      <div class="alert alert--error" role="alert">
+        <span aria-hidden="true">⚠️</span> {{ errorMsg }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-card__form">
+
+      <div class="field">
+        <label class="field__label" for="login-email">Correo electrónico</label>
+        <input
+          id="login-email"
+          type="email"
+          class="field__input"
+          [class.is-invalid]="email.invalid && email.touched"
+          formControlName="email"
+          placeholder="tu@correo.com"
+          autocomplete="email"
+        />
+        @if (email.hasError('required') && email.touched) {
+          <span class="field__error">El correo es obligatorio.</span>
+        } @else if (email.hasError('email') && email.touched) {
+          <span class="field__error">Ingresa un correo válido.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="login-pass">Contraseña</label>
+        <div class="field__pass-wrap">
+          <input
+            id="login-pass"
+            [type]="showPass ? 'text' : 'password'"
+            class="field__input"
+            [class.is-invalid]="password.invalid && password.touched"
+            formControlName="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="field__pass-toggle"
+            (click)="togglePassword()"
+            [attr.aria-label]="showPass ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            {{ showPass ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        @if (password.hasError('required') && password.touched) {
+          <span class="field__error">La contraseña es obligatoria.</span>
+        } @else if (password.hasError('minlength') && password.touched) {
+          <span class="field__error">Mínimo 6 caracteres.</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn--primary btn--full"
+        [disabled]="loading">
+        @if (loading) {
+          <span class="btn__spinner" aria-hidden="true"></span> Iniciando…
+        } @else {
+          Iniciar sesión
+        }
+      </button>
+    </form>
+
+    <p class="auth-card__footer">
+      ¿No tienes cuenta?
+      <a routerLink="/auth/register" class="auth-card__link">Crear cuenta</a>
+    </p>
+  </div>
+
+  <!-- ── Tarjeta QR mockup (desktop: col izq fila 2 · mobile: fondo) ── -->
+  <div class="lp-card-mock">
+    <div class="lp-card-mock__inner">
+
+      <div class="lp-card-mock__header">
+        <span class="lp-card-mock__logo">
+          <span class="lp-card-mock__logo-vita">Vita</span><span class="lp-card-mock__logo-link">Link</span>
+        </span>
+        <span class="lp-card-mock__tag">ID FOR SAVE</span>
+      </div>
+
+      <div class="lp-card-mock__body">
+        <div class="lp-card-mock__qr">
+          <svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="0" y="0" width="7" height="7" rx="1" fill="currentColor"/>
+            <rect x="1" y="1" width="5" height="5" rx="0.5" fill="var(--lp-qr-bg)"/>
+            <rect x="2" y="2" width="3" height="3" fill="currentColor"/>
+            <rect x="14" y="0" width="7" height="7" rx="1" fill="currentColor"/>
+            <rect x="15" y="1" width="5" height="5" rx="0.5" fill="var(--lp-qr-bg)"/>
+            <rect x="16" y="2" width="3" height="3" fill="currentColor"/>
+            <rect x="0" y="14" width="7" height="7" rx="1" fill="currentColor"/>
+            <rect x="1" y="15" width="5" height="5" rx="0.5" fill="var(--lp-qr-bg)"/>
+            <rect x="2" y="16" width="3" height="3" fill="currentColor"/>
+            <rect x="9" y="0" width="1" height="1" fill="currentColor"/>
+            <rect x="11" y="0" width="1" height="1" fill="currentColor"/>
+            <rect x="8" y="1" width="1" height="1" fill="currentColor"/>
+            <rect x="10" y="1" width="2" height="1" fill="currentColor"/>
+            <rect x="9" y="2" width="1" height="2" fill="currentColor"/>
+            <rect x="11" y="3" width="1" height="1" fill="currentColor"/>
+            <rect x="8" y="4" width="2" height="1" fill="currentColor"/>
+            <rect x="12" y="4" width="1" height="1" fill="currentColor"/>
+            <rect x="9" y="5" width="3" height="1" fill="currentColor"/>
+            <rect x="0" y="8" width="1" height="1" fill="currentColor"/>
+            <rect x="2" y="8" width="3" height="1" fill="currentColor"/>
+            <rect x="6" y="8" width="1" height="1" fill="currentColor"/>
+            <rect x="8" y="8" width="2" height="1" fill="currentColor"/>
+            <rect x="11" y="8" width="3" height="1" fill="currentColor"/>
+            <rect x="15" y="8" width="2" height="1" fill="currentColor"/>
+            <rect x="19" y="8" width="2" height="1" fill="currentColor"/>
+            <rect x="1" y="9" width="2" height="1" fill="currentColor"/>
+            <rect x="5" y="9" width="1" height="1" fill="currentColor"/>
+            <rect x="7" y="9" width="1" height="1" fill="currentColor"/>
+            <rect x="9" y="9" width="1" height="1" fill="currentColor"/>
+            <rect x="12" y="9" width="1" height="1" fill="currentColor"/>
+            <rect x="14" y="9" width="1" height="1" fill="currentColor"/>
+            <rect x="17" y="9" width="1" height="1" fill="currentColor"/>
+            <rect x="20" y="9" width="1" height="1" fill="currentColor"/>
+            <rect x="0" y="10" width="3" height="1" fill="currentColor"/>
+            <rect x="4" y="10" width="2" height="1" fill="currentColor"/>
+            <rect x="8" y="10" width="3" height="1" fill="currentColor"/>
+            <rect x="13" y="10" width="2" height="1" fill="currentColor"/>
+            <rect x="16" y="10" width="3" height="1" fill="currentColor"/>
+            <rect x="20" y="10" width="1" height="1" fill="currentColor"/>
+            <rect x="1" y="11" width="1" height="1" fill="currentColor"/>
+            <rect x="3" y="11" width="1" height="1" fill="currentColor"/>
+            <rect x="6" y="11" width="2" height="1" fill="currentColor"/>
+            <rect x="9" y="11" width="2" height="1" fill="currentColor"/>
+            <rect x="12" y="11" width="1" height="1" fill="currentColor"/>
+            <rect x="15" y="11" width="1" height="1" fill="currentColor"/>
+            <rect x="18" y="11" width="2" height="1" fill="currentColor"/>
+            <rect x="0" y="12" width="2" height="1" fill="currentColor"/>
+            <rect x="4" y="12" width="3" height="1" fill="currentColor"/>
+            <rect x="8" y="12" width="1" height="1" fill="currentColor"/>
+            <rect x="10" y="12" width="2" height="1" fill="currentColor"/>
+            <rect x="13" y="12" width="3" height="1" fill="currentColor"/>
+            <rect x="17" y="12" width="1" height="1" fill="currentColor"/>
+            <rect x="20" y="12" width="1" height="1" fill="currentColor"/>
+            <rect x="9" y="14" width="2" height="1" fill="currentColor"/>
+            <rect x="12" y="14" width="1" height="1" fill="currentColor"/>
+            <rect x="14" y="14" width="3" height="1" fill="currentColor"/>
+            <rect x="19" y="14" width="2" height="1" fill="currentColor"/>
+            <rect x="8" y="15" width="1" height="1" fill="currentColor"/>
+            <rect x="10" y="15" width="3" height="1" fill="currentColor"/>
+            <rect x="15" y="15" width="1" height="1" fill="currentColor"/>
+            <rect x="17" y="15" width="2" height="1" fill="currentColor"/>
+            <rect x="20" y="15" width="1" height="1" fill="currentColor"/>
+            <rect x="9" y="16" width="1" height="2" fill="currentColor"/>
+            <rect x="11" y="16" width="2" height="1" fill="currentColor"/>
+            <rect x="14" y="16" width="1" height="1" fill="currentColor"/>
+            <rect x="16" y="16" width="3" height="1" fill="currentColor"/>
+            <rect x="8" y="17" width="1" height="1" fill="currentColor"/>
+            <rect x="12" y="17" width="1" height="1" fill="currentColor"/>
+            <rect x="15" y="17" width="1" height="1" fill="currentColor"/>
+            <rect x="18" y="17" width="3" height="1" fill="currentColor"/>
+            <rect x="9" y="18" width="3" height="1" fill="currentColor"/>
+            <rect x="13" y="18" width="2" height="1" fill="currentColor"/>
+            <rect x="16" y="18" width="1" height="1" fill="currentColor"/>
+            <rect x="19" y="18" width="1" height="1" fill="currentColor"/>
+            <rect x="8" y="19" width="2" height="1" fill="currentColor"/>
+            <rect x="11" y="19" width="1" height="1" fill="currentColor"/>
+            <rect x="14" y="19" width="3" height="1" fill="currentColor"/>
+            <rect x="18" y="19" width="2" height="1" fill="currentColor"/>
+            <rect x="9" y="20" width="1" height="1" fill="currentColor"/>
+            <rect x="12" y="20" width="2" height="1" fill="currentColor"/>
+            <rect x="15" y="20" width="2" height="1" fill="currentColor"/>
+            <rect x="19" y="20" width="2" height="1" fill="currentColor"/>
+          </svg>
+        </div>
+
+        <div class="lp-card-mock__info">
+          <p class="lp-card-mock__name">Juan Pérez</p>
+          <p class="lp-card-mock__detail">Tipo A+ · Alergia: Penicilina</p>
+          <p class="lp-card-mock__url">vitaLink.io/public/a3f…</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

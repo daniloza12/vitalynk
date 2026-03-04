@@ -1,0 +1,106 @@
+<div class="register-wrapper">
+  <div class="auth-card">
+    <div class="auth-card__header">
+      <h1 class="auth-card__title">Crear cuenta</h1>
+      <p class="auth-card__subtitle">Únete a VitaLink y protege tu identidad</p>
+    </div>
+
+    <!-- Error global -->
+    @if (errorMsg) {
+      <div class="alert alert--error" role="alert">
+        <span aria-hidden="true">⚠️</span> {{ errorMsg }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-card__form">
+
+      <!-- Correo -->
+      <div class="field">
+        <label class="field__label" for="reg-email">Correo electrónico</label>
+        <input
+          id="reg-email"
+          type="email"
+          class="field__input"
+          [class.is-invalid]="email.invalid && email.touched"
+          formControlName="email"
+          placeholder="tu@correo.com"
+          autocomplete="email"
+        />
+        @if (email.hasError('required') && email.touched) {
+          <span class="field__error">El correo es obligatorio.</span>
+        } @else if (email.hasError('email') && email.touched) {
+          <span class="field__error">Ingresa un correo válido.</span>
+        }
+      </div>
+
+      <!-- Contraseña -->
+      <div class="field">
+        <label class="field__label" for="reg-pass">Contraseña</label>
+        <div class="field__pass-wrap">
+          <input
+            id="reg-pass"
+            [type]="showPass ? 'text' : 'password'"
+            class="field__input"
+            [class.is-invalid]="password.invalid && password.touched"
+            formControlName="password"
+            placeholder="Mínimo 8 caracteres"
+            autocomplete="new-password"
+          />
+          <button type="button" class="field__pass-toggle"
+                  (click)="togglePassword()"
+                  [attr.aria-label]="showPass ? 'Ocultar' : 'Mostrar'">
+            {{ showPass ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        @if (password.hasError('required') && password.touched) {
+          <span class="field__error">La contraseña es obligatoria.</span>
+        } @else if (password.hasError('minlength') && password.touched) {
+          <span class="field__error">Mínimo 8 caracteres.</span>
+        }
+      </div>
+
+      <!-- Confirmar contraseña -->
+      <div class="field">
+        <label class="field__label" for="reg-confirm">Confirmar contraseña</label>
+        <div class="field__pass-wrap">
+          <input
+            id="reg-confirm"
+            [type]="showConfirm ? 'text' : 'password'"
+            class="field__input"
+            [class.is-invalid]="(confirmPassword.invalid && confirmPassword.touched) || (form.hasError('passwordMismatch') && confirmPassword.touched)"
+            formControlName="confirmPassword"
+            placeholder="Repite tu contraseña"
+            autocomplete="new-password"
+          />
+          <button type="button" class="field__pass-toggle"
+                  (click)="toggleConfirm()"
+                  [attr.aria-label]="showConfirm ? 'Ocultar' : 'Mostrar'">
+            {{ showConfirm ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        @if (confirmPassword.hasError('required') && confirmPassword.touched) {
+          <span class="field__error">Confirma tu contraseña.</span>
+        } @else if (form.hasError('passwordMismatch') && confirmPassword.touched) {
+          <span class="field__error">Las contraseñas no coinciden.</span>
+        }
+      </div>
+
+      <!-- Submit -->
+      <button
+        type="submit"
+        class="btn btn--primary btn--full"
+        [disabled]="loading">
+        @if (loading) {
+          <span class="btn__spinner" aria-hidden="true"></span> Creando cuenta…
+        } @else {
+          Crear cuenta
+        }
+      </button>
+    </form>
+
+    <p class="auth-card__footer">
+      ¿Ya tienes cuenta?
+      <a routerLink="/auth/login" class="auth-card__link">Iniciar sesión</a>
+    </p>
+  </div>
+</div>

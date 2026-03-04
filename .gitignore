@@ -1,0 +1,69 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Angular
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# Environment (nunca subir credenciales reales)
+/src/environments/environment.production.ts
+
+# System files
+.DS_Store
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs
+*.log
+logs/
+
+# Tests
+/coverage
+.nyc_output
+
+# Archivos locales / análisis
+analisiss/
+codeVersion_*.txt
+desplegadoConQR.txt
+mejorasConSkills.txt
+registroCuenta.txt
+CLAUDE*.md
+*.bat
+
+# Imágenes y PDFs locales (raíz)
+/*.png
+/*.jpg
+/*.pdf

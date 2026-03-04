@@ -1,0 +1,203 @@
+<div class="detail-page">
+
+  <!-- Botón volver -->
+  <div class="detail-back">
+    <button class="btn btn--ghost btn--sm" (click)="goBack()">
+      ← Volver a la lista
+    </button>
+  </div>
+
+  <!-- ── Not found ─────────────────────────────────────────── -->
+  @if (notFound) {
+    <div class="card not-found">
+      <p>❌ Cuenta no encontrada.</p>
+      <a routerLink="/admin" class="btn btn--primary btn--sm">Ir al listado</a>
+    </div>
+  }
+
+  @if (account && !notFound) {
+
+    <!-- ══════════════════════════════════════════════════════
+         FILA 1: Datos de la cuenta | QR de emergencia
+    ══════════════════════════════════════════════════════ -->
+    <div class="top-row">
+
+      <section class="card card--account">
+        <div class="card__header">
+          <div class="card__icon card__icon--primary">🔑</div>
+          <h2>Datos de la cuenta</h2>
+          <span class="badge"
+                [class.badge--admin]="account.role === 'ADMIN'"
+                [class.badge--user]="account.role === 'USER'">
+            {{ account.role }}
+          </span>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-item__label">Email</span>
+            <span class="info-item__value">{{ account.email }}</span>
+          </div>
+          <div class="info-item info-item--full">
+            <span class="info-item__label">Security Account</span>
+            <code class="info-item__value mono security">{{ account.securityAccount }}</code>
+          </div>
+          <div class="info-item">
+            <span class="info-item__label">Rol</span>
+            <span class="info-item__value">{{ account.role }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-item__label">Creado el</span>
+            <span class="info-item__value">{{ account.createdAt | date:'dd/MM/yyyy, HH:mm' }}</span>
+          </div>
+        </div>
+      </section>
+
+      @if (account.qrDataUrl) {
+        <section class="card qr-section">
+          <div class="card__header">
+            <div class="card__icon card__icon--secondary">📱</div>
+            <h2>QR de emergencia</h2>
+            <button type="button" class="btn btn--outline btn--sm qr-section__preview"
+                    (click)="openPublicProfile()">
+              Ver ficha pública ↗
+            </button>
+          </div>
+          <div class="qr-block">
+            <div class="qr-block__img">
+              <img [src]="account.qrDataUrl"
+                   alt="QR de emergencia de {{ account.email }}"
+                   width="160" height="160" />
+            </div>
+            <div class="qr-block__meta">
+              <div class="qr-block__row">
+                <span class="qr-block__label">URL codificada</span>
+                <a class="qr-block__link" (click)="openPublicProfile()">{{ publicUrl }}</a>
+              </div>
+              <div class="qr-block__row">
+                <span class="qr-block__label">Security Account</span>
+                <code class="qr-block__code">{{ account.securityAccount }}</code>
+              </div>
+              <button class="btn btn--secondary btn--sm" (click)="downloadQr()">
+                ⬇️ Descargar QR
+              </button>
+            </div>
+          </div>
+        </section>
+      }
+
+    </div><!-- /top-row -->
+
+    @if (!profile) {
+      <section class="card no-profile">
+        <p>📭 Este usuario aún no ha completado su perfil.</p>
+      </section>
+    }
+
+    @if (profile) {
+
+      <!-- ════════════════════════════════════════════════════
+           FILA 2: Datos personales | Datos médicos
+      ════════════════════════════════════════════════════ -->
+      <div class="profile-layout">
+
+        <section class="card">
+          <div class="card__header">
+            <div class="card__icon card__icon--primary">👤</div>
+            <h2>Datos personales</h2>
+          </div>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-item__label">Nombre completo</span>
+              <span class="info-item__value">{{ profile.personal.fullName || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label">Sexo</span>
+              <span class="info-item__value">{{ sexLabel(profile.personal.sex) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label">Fecha de nacimiento</span>
+              <span class="info-item__value">{{ profile.personal.birthDate || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label">Teléfono</span>
+              <span class="info-item__value">{{ profile.personal.phone || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label">Correo personal</span>
+              <span class="info-item__value">{{ profile.personal.personalEmail || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label">Correo trabajo</span>
+              <span class="info-item__value">{{ profile.personal.workEmail || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label">Ciudad</span>
+              <span class="info-item__value">{{ profile.personal.city || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label">Distrito</span>
+              <span class="info-item__value">{{ profile.personal.district || '—' }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card__header">
+            <div class="card__icon card__icon--secondary">🏥</div>
+            <h2>Datos médicos</h2>
+          </div>
+          <div class="medical-grid">
+            <div class="medical-item">
+              <h4 class="medical-item__title">Enfermedades</h4>
+              <p class="medical-item__text">{{ profile.medical.diseases || 'No registrado' }}</p>
+            </div>
+            <div class="medical-item">
+              <h4 class="medical-item__title">Alergias</h4>
+              <p class="medical-item__text">{{ profile.medical.allergies || 'No registrado' }}</p>
+            </div>
+            <div class="medical-item medical-item--full">
+              <h4 class="medical-item__title">Otros / Medicamentos</h4>
+              <p class="medical-item__text">{{ profile.medical.others || 'No registrado' }}</p>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /profile-layout -->
+
+      <!-- ════════════════════════════════════════════════════
+           FILA 3: Contactos de emergencia (ancho completo)
+      ════════════════════════════════════════════════════ -->
+      <section class="card">
+        <div class="card__header">
+          <div class="card__icon card__icon--accent">📞</div>
+          <h2>Contactos de emergencia</h2>
+          <span class="contact-count">{{ profile.contacts.length }}</span>
+        </div>
+
+        @if (profile.contacts.length === 0) {
+          <p class="no-contacts">Sin contactos registrados.</p>
+        } @else {
+          <div class="contacts-list">
+            @for (c of profile.contacts; track $index) {
+              <div class="contact-item">
+                <div class="contact-item__avatar">
+                  {{ c.fullName.charAt(0).toUpperCase() }}
+                </div>
+                <div class="contact-item__body">
+                  <strong class="contact-item__name">{{ c.fullName }}</strong>
+                  <div class="contact-item__details">
+                    @if (c.phone)         { <span>📱 {{ c.phone }}</span> }
+                    @if (c.personalEmail) { <span>✉️ {{ c.personalEmail }}</span> }
+                    @if (c.workEmail)     { <span>💼 {{ c.workEmail }}</span> }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+    }
+
+  }
+</div>
