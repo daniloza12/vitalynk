@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://vitalink.us-east-2.elasticbeanstalk.com/api/v1',
+  apiUrl: 'https://vitalinkbackenddev-g5f6c6fjdfhphxh2.centralus-01.azurewebsites.net/api/v1',
 };
