@@ -5,7 +5,8 @@
 // ============================================================
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap, of } from 'rxjs';
+import { switchMap, of, catchError, EMPTY } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from '../../../core/services/account.service';
 import { Account }        from '../../../core/models/account.model';
 import { Profile, PersonalVisibility, ContactVisibility } from '../../../core/models/profile.model';
@@ -21,9 +22,10 @@ export class AccountPublicComponent implements OnInit {
   private route          = inject(ActivatedRoute);
   private accountService = inject(AccountService);
 
-  account:  Account | undefined;
-  profile:  Profile | null = null;
-  notFound = false;
+  account:     Account | undefined;
+  profile:     Profile | null = null;
+  notFound     = false;
+  rateLimited  = false;
 
   readonly accessed = new Date();
 
@@ -36,6 +38,11 @@ export class AccountPublicComponent implements OnInit {
         if (!account) { this.notFound = true; return of(null); }
         this.account = account;
         return this.accountService.getProfileForAccount(account.id);
+      }),
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 429) { this.rateLimited = true; }
+        else { this.notFound = true; }
+        return EMPTY;
       })
     ).subscribe(profile => {
       this.profile = profile;

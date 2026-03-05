@@ -9,7 +9,8 @@
 // ============================================================
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, of, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Account } from '../models/account.model';
 import { Profile } from '../models/profile.model';
 import { ProfileService } from './profile.service';
@@ -35,7 +36,10 @@ export class AccountService {
 
   getBySecurityAccount(securityAccount: string): Observable<Account | null> {
     return this.http.get<Account>(`${this.api}/security/${securityAccount}`).pipe(
-      catchError(() => of(null))
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 429) return throwError(() => err);
+        return of(null);
+      })
     );
   }
 

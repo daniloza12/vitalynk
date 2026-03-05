@@ -21,8 +21,20 @@
     </main>
   }
 
+  <!-- ── Bloqueo temporal (429) ─────────────────────────────────── -->
+  @if (rateLimited) {
+    <main class="emergency-main">
+      <div class="emergency-card rate-limit-card">
+        <div class="rate-limit-card__icon">🚫</div>
+        <h2>Acceso bloqueado temporalmente</h2>
+        <p>Se han realizado demasiadas consultas a esta ficha desde tu dispositivo.</p>
+        <p class="rate-limit-card__sub">Intenta nuevamente más tarde.</p>
+      </div>
+    </main>
+  }
+
   <!-- ── Ficha de emergencia ───────────────────────────────────── -->
-  @if (account && !notFound) {
+  @if (account && !notFound && !rateLimited) {
     <main class="emergency-main">
 
       @if (profile) {

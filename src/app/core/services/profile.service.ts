@@ -7,7 +7,8 @@
 // ============================================================
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, of, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Profile } from '../models/profile.model';
 import { environment } from '../../../environments/environment';
 
@@ -22,7 +23,10 @@ export class ProfileService {
 
   getByAccountId(accountId: string): Observable<Profile | null> {
     return this.http.get<Profile>(`${this.api}/${accountId}`).pipe(
-      catchError(() => of(null))
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 429) return throwError(() => err);
+        return of(null);
+      })
     );
   }
 
