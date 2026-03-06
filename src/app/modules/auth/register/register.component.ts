@@ -1,7 +1,7 @@
 // ============================================================
 //  register.component.ts
 // ============================================================
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -29,6 +29,7 @@ const passwordMatchValidator: ValidatorFn = (
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent {
   private fb     = inject(FormBuilder);
@@ -44,35 +45,35 @@ export class RegisterComponent {
     { validators: passwordMatchValidator }
   );
 
-  loading  = false;
-  errorMsg = '';
-  showPass = false;
-  showConfirm = false;
+  loading     = signal(false);
+  errorMsg    = signal('');
+  showPass    = signal(false);
+  showConfirm = signal(false);
 
   get email()           { return this.form.get('email')!; }
   get password()        { return this.form.get('password')!; }
   get confirmPassword() { return this.form.get('confirmPassword')!; }
 
-  togglePassword(): void  { this.showPass    = !this.showPass; }
-  toggleConfirm():  void  { this.showConfirm = !this.showConfirm; }
+  togglePassword(): void  { this.showPass.update(v => !v); }
+  toggleConfirm():  void  { this.showConfirm.update(v => !v); }
 
   async onSubmit(): Promise<void> {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.loading()) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.loading  = true;
-    this.errorMsg = '';
+    this.loading.set(true);
+    this.errorMsg.set('');
 
     try {
       const account = await this.auth.register(this.form.getRawValue());
-      // Primera cuenta = ADMIN → va a /admin, resto → /perfil
       this.router.navigate(account.role === 'ADMIN' ? ['/admin'] : ['/perfil']);
-    } catch (err: unknown) {
-      this.errorMsg = err instanceof Error ? err.message : 'Error al registrarse.';
+    } catch {
+      // Mensaje genérico — no revela detalles del error del backend
+      this.errorMsg.set('No fue posible crear la cuenta. Intenta de nuevo.');
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 }

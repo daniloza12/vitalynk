@@ -1,7 +1,14 @@
 // ============================================================
 //  perfil.component.ts — Formulario de perfil con visibilidad QR
 // ============================================================
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -12,6 +19,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router }         from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService }    from '../../../core/services/auth.service';
 import { ProfileService } from '../../../core/services/profile.service';
 import { QrService }      from '../../../core/services/qr.service';
@@ -20,7 +28,6 @@ import {
   DEFAULT_PERSONAL_VISIBILITY,
   DEFAULT_CONTACT_VISIBILITY,
 } from '../../../core/models/profile.model';
-import { Account } from '../../../core/models/account.model';
 
 @Component({
   selector: 'app-perfil',
@@ -28,6 +35,7 @@ import { Account } from '../../../core/models/account.model';
   imports: [ReactiveFormsModule],
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PerfilComponent implements OnInit {
   private fb             = inject(FormBuilder);
@@ -35,98 +43,43 @@ export class PerfilComponent implements OnInit {
   private profileService = inject(ProfileService);
   private qrService      = inject(QrService);
   private router         = inject(Router);
+  private destroyRef     = inject(DestroyRef);
 
-  account: Account | null = null;
+  /** Signal reactivo del usuario — se actualiza cuando el QR se genera en segundo plano */
+  account = this.auth.currentUser;
 
   form!: FormGroup;
-  saving   = false;
-  saved    = false;
-  errorMsg = '';
-  confirmDeleteIndex: number | null = null;
+  saving             = signal(false);
+  saved              = signal(false);
+  errorMsg           = signal('');
+  confirmDeleteIndex = signal<number | null>(null);
 
   // ── Inicialización ───────────────────────────────────────────
   ngOnInit(): void {
-    this.account = this.auth.currentUser();
     this.buildForm();
     this.loadProfile();
   }
 
   get publicUrl(): string {
-    return this.account ? this.qrService.publicUrl(this.account.securityAccount) : '';
+    const acc = this.account();
+    return acc ? this.qrService.publicUrl(acc.securityAccount) : '';
   }
 
   openPublicProfile(): void {
-    if (this.account) {
-      this.router.navigate(['/public', this.account.securityAccount]);
+    const acc = this.account();
+    if (acc) {
+      this.router.navigate(['/public', acc.securityAccount]);
     }
   }
 
   closeModal(): void {
-    this.saved = false;
+    this.saved.set(false);
   }
 
   downloadQr(): void {
-    if (!this.account?.qrDataUrl) return;
-    const sa  = this.account.securityAccount;
-    const msg = 'En caso de pérdida o emergencia, escanee el QR para visualizar los datos de la persona y sus datos de emergencia';
-
-    const canvas  = document.createElement('canvas');
-    const ctx     = canvas.getContext('2d')!;
-    const qrSize  = 220;
-    const padH    = 20;
-    const padV    = 16;
-    const headerH = 36;
-
-    canvas.width  = qrSize + padH * 2;
-    canvas.height = headerH + padV + qrSize + padV + 22 + 10 + 52 + padV;
-
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = '#0052CC';
-    ctx.fillRect(0, 0, canvas.width, headerH);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font      = 'bold 16px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('VitaLink', canvas.width / 2, headerH - 10);
-
-    const img    = new Image();
-    img.onload   = () => {
-      const x = padH;
-      const y = headerH + padV;
-
-      ctx.drawImage(img, x, y, qrSize, qrSize);
-
-      ctx.fillStyle = '#0D1B2A';
-      ctx.font      = 'bold 10px "Courier New", monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(sa, canvas.width / 2, y + qrSize + 18);
-
-      ctx.fillStyle = '#4A5568';
-      ctx.font      = '10px Arial, sans-serif';
-      const words   = msg.split(' ');
-      const maxW    = canvas.width - padH * 2;
-      let   line    = '';
-      let   lineY   = y + qrSize + 36;
-
-      for (const word of words) {
-        const test = line + word + ' ';
-        if (ctx.measureText(test).width > maxW && line) {
-          ctx.fillText(line.trim(), canvas.width / 2, lineY);
-          line  = word + ' ';
-          lineY += 13;
-        } else {
-          line = test;
-        }
-      }
-      if (line) ctx.fillText(line.trim(), canvas.width / 2, lineY);
-
-      const link    = document.createElement('a');
-      link.href     = canvas.toDataURL('image/png');
-      link.download = `vitalink-qr-${sa.substring(0, 8)}.png`;
-      link.click();
-    };
-    img.src = this.account.qrDataUrl;
+    const acc = this.account();
+    if (!acc?.qrDataUrl) return;
+    this.qrService.downloadWithBranding(acc.qrDataUrl, acc.securityAccount);
   }
 
   private buildForm(): void {
@@ -162,27 +115,29 @@ export class PerfilComponent implements OnInit {
   }
 
   private loadProfile(): void {
-    const user = this.auth.currentUser();
+    const user = this.account();
     if (!user) return;
 
-    this.profileService.getByAccountId(user.id).subscribe(profile => {
-      if (!profile) return;
+    this.profileService.getByAccountId(user.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(profile => {
+        if (!profile) return;
 
-      this.form.patchValue({
-        personal: profile.personal,
-        medical:  profile.medical,
+        this.form.patchValue({
+          personal: profile.personal,
+          medical:  profile.medical,
+        });
+
+        const visPersonal = profile.visibility?.personal ?? DEFAULT_PERSONAL_VISIBILITY;
+        this.visPersonal.patchValue(visPersonal);
+
+        const visContacts = profile.visibility?.contacts ?? [];
+        profile.contacts.forEach((c: { fullName: string; phone: string; personalEmail: string; workEmail: string }, i: number) => {
+          const vis = visContacts[i] ?? { ...DEFAULT_CONTACT_VISIBILITY };
+          this.contacts.push(this.newContact(c));
+          this.visContacts.push(this.newContactVis(vis));
+        });
       });
-
-      const visPersonal = profile.visibility?.personal ?? DEFAULT_PERSONAL_VISIBILITY;
-      this.visPersonal.patchValue(visPersonal);
-
-      const visContacts = profile.visibility?.contacts ?? [];
-      profile.contacts.forEach((c: { fullName: string; phone: string; personalEmail: string; workEmail: string }, i: number) => {
-        const vis = visContacts[i] ?? { ...DEFAULT_CONTACT_VISIBILITY };
-        this.contacts.push(this.newContact(c));
-        this.visContacts.push(this.newContactVis(vis));
-      });
-    });
   }
 
   // ── Accesores del form ───────────────────────────────────────
@@ -235,19 +190,20 @@ export class PerfilComponent implements OnInit {
   }
 
   requestDeleteContact(i: number): void {
-    this.confirmDeleteIndex = i;
+    this.confirmDeleteIndex.set(i);
   }
 
   confirmDeleteContact(): void {
-    if (this.confirmDeleteIndex !== null) {
-      this.contacts.removeAt(this.confirmDeleteIndex);
-      this.visContacts.removeAt(this.confirmDeleteIndex);
-      this.confirmDeleteIndex = null;
+    const idx = this.confirmDeleteIndex();
+    if (idx !== null) {
+      this.contacts.removeAt(idx);
+      this.visContacts.removeAt(idx);
+      this.confirmDeleteIndex.set(null);
     }
   }
 
   cancelDeleteContact(): void {
-    this.confirmDeleteIndex = null;
+    this.confirmDeleteIndex.set(null);
   }
 
   removeContact(i: number): void {
@@ -262,11 +218,11 @@ export class PerfilComponent implements OnInit {
       return;
     }
 
-    this.saving   = true;
-    this.errorMsg = '';
-    this.saved    = false;
+    this.saving.set(true);
+    this.errorMsg.set('');
+    this.saved.set(false);
 
-    const user = this.auth.currentUser()!;
+    const user = this.account()!;
     const raw  = this.form.getRawValue();
 
     const profile: Profile = {
@@ -280,9 +236,11 @@ export class PerfilComponent implements OnInit {
       },
     };
 
-    this.profileService.save(profile).subscribe({
-      next:  () => { this.saved = true;  this.saving = false; },
-      error: () => { this.errorMsg = 'Error al guardar el perfil.'; this.saving = false; },
-    });
+    this.profileService.save(profile)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next:  () => { this.saved.set(true);  this.saving.set(false); },
+        error: () => { this.errorMsg.set('Error al guardar el perfil.'); this.saving.set(false); },
+      });
   }
 }

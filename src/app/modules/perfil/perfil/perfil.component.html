@@ -8,8 +8,8 @@
     </div>
     <button class="btn btn--primary"
             (click)="onSubmit()"
-            [disabled]="saving">
-      @if (saving) {
+            [disabled]="saving()">
+      @if (saving()) {
         <span class="btn-spin" aria-hidden="true"></span> Guardando…
       } @else {
         💾 Guardar cambios
@@ -17,8 +17,8 @@
     </button>
   </header>
 
-  @if (errorMsg) {
-    <div class="alert alert--error" role="alert">⚠️ {{ errorMsg }}</div>
+  @if (errorMsg()) {
+    <div class="alert alert--error" role="alert">⚠️ {{ errorMsg() }}</div>
   }
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="perfil-form">
@@ -176,13 +176,13 @@
       </section>
 
       <!-- QR de emergencia -->
-      @if (account?.qrDataUrl) {
+      @if (account()?.qrDataUrl) {
         <aside class="perfil-qr">
           <div class="qr-card">
             <h3 class="qr-card__title">🔐 QR de emergencia</h3>
 
             <div class="qr-card__img-wrap">
-              <img [src]="account!.qrDataUrl"
+              <img [src]="account()!.qrDataUrl"
                    alt="Código QR de tu ficha VitaLink"
                    width="180" height="180" />
             </div>
@@ -200,7 +200,7 @@
 
             <div class="qr-card__code">
               <span class="qr-card__code-label">Security Account</span>
-              <code>{{ account!.securityAccount }}</code>
+              <code>{{ account()!.securityAccount }}</code>
             </div>
 
             <button class="btn btn--secondary btn--sm qr-card__download"
@@ -273,7 +273,7 @@
         }
 
         <div class="contacts-list">
-          @for (contact of contacts.controls; track $index) {
+          @for (contact of contacts.controls; track contact) {
             <div class="contact-card" [formGroupName]="$index">
               <div class="contact-card__header">
                 <span class="contact-card__num">Contacto #{{ $index + 1 }}</span>
@@ -361,8 +361,8 @@
   <div class="perfil-actions">
     <button class="btn btn--primary"
             (click)="onSubmit()"
-            [disabled]="saving">
-      @if (saving) {
+            [disabled]="saving()">
+      @if (saving()) {
         <span class="btn-spin" aria-hidden="true"></span> Guardando…
       } @else {
         💾 Guardar cambios
@@ -373,14 +373,14 @@
 </div>
 
 <!-- ── Modal: confirmar eliminación de contacto ───────────────── -->
-@if (confirmDeleteIndex !== null) {
+@if (confirmDeleteIndex() !== null) {
   <div class="delete-modal" role="dialog" aria-modal="true" aria-labelledby="del-modal-title">
     <div class="delete-modal__backdrop" (click)="cancelDeleteContact()"></div>
     <div class="delete-modal__box">
       <div class="delete-modal__icon">🗑️</div>
       <h2 class="delete-modal__title" id="del-modal-title">¿Eliminar contacto?</h2>
       <p class="delete-modal__msg">
-        Se eliminará <strong>Contacto #{{ confirmDeleteIndex + 1 }}</strong> de tu perfil de emergencia.
+        Se eliminará <strong>Contacto #{{ confirmDeleteIndex()! + 1 }}</strong> de tu perfil de emergencia.
         Esta acción no se puede deshacer.
       </p>
       <div class="delete-modal__actions">
@@ -392,7 +392,7 @@
 }
 
 <!-- ── Modal de éxito al guardar ─────────────────────────────── -->
-@if (saved) {
+@if (saved()) {
   <div class="success-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="success-modal__backdrop" (click)="closeModal()"></div>
     <div class="success-modal__box">

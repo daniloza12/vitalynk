@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -8,6 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainLayoutComponent {
   private auth   = inject(AuthService);
@@ -16,11 +17,11 @@ export class MainLayoutComponent {
   user    = this.auth.currentUser;
   isAdmin = computed(() => this.user()?.role === 'ADMIN');
 
-  sidebarOpen  = false;
+  sidebarOpen  = signal(false);
   activeModal  = signal<string | null>(null);
 
-  toggleSidebar(): void { this.sidebarOpen = !this.sidebarOpen; }
-  closeSidebar():  void { this.sidebarOpen = false; }
+  toggleSidebar(): void { this.sidebarOpen.update(v => !v); }
+  closeSidebar():  void { this.sidebarOpen.set(false); }
 
   openModal(id: string): void {
     this.activeModal.set(id);

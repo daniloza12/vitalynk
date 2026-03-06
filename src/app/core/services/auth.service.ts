@@ -30,12 +30,9 @@ export class AuthService {
       this.http.post<Account>(`${this.api}/register`, payload)
     );
 
-    // El QR se genera en el frontend a partir del securityAccount retornado por el backend
-    account.qrDataUrl = await this.qrService.generate(
-      this.qrService.publicUrl(account.securityAccount)
-    );
-
     this.setCurrentUser(account);
+    // QR se genera en segundo plano — no bloquea la navegación
+    this.generateAndCacheQr(account);
     return account;
   }
 
@@ -46,20 +43,17 @@ export class AuthService {
       this.http.post<Account>(`${this.api}/login`, payload)
     );
 
-    // El backend no almacena qrDataUrl — se genera en el frontend
-    if (!account.qrDataUrl) {
-      account.qrDataUrl = await this.qrService.generate(
-        this.qrService.publicUrl(account.securityAccount)
-      );
-    }
-
     this.setCurrentUser(account);
+    // QR se genera en segundo plano — no bloquea la navegación
+    if (!account.qrDataUrl) {
+      this.generateAndCacheQr(account);
+    }
     return account;
   }
 
   // ── Logout ───────────────────────────────────────────────────
   logout(): void {
-    localStorage.removeItem(this.CURRENT_KEY);
+    try { localStorage.removeItem(this.CURRENT_KEY); } catch { /* ignorar */ }
     this.currentUser.set(null);
   }
 
@@ -74,13 +68,45 @@ export class AuthService {
 
   // ── Privados ─────────────────────────────────────────────────
 
+  /** Genera el QR en segundo plano y actualiza el usuario en localStorage */
+  private generateAndCacheQr(account: Account): void {
+    this.qrService.generate(this.qrService.publicUrl(account.securityAccount))
+      .then(qrDataUrl => {
+        account.qrDataUrl = qrDataUrl;
+        this.setCurrentUser(account);
+      })
+      .catch(() => { /* Fallo de QR no es crítico */ });
+  }
+
   private setCurrentUser(account: Account): void {
-    localStorage.setItem(this.CURRENT_KEY, JSON.stringify(account));
+    try {
+      localStorage.setItem(this.CURRENT_KEY, JSON.stringify(account));
+    } catch { /* localStorage no disponible */ }
     this.currentUser.set(account);
   }
 
   private loadCurrentUser(): Account | null {
-    const raw = localStorage.getItem(this.CURRENT_KEY);
-    return raw ? (JSON.parse(raw) as Account) : null;
+    try {
+      const raw = localStorage.getItem(this.CURRENT_KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw) as unknown;
+      return this.isValidAccount(obj) ? obj : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Valida que el objeto cargado de localStorage tiene estructura Account válida.
+   *  Previene elevación de privilegios USER → ADMIN editando localStorage. */
+  private isValidAccount(obj: unknown): obj is Account {
+    if (!obj || typeof obj !== 'object') return false;
+    const a = obj as Record<string, unknown>;
+    return (
+      typeof a['id'] === 'string' &&
+      typeof a['email'] === 'string' &&
+      (a['role'] === 'ADMIN' || a['role'] === 'USER') &&
+      typeof a['securityAccount'] === 'string' &&
+      /^[0-9a-f]{32}$/.test(a['securityAccount'] as string)
+    );
   }
 }
