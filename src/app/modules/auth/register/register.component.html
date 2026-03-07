@@ -6,9 +6,9 @@
     </div>
 
     <!-- Error global -->
-    @if (errorMsg) {
+    @if (errorMsg()) {
       <div class="alert alert--error" role="alert">
-        <span aria-hidden="true">⚠️</span> {{ errorMsg }}
+        <span aria-hidden="true">⚠️</span> {{ errorMsg() }}
       </div>
     }
 
@@ -39,7 +39,7 @@
         <div class="field__pass-wrap">
           <input
             id="reg-pass"
-            [type]="showPass ? 'text' : 'password'"
+            [type]="showPass() ? 'text' : 'password'"
             class="field__input"
             [class.is-invalid]="password.invalid && password.touched"
             formControlName="password"
@@ -48,8 +48,8 @@
           />
           <button type="button" class="field__pass-toggle"
                   (click)="togglePassword()"
-                  [attr.aria-label]="showPass ? 'Ocultar' : 'Mostrar'">
-            {{ showPass ? '🙈' : '👁️' }}
+                  [attr.aria-label]="showPass() ? 'Ocultar' : 'Mostrar'">
+            {{ showPass() ? '🙈' : '👁️' }}
           </button>
         </div>
         @if (password.hasError('required') && password.touched) {
@@ -65,7 +65,7 @@
         <div class="field__pass-wrap">
           <input
             id="reg-confirm"
-            [type]="showConfirm ? 'text' : 'password'"
+            [type]="showConfirm() ? 'text' : 'password'"
             class="field__input"
             [class.is-invalid]="(confirmPassword.invalid && confirmPassword.touched) || (form.hasError('passwordMismatch') && confirmPassword.touched)"
             formControlName="confirmPassword"
@@ -74,8 +74,8 @@
           />
           <button type="button" class="field__pass-toggle"
                   (click)="toggleConfirm()"
-                  [attr.aria-label]="showConfirm ? 'Ocultar' : 'Mostrar'">
-            {{ showConfirm ? '🙈' : '👁️' }}
+                  [attr.aria-label]="showConfirm() ? 'Ocultar' : 'Mostrar'">
+            {{ showConfirm() ? '🙈' : '👁️' }}
           </button>
         </div>
         @if (confirmPassword.hasError('required') && confirmPassword.touched) {
@@ -89,8 +89,8 @@
       <button
         type="submit"
         class="btn btn--primary btn--full"
-        [disabled]="loading">
-        @if (loading) {
+        [disabled]="loading()">
+        @if (loading()) {
           <span class="btn__spinner" aria-hidden="true"></span> Creando cuenta…
         } @else {
           Crear cuenta

@@ -10,8 +10,19 @@
     </div>
   </header>
 
+  <!-- ── Skeleton de carga ─────────────────────────────────────── -->
+  @if (loading()) {
+    <main class="emergency-main">
+      <div class="skeleton-card">
+        <div class="skeleton skeleton--title"></div>
+        <div class="skeleton skeleton--line"></div>
+        <div class="skeleton skeleton--line"></div>
+      </div>
+    </main>
+  }
+
   <!-- ── Not found ─────────────────────────────────────────────── -->
-  @if (notFound) {
+  @if (notFound()) {
     <main class="emergency-main">
       <div class="emergency-card not-found-card">
         <div class="not-found-card__icon">❌</div>
@@ -22,7 +33,7 @@
   }
 
   <!-- ── Bloqueo temporal (429) ─────────────────────────────────── -->
-  @if (rateLimited) {
+  @if (rateLimited()) {
     <main class="emergency-main">
       <div class="emergency-card rate-limit-card">
         <div class="rate-limit-card__icon">🚫</div>
@@ -34,10 +45,10 @@
   }
 
   <!-- ── Ficha de emergencia ───────────────────────────────────── -->
-  @if (account && !notFound && !rateLimited) {
+  @if (account() && !notFound() && !rateLimited()) {
     <main class="emergency-main">
 
-      @if (profile) {
+      @if (profile()) {
 
         <!-- ══════════════════════════════════════════════════════
              IDENTIDAD
@@ -45,49 +56,49 @@
         <section class="e-card e-card--identity">
           <div class="e-card__header">
             <div class="e-avatar">
-              {{ pVis('fullName') && profile.personal.fullName ? profile.personal.fullName.charAt(0).toUpperCase() : '?' }}
+              {{ pVis('fullName') && profile()!.personal.fullName ? profile()!.personal.fullName.charAt(0).toUpperCase() : '?' }}
             </div>
             <div>
               @if (pVis('fullName')) {
-                <h1 class="e-card__name">{{ profile.personal.fullName || 'Sin nombre' }}</h1>
+                <h1 class="e-card__name">{{ profile()!.personal.fullName || 'Sin nombre' }}</h1>
               }
               <p class="e-card__sub">
-                @if (pVis('sex')) { {{ sexLabel(profile.personal.sex) }} }
-                @if (pVis('birthDate') && profile.personal.birthDate) {
-                  · Nac. {{ profile.personal.birthDate }}
+                @if (pVis('sex')) { {{ sexLabel(profile()!.personal.sex) }} }
+                @if (pVis('birthDate') && profile()!.personal.birthDate) {
+                  · Nac. {{ profile()!.personal.birthDate }}
                 }
               </p>
             </div>
           </div>
 
           <div class="e-info-row">
-            @if (pVis('phone') && profile.personal.phone) {
-              <a [href]="'tel:' + profile.personal.phone"
+            @if (pVis('phone') && profile()!.personal.phone) {
+              <a [href]="'tel:' + profile()!.personal.phone"
                  class="e-call-btn"
-                 [attr.aria-label]="'Llamar a ' + profile.personal.phone">
+                 [attr.aria-label]="'Llamar a ' + profile()!.personal.phone">
                 <span class="e-call-btn__icon">📱</span>
-                <span>{{ profile.personal.phone }}</span>
+                <span>{{ profile()!.personal.phone }}</span>
               </a>
             }
-            @if (pVis('personalEmail') && profile.personal.personalEmail) {
+            @if (pVis('personalEmail') && profile()!.personal.personalEmail) {
               <div class="e-info-chip">
                 <span class="e-info-chip__icon">✉️</span>
-                <span>{{ profile.personal.personalEmail }}</span>
+                <span>{{ profile()!.personal.personalEmail }}</span>
               </div>
             }
-            @if (pVis('workEmail') && profile.personal.workEmail) {
+            @if (pVis('workEmail') && profile()!.personal.workEmail) {
               <div class="e-info-chip">
                 <span class="e-info-chip__icon">💼</span>
-                <span>{{ profile.personal.workEmail }}</span>
+                <span>{{ profile()!.personal.workEmail }}</span>
               </div>
             }
-            @if ((pVis('city') || pVis('district')) && (profile.personal.city || profile.personal.district)) {
+            @if ((pVis('city') || pVis('district')) && (profile()!.personal.city || profile()!.personal.district)) {
               <div class="e-info-chip">
                 <span class="e-info-chip__icon">📍</span>
                 <span>
-                  @if (pVis('district')) { {{ profile.personal.district }} }
-                  @if (pVis('city') && profile.personal.city) {
-                    {{ pVis('district') && profile.personal.district ? ', ' : '' }}{{ profile.personal.city }}
+                  @if (pVis('district')) { {{ profile()!.personal.district }} }
+                  @if (pVis('city') && profile()!.personal.city) {
+                    {{ pVis('district') && profile()!.personal.district ? ', ' : '' }}{{ profile()!.personal.city }}
                   }
                 </span>
               </div>
@@ -103,25 +114,25 @@
 
           <div class="e-medical-grid">
             <div class="e-medical-item e-medical-item--alert"
-                 [class.e-medical-item--empty]="!profile.medical.diseases">
+                 [class.e-medical-item--empty]="!profile()!.medical.diseases">
               <h3 class="e-medical-item__label">Enfermedades</h3>
               <p class="e-medical-item__text">
-                {{ profile.medical.diseases || 'Ninguna registrada' }}
+                {{ profile()!.medical.diseases || 'Ninguna registrada' }}
               </p>
             </div>
 
             <div class="e-medical-item e-medical-item--warning"
-                 [class.e-medical-item--empty]="!profile.medical.allergies">
+                 [class.e-medical-item--empty]="!profile()!.medical.allergies">
               <h3 class="e-medical-item__label">Alergias</h3>
               <p class="e-medical-item__text">
-                {{ profile.medical.allergies || 'Ninguna registrada' }}
+                {{ profile()!.medical.allergies || 'Ninguna registrada' }}
               </p>
             </div>
 
-            @if (profile.medical.others) {
+            @if (profile()!.medical.others) {
               <div class="e-medical-item e-medical-item--info e-medical-item--full">
                 <h3 class="e-medical-item__label">Otros / Medicamentos</h3>
-                <p class="e-medical-item__text">{{ profile.medical.others }}</p>
+                <p class="e-medical-item__text">{{ profile()!.medical.others }}</p>
               </div>
             }
           </div>
@@ -130,11 +141,11 @@
         <!-- ══════════════════════════════════════════════════════
              CONTACTOS DE EMERGENCIA
         ══════════════════════════════════════════════════════ -->
-        @if (profile.contacts.length > 0) {
+        @if (profile()!.contacts.length > 0) {
           <section class="e-card">
             <h2 class="e-card__title">📞 Contactos de emergencia</h2>
             <div class="e-contacts">
-              @for (c of profile.contacts; track $index) {
+              @for (c of profile()!.contacts; track c.phone + c.fullName) {
                 <div class="e-contact">
                   <div class="e-contact__avatar">
                     {{ cVis($index, 'fullName') ? c.fullName.charAt(0).toUpperCase() : '?' }}
@@ -175,14 +186,14 @@
         <section class="e-card no-profile-card">
           <div class="e-avatar e-avatar--lg">?</div>
           <p>El titular de esta cuenta aún no ha completado su perfil de emergencia.</p>
-          <p class="no-profile-card__email">Cuenta: {{ account.email }}</p>
+          <p class="no-profile-card__email">Cuenta: {{ account()!.email }}</p>
         </section>
       }
 
       <!-- Código de verificación -->
       <div class="emergency-footer">
         <p class="emergency-footer__label">Código de verificación VitaLink</p>
-        <code class="emergency-footer__code">{{ account.securityAccount }}</code>
+        <code class="emergency-footer__code">{{ account()!.securityAccount }}</code>
       </div>
 
     </main>

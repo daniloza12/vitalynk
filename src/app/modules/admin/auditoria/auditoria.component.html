@@ -1,0 +1,427 @@
+<div class="pbi-dashboard">
+
+  <!-- ══ TOOLBAR ═════════════════════════════════════════════ -->
+  <header class="pbi-toolbar">
+    <div class="pbi-toolbar__brand">
+      <div class="pbi-toolbar__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1" ry="1"/>
+          <line x1="9" y1="12" x2="15" y2="12"/>
+          <line x1="9" y1="16" x2="12" y2="16"/>
+        </svg>
+      </div>
+      <div class="pbi-toolbar__text">
+        <span class="pbi-toolbar__title">Auditoría de Accesos</span>
+        <span class="pbi-toolbar__sub">VitaLink &middot; Monitoreo de seguridad</span>
+      </div>
+    </div>
+    <div class="pbi-toolbar__actions">
+      <span class="pbi-toolbar__update">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Act. {{ lastUpdate() | date:'HH:mm' }}
+      </span>
+      <a routerLink="/admin" class="pbi-toolbar__btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- ══ FILTRO DE PERÍODO ════════════════════════════════════ -->
+  <div class="pbi-panel pbi-filter-bar">
+    <div class="filter-bar__inner">
+      <div class="filter-bar__label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8"  y1="2" x2="8"  y2="6"/>
+          <line x1="3"  y1="10" x2="21" y2="10"/>
+        </svg>
+        Período de análisis
+      </div>
+      <div class="filter-bar__dates">
+        <div class="filter-bar__field">
+          <label class="filter-bar__lbl" for="dateFrom">Desde</label>
+          <input id="dateFrom" type="date" class="field__input filter-date-input"
+                 [value]="dateFrom()" (change)="onDateFromChange($event)" />
+        </div>
+        <span class="filter-bar__sep">→</span>
+        <div class="filter-bar__field">
+          <label class="filter-bar__lbl" for="dateTo">Hasta</label>
+          <input id="dateTo" type="date" class="field__input filter-date-input"
+                 [value]="dateTo()" (change)="onDateToChange($event)" />
+        </div>
+        <button class="btn btn--primary btn--sm filter-bar__apply"
+                [disabled]="loading()"
+                (click)="applyDateFilter()">
+          @if (loading()) {
+            <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            </svg>
+            Cargando…
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-7"/>
+            </svg>
+            Aplicar
+          }
+        </button>
+        <button class="btn btn--outline btn--sm"
+                [disabled]="loading()"
+                (click)="resetToToday()"
+                title="Restablecer al período actual y recargar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <polyline points="3 3 3 8 8 8"/>
+          </svg>
+          Hoy
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ KPI CARDS ════════════════════════════════════════════ -->
+  @if (loading()) {
+    <div class="pbi-kpis">
+      @for (_ of [1,2,3,4]; track $index) {
+        <div class="skeleton-card"><div class="skeleton--title"></div><div class="skeleton--line"></div></div>
+      }
+    </div>
+  } @else {
+    <div class="pbi-kpis">
+
+      <div class="kpi-card kpi-card--blue">
+        <div class="kpi-card__accent"></div>
+        <div class="kpi-card__ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6"  y1="20" x2="6"  y2="14"/>
+          </svg>
+        </div>
+        <div class="kpi-card__content">
+          <div class="kpi-card__value">{{ totalPeriodo() }}</div>
+          <div class="kpi-card__label">Total de eventos</div>
+          <div class="kpi-card__trend">En el período seleccionado</div>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-card--green">
+        <div class="kpi-card__accent"></div>
+        <div class="kpi-card__ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div class="kpi-card__content">
+          <div class="kpi-card__value">{{ exitosos() }}</div>
+          <div class="kpi-card__label">Logins exitosos</div>
+          <div class="kpi-card__trend kpi-trend--up">{{ successRate() }}% tasa de éxito</div>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-card--orange">
+        <div class="kpi-card__accent"></div>
+        <div class="kpi-card__ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div class="kpi-card__content">
+          <div class="kpi-card__value">{{ fallos() }}</div>
+          <div class="kpi-card__label">Fallos de login</div>
+          <div class="kpi-card__trend kpi-trend--warn">{{ failureRate() }}% tasa de fallos</div>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-card--violet">
+        <div class="kpi-card__accent"></div>
+        <div class="kpi-card__ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="kpi-card__content">
+          <div class="kpi-card__value">{{ usuariosUnicos() }}</div>
+          <div class="kpi-card__label">Usuarios únicos</div>
+          <div class="kpi-card__trend">Con actividad en el período</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ GRÁFICOS ═══════════════════════════════════════════ -->
+    @if (totalPeriodo() > 0) {
+      <div class="pbi-charts">
+
+        <!-- Bar chart: exitosos + fallos por día -->
+        <div class="pbi-panel">
+          <div class="pbi-panel__header">
+            <div>
+              <div class="pbi-panel__title">Actividad diaria</div>
+              <div class="pbi-panel__sub">Logins exitosos vs fallos por día</div>
+            </div>
+            <div class="chart-legend">
+              <span class="lgnd-dot lgnd-dot--success"></span><span>Exitosos</span>
+              <span class="lgnd-dot lgnd-dot--failed"></span><span>Fallos</span>
+            </div>
+          </div>
+          <div class="pbi-panel__body">
+            <svg viewBox="0 0 560 185" class="bar-chart" aria-label="Actividad diaria">
+              <defs>
+                <linearGradient id="grad-success" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stop-color="#00B37E" stop-opacity="0.95"/>
+                  <stop offset="100%" stop-color="#00B37E" stop-opacity="0.5"/>
+                </linearGradient>
+                <linearGradient id="grad-failed" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stop-color="#F97316" stop-opacity="0.95"/>
+                  <stop offset="100%" stop-color="#F97316" stop-opacity="0.5"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Grid lines -->
+              @for (gl of svgGridLines(); track gl.y) {
+                <line [attr.x1]="50" [attr.y1]="gl.y" [attr.x2]="540" [attr.y2]="gl.y"
+                      stroke="#E2E8F0" stroke-width="1" stroke-dasharray="4 4"/>
+                <text [attr.x]="44" [attr.y]="gl.y + 4"
+                      text-anchor="end" font-size="10" fill="#9AA5B1">{{ gl.value }}</text>
+              }
+
+              <!-- X axis -->
+              <line x1="50" y1="130" x2="540" y2="130" stroke="#CBD2DA" stroke-width="1.5"/>
+
+              <!-- Bars -->
+              @for (grp of svgBars(); track grp.label) {
+                <!-- Success bar -->
+                @if (grp.success.h > 0) {
+                  <g>
+                    <title>{{ grp.label }} — Exitosos: {{ grp.success.count }}</title>
+                    <rect [attr.x]="grp.success.x" [attr.y]="grp.success.y"
+                          [attr.width]="grp.success.w" [attr.height]="grp.success.h"
+                          rx="2" fill="url(#grad-success)" style="cursor:pointer"/>
+                  </g>
+                  <text [attr.x]="grp.success.x + grp.success.w / 2" [attr.y]="grp.success.y - 4"
+                        text-anchor="middle" font-size="9" fill="#008A5F" font-weight="700">
+                    {{ grp.success.count }}
+                  </text>
+                }
+                <!-- Failed bar -->
+                @if (grp.failed.h > 0) {
+                  <g>
+                    <title>{{ grp.label }} — Fallidos: {{ grp.failed.count }}</title>
+                    <rect [attr.x]="grp.failed.x" [attr.y]="grp.failed.y"
+                          [attr.width]="grp.failed.w" [attr.height]="grp.failed.h"
+                          rx="2" fill="url(#grad-failed)" style="cursor:pointer"/>
+                  </g>
+                  <text [attr.x]="grp.failed.x + grp.failed.w / 2" [attr.y]="grp.failed.y - 4"
+                        text-anchor="middle" font-size="9" fill="#C2410C" font-weight="700">
+                    {{ grp.failed.count }}
+                  </text>
+                }
+                <!-- Day label -->
+                @if (grp.showLbl) {
+                  <text [attr.x]="grp.cx" [attr.y]="148"
+                        text-anchor="middle" font-size="9" fill="#6B7A8D">
+                    {{ grp.label }}
+                  </text>
+                }
+              }
+            </svg>
+          </div>
+        </div>
+
+        <!-- Donut: distribución de eventos -->
+        <div class="pbi-panel">
+          <div class="pbi-panel__header">
+            <div>
+              <div class="pbi-panel__title">Distribución de eventos</div>
+              <div class="pbi-panel__sub">Exitosos · Fallos · Otros</div>
+            </div>
+          </div>
+          <div class="pbi-panel__body pbi-panel__body--donut">
+            <svg viewBox="0 0 200 200" class="donut-chart" aria-label="Distribución de eventos">
+              <!-- Background ring -->
+              <circle cx="100" cy="100" r="60" fill="none" stroke="#F1F5F9" stroke-width="24"/>
+              <!-- Success arc (green) -->
+              <circle cx="100" cy="100" r="60" fill="none"
+                      stroke="#00B37E" stroke-width="24" stroke-linecap="butt"
+                      [attr.stroke-dasharray]="eventDistribution().successArc + ' 9999'"
+                      transform="rotate(-90, 100, 100)"/>
+              <!-- Failed arc (orange) -->
+              <circle cx="100" cy="100" r="60" fill="none"
+                      stroke="#F97316" stroke-width="24" stroke-linecap="butt"
+                      [attr.stroke-dasharray]="'0 ' + eventDistribution().successArc + ' ' + eventDistribution().failedArc + ' 9999'"
+                      transform="rotate(-90, 100, 100)"/>
+              <!-- Other arc (gray) -->
+              <circle cx="100" cy="100" r="60" fill="none"
+                      stroke="#CBD2DA" stroke-width="24" stroke-linecap="butt"
+                      [attr.stroke-dasharray]="'0 ' + (eventDistribution().successArc + eventDistribution().failedArc) + ' ' + eventDistribution().otherArc + ' 9999'"
+                      transform="rotate(-90, 100, 100)"/>
+              <!-- Center -->
+              <text x="100" y="94" text-anchor="middle" font-size="26" font-weight="800" fill="#0D1B2A">
+                {{ eventDistribution().successPct }}%
+              </text>
+              <text x="100" y="113" text-anchor="middle" font-size="10" fill="#6B7A8D">tasa de éxito</text>
+            </svg>
+
+            <div class="donut-legend">
+              <div class="donut-legend__item">
+                <span class="donut-legend__dot donut-legend__dot--green"></span>
+                <span class="donut-legend__label">Exitosos</span>
+                <span class="donut-legend__val">{{ exitosos() }}</span>
+              </div>
+              <div class="donut-legend__item">
+                <span class="donut-legend__dot donut-legend__dot--orange"></span>
+                <span class="donut-legend__label">Fallos</span>
+                <span class="donut-legend__val">{{ fallos() }}</span>
+              </div>
+              <div class="donut-legend__item">
+                <span class="donut-legend__dot donut-legend__dot--gray"></span>
+                <span class="donut-legend__label">Otros</span>
+                <span class="donut-legend__val">{{ eventDistribution().other }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    }
+  }
+
+  <!-- ══ TABLA CON FILTROS LOCALES ════════════════════════════ -->
+  <div class="pbi-panel">
+    <div class="pbi-panel__header pbi-panel__header--wrap">
+      <div>
+        <div class="pbi-panel__title">Registro de eventos</div>
+        <div class="pbi-panel__sub">{{ filtered().length }} de {{ logs().length }} entradas</div>
+      </div>
+      <div class="local-filters">
+        <div class="local-filter">
+          <select class="field__select local-filter__select" (change)="onEventChange($event)">
+            @for (opt of eventTypes; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="local-filter search-wrap">
+          <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" class="field__input search-input"
+                 placeholder="Buscar email…"
+                 (input)="onEmailInput($event)" />
+        </div>
+      </div>
+    </div>
+
+    @if (filtered().length === 0) {
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48" opacity="0.25">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1" ry="1"/>
+          <line x1="9" y1="12" x2="15" y2="12"/>
+          <line x1="9" y1="16" x2="12" y2="16"/>
+        </svg>
+        <p>Sin registros para los filtros seleccionados</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha / hora</th>
+              <th>Email</th>
+              <th>Evento</th>
+              <th>IP</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of pagedLogs(); track log.id) {
+              <tr>
+                <td class="col-date">{{ formatDate(log.createdAt) }}</td>
+                <td class="col-email">{{ log.email }}</td>
+                <td>
+                  <span [class]="'abadge ' + eventBadgeClass(log.eventType)">
+                    {{ eventLabels[log.eventType] }}
+                  </span>
+                </td>
+                <td class="col-ip">{{ log.ipAddress ?? '—' }}</td>
+                <td class="col-reason">{{ log.failureReason ?? '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Barra de paginación -->
+      <div class="pagination">
+        <span class="pagination__info">
+          {{ (currentPage() - 1) * pageSize() + 1 }}–{{ currentPage() * pageSize() < filtered().length ? currentPage() * pageSize() : filtered().length }}
+          de {{ filtered().length }}
+        </span>
+
+        <div class="pagination__controls">
+          <!-- Botón Primera -->
+          <button class="pagination__btn" [disabled]="currentPage() === 1" (click)="goToPage(1)" title="Primera página">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/>
+            </svg>
+          </button>
+          <!-- Botón Anterior -->
+          <button class="pagination__btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)" title="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+
+          <!-- Números de página -->
+          @for (p of pageRange(); track $index) {
+            @if (p === null) {
+              <span class="pagination__ellipsis">…</span>
+            } @else {
+              <button class="pagination__btn"
+                      [class.pagination__btn--active]="p === currentPage()"
+                      (click)="goToPage(p)">{{ p }}</button>
+            }
+          }
+
+          <!-- Botón Siguiente -->
+          <button class="pagination__btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)" title="Siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+          <!-- Botón Última -->
+          <button class="pagination__btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(totalPages())" title="Última página">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="pagination__size">
+          <label class="pagination__size-lbl" for="pageSize">Filas:</label>
+          <select id="pageSize" class="field__select pagination__size-select"
+                  (change)="onPageSizeChange($event)">
+            <option value="10"  [selected]="pageSize() === 10">10</option>
+            <option value="25"  [selected]="pageSize() === 25">25</option>
+            <option value="50"  [selected]="pageSize() === 50">50</option>
+          </select>
+        </div>
+      </div>
+    }
+  </div>
+
+</div>

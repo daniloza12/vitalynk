@@ -1,7 +1,7 @@
-<div class="app-shell" [class.sidebar-open]="sidebarOpen">
+<div class="app-shell" [class.sidebar-open]="sidebarOpen()">
 
   <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
-  <aside class="sidebar" [class.is-open]="sidebarOpen">
+  <aside class="sidebar" [class.is-open]="sidebarOpen()">
 
     <div class="sidebar__brand">
       <a routerLink="/" (click)="closeSidebar()">
@@ -101,9 +101,19 @@
             <a class="sidebar__link"
                routerLink="/admin"
                routerLinkActive="is-active"
+               [routerLinkActiveOptions]="{ exact: true }"
                (click)="closeSidebar()">
               <span class="sidebar__icon" aria-hidden="true">⚙️</span>
               Gestión de cuentas
+            </a>
+          </li>
+          <li>
+            <a class="sidebar__link"
+               routerLink="/admin/auditoria"
+               routerLinkActive="is-active"
+               (click)="closeSidebar()">
+              <span class="sidebar__icon" aria-hidden="true">📋</span>
+              Auditoría de accesos
             </a>
           </li>
         </ul>
@@ -130,7 +140,7 @@
 
   <!-- Overlay móvil -->
   <div class="sidebar-overlay"
-       [class.is-visible]="sidebarOpen"
+       [class.is-visible]="sidebarOpen()"
        (click)="closeSidebar()"
        aria-hidden="true">
   </div>
@@ -141,7 +151,7 @@
     <header class="app-header">
       <button class="app-header__burger"
               (click)="toggleSidebar()"
-              [attr.aria-expanded]="sidebarOpen"
+              [attr.aria-expanded]="sidebarOpen()"
               aria-label="Abrir menú">
         <span></span><span></span><span></span>
       </button>

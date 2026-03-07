@@ -1,10 +1,18 @@
 // ============================================================
 //  account-detail.component.ts
 // ============================================================
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { switchMap } from 'rxjs';
+import { forkJoin } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AccountService } from '../../../core/services/account.service';
 import { QrService }      from '../../../core/services/qr.service';
 import { Account }        from '../../../core/models/account.model';
@@ -16,38 +24,42 @@ import { Profile }        from '../../../core/models/profile.model';
   imports: [RouterLink, DatePipe],
   templateUrl: './account-detail.component.html',
   styleUrl: './account-detail.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountDetailComponent implements OnInit {
   private route          = inject(ActivatedRoute);
   private router         = inject(Router);
   private accountService = inject(AccountService);
   private qrService      = inject(QrService);
+  private destroyRef     = inject(DestroyRef);
 
-  account: Account | undefined;
-  profile: Profile | null = null;
-  notFound = false;
+  account  = signal<Account | undefined>(undefined);
+  profile  = signal<Profile | null>(null);
+  notFound = signal(false);
+  loading  = signal(true);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (!id) { this.notFound = true; return; }
+    if (!id) { this.notFound.set(true); this.loading.set(false); return; }
 
-    this.accountService.getById(id).pipe(
-      switchMap(account => {
-        this.account = account;
-        return this.accountService.getProfileForAccount(account.id);
-      })
-    ).subscribe({
-      next: async profile => {
-        this.profile = profile;
-        // El backend no almacena qrDataUrl — se genera en el frontend
-        if (this.account && !this.account.qrDataUrl) {
-          this.account.qrDataUrl = await this.qrService.generate(
-            this.qrService.publicUrl(this.account.securityAccount)
-          );
-        }
-      },
-      error: () => { this.notFound = true; },
-    });
+    forkJoin({
+      account: this.accountService.getById(id),
+      profile: this.accountService.getProfileForAccount(id),
+    }).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: async ({ account, profile }) => {
+          this.profile.set(profile);
+          // El backend no almacena qrDataUrl — se genera en el frontend
+          if (!account.qrDataUrl) {
+            account.qrDataUrl = await this.qrService.generate(
+              this.qrService.publicUrl(account.securityAccount)
+            );
+          }
+          this.account.set(account);
+          this.loading.set(false);
+        },
+        error: () => { this.notFound.set(true); this.loading.set(false); },
+      });
   }
 
   goBack(): void {
@@ -62,22 +74,22 @@ export class AccountDetailComponent implements OnInit {
 
   /** URL pública que codifica el QR */
   get publicUrl(): string {
-    return this.account ? this.qrService.publicUrl(this.account.securityAccount) : '';
+    const acc = this.account();
+    return acc ? this.qrService.publicUrl(acc.securityAccount) : '';
   }
 
   /** Navega a la ficha pública dentro del SPA */
   openPublicProfile(): void {
-    if (this.account) {
-      this.router.navigate(['/public', this.account.securityAccount]);
+    const acc = this.account();
+    if (acc) {
+      this.router.navigate(['/public', acc.securityAccount]);
     }
   }
 
-  /** Descarga el QR como PNG */
+  /** Descarga el QR con branding como PNG */
   downloadQr(): void {
-    if (!this.account?.qrDataUrl) return;
-    const link = document.createElement('a');
-    link.href     = this.account.qrDataUrl;
-    link.download = `vitalink-qr-${this.account.securityAccount.substring(0, 8)}.png`;
-    link.click();
+    const acc = this.account();
+    if (!acc?.qrDataUrl) return;
+    this.qrService.downloadWithBranding(acc.qrDataUrl, acc.securityAccount);
   }
 }

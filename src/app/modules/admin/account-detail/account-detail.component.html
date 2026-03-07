@@ -7,15 +7,24 @@
     </button>
   </div>
 
+  <!-- ── Skeleton de carga ──────────────────────────────────── -->
+  @if (loading()) {
+    <div class="skeleton-card">
+      <div class="skeleton skeleton--title"></div>
+      <div class="skeleton skeleton--line"></div>
+      <div class="skeleton skeleton--line"></div>
+    </div>
+  }
+
   <!-- ── Not found ─────────────────────────────────────────── -->
-  @if (notFound) {
+  @if (notFound()) {
     <div class="card not-found">
       <p>❌ Cuenta no encontrada.</p>
       <a routerLink="/admin" class="btn btn--primary btn--sm">Ir al listado</a>
     </div>
   }
 
-  @if (account && !notFound) {
+  @if (account() && !notFound()) {
 
     <!-- ══════════════════════════════════════════════════════
          FILA 1: Datos de la cuenta | QR de emergencia
@@ -27,32 +36,32 @@
           <div class="card__icon card__icon--primary">🔑</div>
           <h2>Datos de la cuenta</h2>
           <span class="badge"
-                [class.badge--admin]="account.role === 'ADMIN'"
-                [class.badge--user]="account.role === 'USER'">
-            {{ account.role }}
+                [class.badge--admin]="account()!.role === 'ADMIN'"
+                [class.badge--user]="account()!.role === 'USER'">
+            {{ account()!.role }}
           </span>
         </div>
         <div class="info-grid">
           <div class="info-item">
             <span class="info-item__label">Email</span>
-            <span class="info-item__value">{{ account.email }}</span>
+            <span class="info-item__value">{{ account()!.email }}</span>
           </div>
           <div class="info-item info-item--full">
             <span class="info-item__label">Security Account</span>
-            <code class="info-item__value mono security">{{ account.securityAccount }}</code>
+            <code class="info-item__value mono security">{{ account()!.securityAccount }}</code>
           </div>
           <div class="info-item">
             <span class="info-item__label">Rol</span>
-            <span class="info-item__value">{{ account.role }}</span>
+            <span class="info-item__value">{{ account()!.role }}</span>
           </div>
           <div class="info-item">
             <span class="info-item__label">Creado el</span>
-            <span class="info-item__value">{{ account.createdAt | date:'dd/MM/yyyy, HH:mm' }}</span>
+            <span class="info-item__value">{{ account()!.createdAt | date:'dd/MM/yyyy, HH:mm' }}</span>
           </div>
         </div>
       </section>
 
-      @if (account.qrDataUrl) {
+      @if (account()!.qrDataUrl) {
         <section class="card qr-section">
           <div class="card__header">
             <div class="card__icon card__icon--secondary">📱</div>
@@ -64,8 +73,8 @@
           </div>
           <div class="qr-block">
             <div class="qr-block__img">
-              <img [src]="account.qrDataUrl"
-                   alt="QR de emergencia de {{ account.email }}"
+              <img [src]="account()!.qrDataUrl"
+                   alt="QR de emergencia de {{ account()!.email }}"
                    width="160" height="160" />
             </div>
             <div class="qr-block__meta">
@@ -75,7 +84,7 @@
               </div>
               <div class="qr-block__row">
                 <span class="qr-block__label">Security Account</span>
-                <code class="qr-block__code">{{ account.securityAccount }}</code>
+                <code class="qr-block__code">{{ account()!.securityAccount }}</code>
               </div>
               <button class="btn btn--secondary btn--sm" (click)="downloadQr()">
                 ⬇️ Descargar QR
@@ -87,13 +96,13 @@
 
     </div><!-- /top-row -->
 
-    @if (!profile) {
+    @if (!profile()) {
       <section class="card no-profile">
         <p>📭 Este usuario aún no ha completado su perfil.</p>
       </section>
     }
 
-    @if (profile) {
+    @if (profile()) {
 
       <!-- ════════════════════════════════════════════════════
            FILA 2: Datos personales | Datos médicos
@@ -108,35 +117,35 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-item__label">Nombre completo</span>
-              <span class="info-item__value">{{ profile.personal.fullName || '—' }}</span>
+              <span class="info-item__value">{{ profile()!.personal.fullName || '—' }}</span>
             </div>
             <div class="info-item">
               <span class="info-item__label">Sexo</span>
-              <span class="info-item__value">{{ sexLabel(profile.personal.sex) }}</span>
+              <span class="info-item__value">{{ sexLabel(profile()!.personal.sex) }}</span>
             </div>
             <div class="info-item">
               <span class="info-item__label">Fecha de nacimiento</span>
-              <span class="info-item__value">{{ profile.personal.birthDate || '—' }}</span>
+              <span class="info-item__value">{{ profile()!.personal.birthDate || '—' }}</span>
             </div>
             <div class="info-item">
               <span class="info-item__label">Teléfono</span>
-              <span class="info-item__value">{{ profile.personal.phone || '—' }}</span>
+              <span class="info-item__value">{{ profile()!.personal.phone || '—' }}</span>
             </div>
             <div class="info-item">
               <span class="info-item__label">Correo personal</span>
-              <span class="info-item__value">{{ profile.personal.personalEmail || '—' }}</span>
+              <span class="info-item__value">{{ profile()!.personal.personalEmail || '—' }}</span>
             </div>
             <div class="info-item">
               <span class="info-item__label">Correo trabajo</span>
-              <span class="info-item__value">{{ profile.personal.workEmail || '—' }}</span>
+              <span class="info-item__value">{{ profile()!.personal.workEmail || '—' }}</span>
             </div>
             <div class="info-item">
               <span class="info-item__label">Ciudad</span>
-              <span class="info-item__value">{{ profile.personal.city || '—' }}</span>
+              <span class="info-item__value">{{ profile()!.personal.city || '—' }}</span>
             </div>
             <div class="info-item">
               <span class="info-item__label">Distrito</span>
-              <span class="info-item__value">{{ profile.personal.district || '—' }}</span>
+              <span class="info-item__value">{{ profile()!.personal.district || '—' }}</span>
             </div>
           </div>
         </section>
@@ -149,15 +158,15 @@
           <div class="medical-grid">
             <div class="medical-item">
               <h4 class="medical-item__title">Enfermedades</h4>
-              <p class="medical-item__text">{{ profile.medical.diseases || 'No registrado' }}</p>
+              <p class="medical-item__text">{{ profile()!.medical.diseases || 'No registrado' }}</p>
             </div>
             <div class="medical-item">
               <h4 class="medical-item__title">Alergias</h4>
-              <p class="medical-item__text">{{ profile.medical.allergies || 'No registrado' }}</p>
+              <p class="medical-item__text">{{ profile()!.medical.allergies || 'No registrado' }}</p>
             </div>
             <div class="medical-item medical-item--full">
               <h4 class="medical-item__title">Otros / Medicamentos</h4>
-              <p class="medical-item__text">{{ profile.medical.others || 'No registrado' }}</p>
+              <p class="medical-item__text">{{ profile()!.medical.others || 'No registrado' }}</p>
             </div>
           </div>
         </section>
@@ -171,14 +180,14 @@
         <div class="card__header">
           <div class="card__icon card__icon--accent">📞</div>
           <h2>Contactos de emergencia</h2>
-          <span class="contact-count">{{ profile.contacts.length }}</span>
+          <span class="contact-count">{{ profile()!.contacts.length }}</span>
         </div>
 
-        @if (profile.contacts.length === 0) {
+        @if (profile()!.contacts.length === 0) {
           <p class="no-contacts">Sin contactos registrados.</p>
         } @else {
           <div class="contacts-list">
-            @for (c of profile.contacts; track $index) {
+            @for (c of profile()!.contacts; track c.phone + c.fullName) {
               <div class="contact-item">
                 <div class="contact-item__avatar">
                   {{ c.fullName.charAt(0).toUpperCase() }}

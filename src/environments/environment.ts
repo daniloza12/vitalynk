@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://vitalinkbk-ewd2fufafze3ayay.canadacentral-01.azurewebsites.net/api/v1',
+  apiUrl: 'https://backendvitalink-dthsh0gedtfeemad.canadacentral-01.azurewebsites.net/api/v1',
 };

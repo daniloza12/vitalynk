@@ -1,40 +1,307 @@
-<div class="admin-page">
+<div class="pbi-dashboard">
 
-  <!-- ── Encabezado ────────────────────────────────────────── -->
-  <header class="page-header">
-    <div>
-      <h1 class="page-header__title">🛡️ Administrador</h1>
-      <p class="page-header__sub">Gestión de cuentas del sistema VitaLink</p>
-    </div>
-    <div class="admin-stats">
-      <div class="stat-chip">
-        <span class="stat-chip__num">{{ accounts().length }}</span>
-        <span class="stat-chip__label">Cuentas registradas</span>
+  <!-- ══ TOOLBAR ════════════════════════════════════════════════ -->
+  <header class="pbi-toolbar">
+    <div class="pbi-toolbar__brand">
+      <div class="pbi-toolbar__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
       </div>
+      <div class="pbi-toolbar__text">
+        <span class="pbi-toolbar__title">Gestión de Cuentas</span>
+        <span class="pbi-toolbar__sub">VitaLink &middot; Gestión de cuentas</span>
+      </div>
+    </div>
+    <div class="pbi-toolbar__actions">
+      <span class="pbi-toolbar__update">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Act. {{ lastUpdate() | date:'HH:mm' }}
+      </span>
+      <a routerLink="/admin/auditoria" class="pbi-toolbar__btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+          <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+        </svg>
+        Auditoría
+      </a>
     </div>
   </header>
 
-  <!-- ── Card tabla ────────────────────────────────────────── -->
-  <div class="card">
-    <div class="card__header">
-      <div class="card__icon card__icon--primary">📋</div>
-      <h2>Lista de cuentas</h2>
-      <!-- Buscador -->
+  <!-- ══ FILTRO DE PERÍODO ══════════════════════════════════════ -->
+  <div class="pbi-panel pbi-filter-bar">
+    <div class="filter-bar__inner">
+      <div class="filter-bar__label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8"  y1="2" x2="8"  y2="6"/>
+          <line x1="3"  y1="10" x2="21" y2="10"/>
+        </svg>
+        Período de registro
+      </div>
+      <div class="filter-bar__dates">
+        <div class="filter-bar__field">
+          <label class="filter-bar__lbl" for="acctDateFrom">Desde</label>
+          <input id="acctDateFrom" type="date" class="field__input filter-date-input"
+                 [value]="dateFrom()" (change)="onDateFromChange($event)" />
+        </div>
+        <span class="filter-bar__sep">→</span>
+        <div class="filter-bar__field">
+          <label class="filter-bar__lbl" for="acctDateTo">Hasta</label>
+          <input id="acctDateTo" type="date" class="field__input filter-date-input"
+                 [value]="dateTo()" (change)="onDateToChange($event)" />
+        </div>
+        <button class="btn btn--primary btn--sm filter-bar__apply"
+                [disabled]="loading()"
+                (click)="applyDateFilter()">
+          @if (loading()) {
+            <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            </svg>
+            Cargando…
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-7"/>
+            </svg>
+            Aplicar
+          }
+        </button>
+        <button class="btn btn--outline btn--sm"
+                [disabled]="loading()"
+                (click)="resetToToday()"
+                title="Restablecer al período actual y recargar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <polyline points="3 3 3 8 8 8"/>
+          </svg>
+          Hoy
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ KPI CARDS ══════════════════════════════════════════════ -->
+  <div class="pbi-kpis">
+
+    <div class="kpi-card kpi-card--blue">
+      <div class="kpi-card__accent"></div>
+      <div class="kpi-card__ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <div class="kpi-card__value">{{ totalAccounts() }}</div>
+        <div class="kpi-card__label">Total de cuentas</div>
+        <div class="kpi-card__trend kpi-trend--up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11">
+            <polyline points="18 15 12 9 6 15"/>
+          </svg>
+          +{{ recentCount() }} esta semana
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--gold">
+      <div class="kpi-card__accent"></div>
+      <div class="kpi-card__ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <div class="kpi-card__value">{{ adminCount() }}</div>
+        <div class="kpi-card__label">Administradores</div>
+        <div class="kpi-card__trend">{{ adminPct() }}% del total</div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--green">
+      <div class="kpi-card__accent"></div>
+      <div class="kpi-card__ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <div class="kpi-card__value">{{ userCount() }}</div>
+        <div class="kpi-card__label">Usuarios</div>
+        <div class="kpi-card__trend">{{ userPct() }}% del total</div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--violet">
+      <div class="kpi-card__accent"></div>
+      <div class="kpi-card__ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8"  y1="2" x2="8"  y2="6"/>
+          <line x1="3"  y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+      <div class="kpi-card__content">
+        <div class="kpi-card__value">{{ recentCount() }}</div>
+        <div class="kpi-card__label">Nuevos esta semana</div>
+        <div class="kpi-card__trend">Últimos 7 días</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ CHARTS ROW ═════════════════════════════════════════════ -->
+  <div class="pbi-charts">
+
+    <!-- Bar chart -->
+    <div class="pbi-panel">
+      <div class="pbi-panel__header">
+        <div>
+          <div class="pbi-panel__title">Registros por día</div>
+          <div class="pbi-panel__sub">Nuevas cuentas — últimos 7 días</div>
+        </div>
+      </div>
+      <div class="pbi-panel__body">
+        <svg viewBox="0 0 520 180" class="bar-chart" aria-label="Gráfico de registros por día">
+          <defs>
+            <linearGradient id="bar-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#0052CC" stop-opacity="0.95"/>
+              <stop offset="100%" stop-color="#0052CC" stop-opacity="0.45"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Grid lines -->
+          @for (gl of yAxisLabels(); track gl.y) {
+            <line
+              [attr.x1]="50" [attr.y1]="gl.y"
+              [attr.x2]="500" [attr.y2]="gl.y"
+              stroke="#E2E8F0" stroke-width="1" stroke-dasharray="4 4"/>
+            <text
+              [attr.x]="44" [attr.y]="gl.y + 4"
+              text-anchor="end" font-size="10" fill="#9AA5B1">{{ gl.value }}</text>
+          }
+
+          <!-- X axis -->
+          <line x1="50" y1="130" x2="500" y2="130" stroke="#CBD2DA" stroke-width="1.5"/>
+
+          <!-- Bars + labels -->
+          @for (bar of barChartData(); track bar.label) {
+            @if (bar.barHeight > 0) {
+              <g>
+                <title>{{ bar.label }}: {{ bar.count }} registro(s)</title>
+                <rect
+                  [attr.x]="bar.x" [attr.y]="bar.barY"
+                  [attr.width]="bar.width" [attr.height]="bar.barHeight"
+                  rx="3" fill="url(#bar-grad)" style="cursor:pointer"/>
+              </g>
+              <text
+                [attr.x]="bar.x + bar.width / 2" [attr.y]="bar.barY - 5"
+                text-anchor="middle" font-size="10" fill="#0052CC" font-weight="700">
+                {{ bar.count }}
+              </text>
+            }
+            <text
+              [attr.x]="bar.x + bar.width / 2" [attr.y]="148"
+              text-anchor="middle" font-size="10" fill="#6B7A8D">
+              {{ bar.label }}
+            </text>
+          }
+        </svg>
+      </div>
+    </div>
+
+    <!-- Donut chart -->
+    <div class="pbi-panel">
+      <div class="pbi-panel__header">
+        <div>
+          <div class="pbi-panel__title">Distribución de roles</div>
+          <div class="pbi-panel__sub">Admins vs Usuarios</div>
+        </div>
+      </div>
+      <div class="pbi-panel__body pbi-panel__body--donut">
+        <svg viewBox="0 0 200 200" class="donut-chart" aria-label="Distribución de roles">
+          @if (donutData().total === 0) {
+            <circle cx="100" cy="100" r="60" fill="none" stroke="#E2E8F0" stroke-width="24"/>
+            <text x="100" y="105" text-anchor="middle" font-size="12" fill="#9AA5B1">Sin datos</text>
+          } @else {
+            <!-- Background ring -->
+            <circle cx="100" cy="100" r="60" fill="none" stroke="#F1F5F9" stroke-width="24"/>
+            <!-- Admin arc (gold) -->
+            <circle cx="100" cy="100" r="60" fill="none"
+                    stroke="#F59E0B" stroke-width="24" stroke-linecap="butt"
+                    [attr.stroke-dasharray]="donutData().adminArc + ' 9999'"
+                    transform="rotate(-90, 100, 100)"/>
+            <!-- User arc (green) -->
+            <circle cx="100" cy="100" r="60" fill="none"
+                    stroke="#00B37E" stroke-width="24" stroke-linecap="butt"
+                    [attr.stroke-dasharray]="'0 ' + donutData().adminArc + ' ' + donutData().userArc + ' 9999'"
+                    transform="rotate(-90, 100, 100)"/>
+            <!-- Center label -->
+            <text x="100" y="94" text-anchor="middle" font-size="28" font-weight="800" fill="#0D1B2A">
+              {{ donutData().total }}
+            </text>
+            <text x="100" y="113" text-anchor="middle" font-size="11" fill="#6B7A8D">cuentas</text>
+          }
+        </svg>
+
+        <div class="donut-legend">
+          <div class="donut-legend__item">
+            <span class="donut-legend__dot donut-legend__dot--gold"></span>
+            <span class="donut-legend__label">Administrador</span>
+            <span class="donut-legend__val">{{ adminCount() }} &middot; {{ adminPct() }}%</span>
+          </div>
+          <div class="donut-legend__item">
+            <span class="donut-legend__dot donut-legend__dot--green"></span>
+            <span class="donut-legend__label">Usuario</span>
+            <span class="donut-legend__val">{{ userCount() }} &middot; {{ userPct() }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ ACCOUNTS TABLE ═════════════════════════════════════════ -->
+  <div class="pbi-panel">
+    <div class="pbi-panel__header">
+      <div>
+        <div class="pbi-panel__title">Gestión de cuentas</div>
+        <div class="pbi-panel__sub">{{ filtered().length }} de {{ accounts().length }} registros</div>
+
+      </div>
       <div class="table-search">
-        <input
-          type="search"
-          class="field__input"
-          placeholder="Buscar por email o rol…"
-          [value]="search()"
-          (input)="onSearch($event)"
-          aria-label="Buscar cuentas"
-        />
+        <div class="search-wrap">
+          <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="search"
+            class="field__input search-input"
+            placeholder="Buscar por email o rol…"
+            [value]="search()"
+            (input)="onSearch($event)"
+            aria-label="Buscar cuentas"
+          />
+        </div>
       </div>
     </div>
 
     @if (accounts().length === 0) {
       <div class="empty-state">
-        <p>🔍 No hay cuentas registradas.</p>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="52" height="52" opacity="0.25">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <p>No hay cuentas registradas</p>
       </div>
     } @else {
       <div class="table-wrap">
@@ -44,18 +311,21 @@
               <th>#</th>
               <th>Email</th>
               <th>Rol</th>
+              <th>Estado</th>
               <th>Security Account</th>
               <th>Creado</th>
               <th>Acción</th>
             </tr>
           </thead>
           <tbody>
-            @for (account of filtered(); track account.id; let i = $index) {
+            @for (account of pagedAccounts(); track account.id; let i = $index) {
               <tr>
-                <td class="col-idx">{{ i + 1 }}</td>
+                <td class="col-idx">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
                 <td class="col-email">
                   <div class="user-cell">
-                    <div class="user-avatar">{{ account.email.charAt(0).toUpperCase() }}</div>
+                    <div class="user-avatar" [class.user-avatar--admin]="account.role === 'ADMIN'">
+                      {{ account.email.charAt(0).toUpperCase() }}
+                    </div>
                     <span>{{ account.email }}</span>
                   </div>
                 </td>
@@ -66,11 +336,22 @@
                     {{ account.role }}
                   </span>
                 </td>
+                <td>
+                  <button class="status-badge status-badge--{{ account.status | lowercase }} status-badge--btn"
+                          title="Cambiar estado"
+                          (click)="openStatusModal(account)">
+                    {{ account.status }}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                </td>
                 <td class="col-security">
                   <code class="security-code">{{ account.securityAccount }}</code>
                 </td>
                 <td class="col-date">{{ account.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-                <td>
+                <td class="col-actions">
                   <a class="btn btn--outline btn--sm"
                      [routerLink]="['/admin/account', account.id]">
                     Ver detalle
@@ -82,9 +363,138 @@
         </table>
       </div>
 
-      @if (filtered().length === 0 && search()) {
-        <p class="no-results">Sin resultados para "{{ search() }}"</p>
+      <!-- Barra de paginación -->
+      <div class="pagination">
+        <span class="pagination__info">
+          {{ (currentPage() - 1) * pageSize() + 1 }}–{{ currentPage() * pageSize() < filtered().length ? currentPage() * pageSize() : filtered().length }}
+          de {{ filtered().length }}
+        </span>
+
+        <div class="pagination__controls">
+          <button class="pagination__btn" [disabled]="currentPage() === 1" (click)="goToPage(1)" title="Primera página">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/>
+            </svg>
+          </button>
+          <button class="pagination__btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)" title="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+
+          @for (p of pageRange(); track $index) {
+            @if (p === null) {
+              <span class="pagination__ellipsis">…</span>
+            } @else {
+              <button class="pagination__btn"
+                      [class.pagination__btn--active]="p === currentPage()"
+                      (click)="goToPage(p)">{{ p }}</button>
+            }
+          }
+
+          <button class="pagination__btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)" title="Siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+          <button class="pagination__btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(totalPages())" title="Última página">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="pagination__size">
+          <label class="pagination__size-lbl" for="acctPageSize">Filas:</label>
+          <select id="acctPageSize" class="field__select pagination__size-select"
+                  (change)="onPageSizeChange($event)">
+            <option value="10"  [selected]="pageSize() === 10">10</option>
+            <option value="25"  [selected]="pageSize() === 25">25</option>
+            <option value="50"  [selected]="pageSize() === 50">50</option>
+          </select>
+        </div>
+      </div>
+
+      @if (filtered().length === 0) {
+        <p class="no-results">
+          @if (search()) {
+            Sin resultados para "{{ search() }}" en el período seleccionado
+          } @else {
+            Sin registros en el período seleccionado
+          }
+        </p>
       }
     }
   </div>
+
+  <!-- ══ MODAL: CAMBIAR ESTADO ══════════════════════════════════ -->
+  @if (modalOpen()) {
+    <div class="modal-overlay" (click)="closeStatusModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()" role="dialog"
+           aria-modal="true" aria-labelledby="modal-title">
+
+        <div class="modal-header">
+          <h3 class="modal-title" id="modal-title">Cambiar estado de cuenta</h3>
+          <button class="modal-close" [disabled]="modalLoading()" (click)="closeStatusModal()" aria-label="Cerrar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-account-email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            {{ modalAccount()?.email }}
+          </p>
+
+          <div class="modal-status-row">
+            <span class="modal-status-lbl">Estado actual:</span>
+            <span class="status-badge status-badge--{{ modalAccount()?.status | lowercase }}">
+              {{ modalAccount()?.status }}
+            </span>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="modalStatusSelect">Nuevo estado</label>
+            <select id="modalStatusSelect" class="field__select"
+                    [value]="modalSelectedStatus()"
+                    (change)="onModalStatusChange($event)"
+                    [disabled]="modalLoading()">
+              @for (s of statusOptions; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </div>
+
+          @if (modalError()) {
+            <div class="alert--error modal-error">{{ modalError() }}</div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn--ghost btn--sm" [disabled]="modalLoading()" (click)="closeStatusModal()">
+            Cancelar
+          </button>
+          <button class="btn btn--primary btn--sm"
+                  [disabled]="modalLoading() || modalSelectedStatus() === modalAccount()?.status"
+                  (click)="confirmStatusChange()">
+            @if (modalLoading()) {
+              <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+              </svg>
+              Guardando…
+            } @else {
+              Confirmar
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
 </div>

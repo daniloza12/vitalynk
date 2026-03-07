@@ -1,7 +1,7 @@
 // ============================================================
 //  login.component.ts
 // ============================================================
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -17,6 +17,7 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   private fb     = inject(FormBuilder);
@@ -28,32 +29,32 @@ export class LoginComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  loading  = false;
-  errorMsg = '';
-  showPass = false;
+  loading  = signal(false);
+  errorMsg = signal('');
+  showPass = signal(false);
 
   get email()    { return this.form.get('email')!; }
   get password() { return this.form.get('password')!; }
 
-  togglePassword(): void { this.showPass = !this.showPass; }
+  togglePassword(): void { this.showPass.update(v => !v); }
 
   async onSubmit(): Promise<void> {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.loading()) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.loading  = true;
-    this.errorMsg = '';
+    this.loading.set(true);
+    this.errorMsg.set('');
 
     try {
       const account = await this.auth.login(this.form.getRawValue());
-      // Redirige según rol
       this.router.navigate(account.role === 'ADMIN' ? ['/admin'] : ['/perfil']);
-    } catch (err: unknown) {
-      this.errorMsg = err instanceof Error ? err.message : 'Error al iniciar sesión.';
+    } catch {
+      // Mensaje genérico — no revela si el usuario existe
+      this.errorMsg.set('Correo o contraseña incorrectos.');
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 }

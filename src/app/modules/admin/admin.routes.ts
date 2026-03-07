@@ -14,4 +14,9 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () =>
       import('./account-detail/account-detail.component').then(m => m.AccountDetailComponent),
   },
+  {
+    path: 'auditoria',
+    loadComponent: () =>
+      import('./auditoria/auditoria.component').then(m => m.AuditoriaComponent),
+  },
 ];
