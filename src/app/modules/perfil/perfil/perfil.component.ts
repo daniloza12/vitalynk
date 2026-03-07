@@ -83,13 +83,14 @@ export class PerfilComponent implements OnInit {
   }
 
   private buildForm(): void {
+    const accountEmail = this.account()?.email ?? '';
     this.form = this.fb.group({
       personal: this.fb.group({
         sex:           ['',  Validators.required],
         birthDate:     ['',  Validators.required],
         fullName:      ['',  [Validators.required, Validators.minLength(3)]],
         phone:         ['',  Validators.required],
-        personalEmail: ['',  Validators.email],
+        personalEmail: [{ value: accountEmail, disabled: true }, Validators.email],
         workEmail:     ['',  Validators.email],
         city:          ['',  Validators.required],
         district:      ['',  Validators.required],
@@ -127,6 +128,8 @@ export class PerfilComponent implements OnInit {
           personal: profile.personal,
           medical:  profile.medical,
         });
+        // El correo personal siempre refleja el email de la cuenta — no editable
+        this.personal.get('personalEmail')!.setValue(this.account()?.email ?? '');
 
         const visPersonal = profile.visibility?.personal ?? DEFAULT_PERSONAL_VISIBILITY;
         this.visPersonal.patchValue(visPersonal);

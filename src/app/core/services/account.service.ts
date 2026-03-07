@@ -8,10 +8,10 @@
 //    DELETE /accounts/{id}                  → void
 // ============================================================
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Account } from '../models/account.model';
+import { Account, AccountStatus } from '../models/account.model';
 import { Profile } from '../models/profile.model';
 import { ProfileService } from './profile.service';
 import { environment } from '../../../environments/environment';
@@ -26,8 +26,11 @@ export class AccountService {
 
   // ── Consultas ─────────────────────────────────────────────────
 
-  getAll(): Observable<Account[]> {
-    return this.http.get<Account[]>(this.api);
+  getAll(from?: string, to?: string): Observable<Account[]> {
+    const params = from && to
+      ? new HttpParams().set('from', from).set('to', to)
+      : undefined;
+    return this.http.get<Account[]>(this.api, { params });
   }
 
   getById(id: string): Observable<Account> {
@@ -47,6 +50,10 @@ export class AccountService {
 
   update(id: string, data: Partial<Account>): Observable<Account> {
     return this.http.put<Account>(`${this.api}/${id}`, data);
+  }
+
+  updateStatus(id: string, status: AccountStatus): Observable<Account> {
+    return this.http.patch<Account>(`${this.api}/${id}/status`, { status });
   }
 
   delete(id: string): Observable<void> {

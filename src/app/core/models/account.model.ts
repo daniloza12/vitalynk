@@ -3,6 +3,9 @@
 // ============================================================
 
 export type Role = 'ADMIN' | 'USER';
+export type AccountStatus = 'REGISTRADO' | 'ACTIVO' | 'INACTIVO' | 'SUSPENDIDO' | 'BLOQUEADO';
+
+export const ACCOUNT_STATUSES: AccountStatus[] = ['REGISTRADO', 'ACTIVO', 'INACTIVO', 'SUSPENDIDO', 'BLOQUEADO'];
 
 export interface Account {
   /** Identificador único autogenerado */
@@ -11,6 +14,7 @@ export interface Account {
   /** Contraseña hasheada con SHA-256 */
   password: string;
   role: Role;
+  status: AccountStatus;
   /** Hash SHA-256 truncado a 32 chars, generado al registrarse */
   securityAccount: string;
   /** Imagen QR como base64 PNG data URL, generada al registrarse.

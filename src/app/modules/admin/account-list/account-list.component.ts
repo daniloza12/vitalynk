@@ -5,18 +5,20 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  effect,
   inject,
   OnInit,
   signal,
   computed,
+  untracked,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DatePipe }   from '@angular/common';
+import { DatePipe, LowerCasePipe } from '@angular/common';
 import { Subject }    from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AccountService } from '../../../core/services/account.service';
-import { Account }        from '../../../core/models/account.model';
+import { Account, AccountStatus, ACCOUNT_STATUSES } from '../../../core/models/account.model';
 
 /** Convierte "DD/MM/YYYY HH:mm:ss" → "YYYY-MM-DD" sin ambigüedad de browser */
 function createdAtToIso(s: string): string {
@@ -27,6 +29,9 @@ function createdAtToIso(s: string): string {
 function localIso(d: Date): string {
   return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
 }
+function toIsoDate(d: Date): string { return d.toISOString().slice(0, 10); }
+function hace30Dias(): string { const d = new Date(); d.setDate(d.getDate() - 30); return toIsoDate(d); }
+function hoy(): string { return toIsoDate(new Date()); }
 
 export interface BarData {
   label:     string;
@@ -45,7 +50,7 @@ export interface GridLine {
 @Component({
   selector: 'app-account-list',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, LowerCasePipe],
   templateUrl: './account-list.component.html',
   styleUrl: './account-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,10 +60,14 @@ export class AccountListComponent implements OnInit {
   private destroyRef     = inject(DestroyRef);
 
   accounts   = signal<Account[]>([]);
+  loading    = signal(false);
   lastUpdate = signal<Date>(new Date());
 
   private searchSubject = new Subject<string>();
   search = toSignal(this.searchSubject.pipe(debounceTime(300)), { initialValue: '' });
+
+  dateFrom = signal(hace30Dias());
+  dateTo   = signal(hoy());
 
   filtered = computed(() => {
     const q = this.search().toLowerCase().trim();
@@ -66,6 +75,24 @@ export class AccountListComponent implements OnInit {
     return this.accounts().filter(
       a => a.email.toLowerCase().includes(q) || a.role.toLowerCase().includes(q)
     );
+  });
+
+  pageSize      = signal(10);
+  currentPage   = signal(1);
+  totalPages    = computed(() => Math.max(1, Math.ceil(this.filtered().length / this.pageSize())));
+  pagedAccounts = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filtered().slice(start, start + this.pageSize());
+  });
+  pageRange = computed((): (number | null)[] => {
+    const total = this.totalPages(), current = this.currentPage();
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const pages: (number | null)[] = [1];
+    if (current > 3) pages.push(null);
+    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) pages.push(i);
+    if (current < total - 2) pages.push(null);
+    pages.push(total);
+    return pages;
   });
 
   // ── KPIs ────────────────────────────────────────────────────
@@ -163,17 +190,81 @@ export class AccountListComponent implements OnInit {
       .slice(0, 5)
   );
 
-  ngOnInit(): void {
-    this.accountService.getAll()
+  constructor() {
+    effect(() => { this.filtered(); untracked(() => this.currentPage.set(1)); });
+  }
+
+  ngOnInit(): void { this.applyDateFilter(); }
+
+  applyDateFilter(): void {
+    this.loading.set(true);
+    this.accountService.getAll(this.dateFrom(), this.dateTo())
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(accounts => {
-        this.accounts.set(accounts);
-        this.lastUpdate.set(new Date());
+      .subscribe({
+        next:  accounts => { this.accounts.set(accounts); this.loading.set(false); this.lastUpdate.set(new Date()); },
+        error: ()       => this.loading.set(false),
       });
   }
 
   onSearch(event: Event): void {
     this.searchSubject.next((event.target as HTMLInputElement).value);
+  }
+
+  onDateFromChange(e: Event): void { this.dateFrom.set((e.target as HTMLInputElement).value); }
+  onDateToChange(e: Event):   void { this.dateTo.set((e.target as HTMLInputElement).value); }
+  resetToToday(): void { this.dateFrom.set(hoy()); this.dateTo.set(hoy()); this.applyDateFilter(); }
+  goToPage(page: number): void { if (page >= 1 && page <= this.totalPages()) this.currentPage.set(page); }
+  onPageSizeChange(e: Event): void { this.pageSize.set(+(e.target as HTMLSelectElement).value); this.currentPage.set(1); }
+
+  // ── Modal de cambio de estado ────────────────────────────────
+  readonly statusOptions = ACCOUNT_STATUSES;
+
+  modalOpen            = signal(false);
+  modalAccount         = signal<Account | null>(null);
+  modalSelectedStatus  = signal<AccountStatus>('REGISTRADO');
+  modalLoading         = signal(false);
+  modalError           = signal('');
+
+  openStatusModal(account: Account): void {
+    this.modalAccount.set(account);
+    this.modalSelectedStatus.set(account.status);
+    this.modalError.set('');
+    this.modalOpen.set(true);
+  }
+
+  closeStatusModal(): void {
+    if (this.modalLoading()) return;
+    this.modalOpen.set(false);
+    this.modalAccount.set(null);
+  }
+
+  onModalStatusChange(e: Event): void {
+    this.modalSelectedStatus.set((e.target as HTMLSelectElement).value as AccountStatus);
+  }
+
+  confirmStatusChange(): void {
+    const account = this.modalAccount();
+    const newStatus = this.modalSelectedStatus();
+    if (!account || newStatus === account.status) return;
+
+    this.modalLoading.set(true);
+    this.modalError.set('');
+
+    this.accountService.updateStatus(account.id, newStatus)
+      .subscribe({
+        next: (updated) => {
+          this.accounts.update(list =>
+            list.map(a => a.id === updated.id ? updated : a)
+          );
+          this.modalLoading.set(false);
+          this.modalOpen.set(false);
+          this.modalAccount.set(null);
+        },
+        error: () => {
+          this.modalError.set('No se pudo actualizar el estado. Intente nuevamente.');
+          this.modalLoading.set(false);
+        },
+      });
   }
 
   trackByLabel(_: number, d: BarData):   string { return d.label; }
