@@ -43,8 +43,12 @@
         </div>
         <div class="info-grid">
           <div class="info-item">
-            <span class="info-item__label">Email</span>
-            <span class="info-item__value">{{ account()!.email }}</span>
+            <span class="info-item__label">Estado</span>
+            <span class="account-status" [class]="statusClass">{{ account()!.status }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-item__label">Creado el</span>
+            <span class="info-item__value">{{ account()!.createdAt | date:'dd/MM/yyyy, HH:mm' }}</span>
           </div>
           <div class="info-item info-item--full">
             <span class="info-item__label">Security Account</span>
@@ -55,8 +59,8 @@
             <span class="info-item__value">{{ account()!.role }}</span>
           </div>
           <div class="info-item">
-            <span class="info-item__label">Creado el</span>
-            <span class="info-item__value">{{ account()!.createdAt | date:'dd/MM/yyyy, HH:mm' }}</span>
+            <span class="info-item__label">Email</span>
+            <span class="info-item__value">{{ account()!.email }}</span>
           </div>
         </div>
       </section>

@@ -54,6 +54,40 @@ export const routes: Routes = [
       import('./modules/public/public.routes').then(m => m.PUBLIC_ROUTES),
   },
 
+  // ── Recuperación de contraseña ──────────────────────────────
+  {
+    path: 'forgot-password',
+    component: AuthLayoutComponent,
+    children: [{
+      path: '',
+      loadComponent: () =>
+        import('./modules/auth/forgot-password/forgot-password.component')
+          .then(m => m.ForgotPasswordComponent),
+    }],
+  },
+  {
+    path: 'reset-password',
+    component: AuthLayoutComponent,
+    children: [{
+      path: '',
+      loadComponent: () =>
+        import('./modules/auth/reset-password/reset-password.component')
+          .then(m => m.ResetPasswordComponent),
+    }],
+  },
+
+  // ── Activación de cuenta ────────────────────────────────────
+  {
+    path: 'activate',
+    component: AuthLayoutComponent,
+    children: [{
+      path: '',
+      loadComponent: () =>
+        import('./modules/auth/activate-account/activate-account.component')
+          .then(m => m.ActivateAccountComponent),
+    }],
+  },
+
   // Fallback
   { path: '**', redirectTo: '/auth/login' },
 ];

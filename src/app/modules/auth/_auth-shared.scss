@@ -133,11 +133,17 @@
   }
 }
 
-/* ── Alert override para auth (fondo oscuro) ───────────────── */
+/* ── Alert overrides para auth (fondo oscuro) ──────────────── */
 .auth-card .alert--error {
   background: rgba(var(--color-accent-rgb), 0.15);
   border-color: rgba(var(--color-accent-rgb), 0.3);
   color: #ff8080;
+}
+
+.auth-card .alert--success {
+  background: rgba(0, 179, 126, 0.12);
+  border-color: rgba(0, 179, 126, 0.3);
+  color: #4ade80;
 }
 
 /* ── Auth card responsive ──────────────────────────────────── */

@@ -72,6 +72,17 @@ export class AccountDetailComponent implements OnInit {
     return sex ? (map[sex] ?? sex) : '—';
   }
 
+  get statusClass(): string {
+    const map: Record<string, string> = {
+      ACTIVO:     'status--active',
+      REGISTRADO: 'status--pending',
+      INACTIVO:   'status--inactive',
+      SUSPENDIDO: 'status--suspended',
+      BLOQUEADO:  'status--blocked',
+    };
+    return map[this.account()?.status ?? ''] ?? 'status--inactive';
+  }
+
   /** URL pública que codifica el QR */
   get publicUrl(): string {
     const acc = this.account();

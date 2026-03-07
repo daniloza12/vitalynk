@@ -179,6 +179,38 @@
   }
 }
 
+/* ── Acciones del formulario ─────────────────────────────────── */
+.login-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.forgot-link {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--color-secondary);
+  }
+}
+
+/* ── Reenvío de activación ───────────────────────────────────── */
+.resend-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  &__label {
+    font-size: var(--text-sm);
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+  }
+}
+
 /* ── Lista de features ───────────────────────────────────────── */
 .lp-features {
   list-style: none;

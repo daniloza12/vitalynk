@@ -30,12 +30,10 @@
 
       <!-- Datos personales + visibilidad QR -->
       <section class="card" formGroupName="personal">
-        <div class="card__header vis-grid-header">
-          <div class="card__header-left">
-            <div class="card__icon card__icon--primary">👤</div>
-            <h2>Datos personales</h2>
-          </div>
-          <span class="vis-col-label" title="Visible en ficha QR pública">👁 QR</span>
+        <div class="card__header">
+          <div class="card__icon card__icon--primary">👤</div>
+          <h2>Datos personales</h2>
+          <span class="account-status" [class]="statusClass">{{ account()?.status }}</span>
         </div>
 
         <div class="field-vis-row">
@@ -52,7 +50,6 @@
           </div>
           <label class="vis-toggle" title="Mostrar en ficha QR">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('fullName')" />
-            <span class="vis-toggle__label">QR</span>
           </label>
         </div>
 
@@ -73,7 +70,6 @@
           </div>
           <label class="vis-toggle" title="Mostrar en ficha QR">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('sex')" />
-            <span class="vis-toggle__label">QR</span>
           </label>
         </div>
 
@@ -89,7 +85,6 @@
           </div>
           <label class="vis-toggle" title="Mostrar en ficha QR">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('birthDate')" />
-            <span class="vis-toggle__label">QR</span>
           </label>
         </div>
 
@@ -105,7 +100,6 @@
           </div>
           <label class="vis-toggle" title="Mostrar en ficha QR">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('phone')" />
-            <span class="vis-toggle__label">QR</span>
           </label>
         </div>
 
@@ -121,7 +115,6 @@
           </div>
           <label class="vis-toggle" title="Mostrar en ficha QR">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('personalEmail')" />
-            <span class="vis-toggle__label">QR</span>
           </label>
         </div>
 
@@ -137,7 +130,6 @@
           </div>
           <label class="vis-toggle" title="Mostrar en ficha QR">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('workEmail')" />
-            <span class="vis-toggle__label">QR</span>
           </label>
         </div>
 
@@ -153,7 +145,6 @@
           </div>
           <label class="vis-toggle" title="Mostrar en ficha QR">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('city')" />
-            <span class="vis-toggle__label">QR</span>
           </label>
         </div>
 
@@ -169,7 +160,6 @@
           </div>
           <label class="vis-toggle" title="Mostrar en ficha QR">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('district')" />
-            <span class="vis-toggle__label">QR</span>
           </label>
         </div>
 
@@ -251,16 +241,13 @@
 
       <!-- Contactos de emergencia -->
       <section class="card" formArrayName="contacts">
-        <div class="card__header vis-grid-header">
-          <div class="card__header-left">
-            <div class="card__icon card__icon--accent">📞</div>
-            <h2>Contactos de emergencia</h2>
-            <button type="button" class="btn btn--secondary btn--sm contact-add-btn"
-                    (click)="addContact()">
-              + Agregar contacto
-            </button>
-          </div>
-          <span class="vis-col-label" title="Visible en ficha QR pública">👁 QR</span>
+        <div class="card__header">
+          <div class="card__icon card__icon--accent">📞</div>
+          <h2>Contactos de emergencia</h2>
+          <button type="button" class="btn btn--secondary btn--sm contact-add-btn"
+                  (click)="addContact()">
+            + Agregar contacto
+          </button>
         </div>
 
         @if (contacts.length === 0) {
@@ -296,8 +283,7 @@
                 </div>
                 <label class="vis-toggle" title="Mostrar en ficha QR">
                   <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'fullName')" />
-                  <span class="vis-toggle__label">QR</span>
-                </label>
+                      </label>
               </div>
 
               <div class="field-vis-row">
@@ -312,8 +298,7 @@
                 </div>
                 <label class="vis-toggle" title="Mostrar en ficha QR">
                   <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'phone')" />
-                  <span class="vis-toggle__label">QR</span>
-                </label>
+                      </label>
               </div>
 
               <div class="field-vis-row">
@@ -328,8 +313,7 @@
                 </div>
                 <label class="vis-toggle" title="Mostrar en ficha QR">
                   <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'personalEmail')" />
-                  <span class="vis-toggle__label">QR</span>
-                </label>
+                      </label>
               </div>
 
               <div class="field-vis-row">
@@ -344,8 +328,7 @@
                 </div>
                 <label class="vis-toggle" title="Mostrar en ficha QR">
                   <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'workEmail')" />
-                  <span class="vis-toggle__label">QR</span>
-                </label>
+                      </label>
               </div>
 
             </div>

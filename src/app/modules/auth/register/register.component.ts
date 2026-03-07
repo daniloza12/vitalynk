@@ -11,7 +11,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 /** Validador: confirmar contraseña coincide con password */
@@ -32,9 +32,8 @@ const passwordMatchValidator: ValidatorFn = (
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent {
-  private fb     = inject(FormBuilder);
-  private auth   = inject(AuthService);
-  private router = inject(Router);
+  private fb   = inject(FormBuilder);
+  private auth = inject(AuthService);
 
   form: FormGroup = this.fb.group(
     {
@@ -45,10 +44,14 @@ export class RegisterComponent {
     { validators: passwordMatchValidator }
   );
 
-  loading     = signal(false);
-  errorMsg    = signal('');
-  showPass    = signal(false);
-  showConfirm = signal(false);
+  loading         = signal(false);
+  errorMsg        = signal('');
+  showPass        = signal(false);
+  showConfirm     = signal(false);
+  registeredEmail = signal('');
+  resendLoading   = signal(false);
+  resendSuccess   = signal('');
+  resendError     = signal('');
 
   get email()           { return this.form.get('email')!; }
   get password()        { return this.form.get('password')!; }
@@ -67,13 +70,31 @@ export class RegisterComponent {
     this.errorMsg.set('');
 
     try {
-      const account = await this.auth.register(this.form.getRawValue());
-      this.router.navigate(account.role === 'ADMIN' ? ['/admin'] : ['/perfil']);
+      await this.auth.register(this.form.getRawValue());
+      this.registeredEmail.set(this.form.get('email')!.value);
     } catch {
       // Mensaje genérico — no revela detalles del error del backend
       this.errorMsg.set('No fue posible crear la cuenta. Intenta de nuevo.');
     } finally {
       this.loading.set(false);
     }
+  }
+
+  resend(): void {
+    const email = this.registeredEmail();
+    if (!email) return;
+    this.resendLoading.set(true);
+    this.resendSuccess.set('');
+    this.resendError.set('');
+    this.auth.resendActivationEmail(email).subscribe({
+      next: (res) => {
+        this.resendSuccess.set(res.message || 'Email reenviado. Revisa tu bandeja.');
+        this.resendLoading.set(false);
+      },
+      error: () => {
+        this.resendError.set('No se pudo reenviar. Intenta de nuevo.');
+        this.resendLoading.set(false);
+      },
+    });
   }
 }

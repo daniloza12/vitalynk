@@ -5,8 +5,8 @@
 //    POST /auth/login     { email, password } → Account
 // ============================================================
 import { inject, Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { firstValueFrom, Observable } from 'rxjs';
 import { Account, LoginDTO, RegisterDTO } from '../models/account.model';
 import { QrService } from './qr.service';
 import { environment } from '../../../environments/environment';
@@ -29,10 +29,7 @@ export class AuthService {
     const account = await firstValueFrom(
       this.http.post<Account>(`${this.api}/register`, payload)
     );
-
-    this.setCurrentUser(account);
-    // QR se genera en segundo plano — no bloquea la navegación
-    this.generateAndCacheQr(account);
+    // No se guarda sesión — el usuario debe activar su cuenta primero
     return account;
   }
 
@@ -94,6 +91,28 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  // ── Recuperación de contraseña ──────────────────────────────
+  forgotPassword(email: string): Observable<{ message: string }> {
+    const params = new HttpParams().set('email', email);
+    return this.http.post<{ message: string }>(`${this.api}/forgot-password`, null, { params });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<{ message: string }> {
+    const params = new HttpParams().set('token', token);
+    return this.http.post<{ message: string }>(`${this.api}/reset-password`, { newPassword }, { params });
+  }
+
+  // ── Activación ──────────────────────────────────────────────
+  activateAccount(token: string): Observable<{ message: string }> {
+    const params = new HttpParams().set('token', token);
+    return this.http.get<{ message: string }>(`${this.api}/activate`, { params });
+  }
+
+  resendActivationEmail(email: string): Observable<{ message: string }> {
+    const params = new HttpParams().set('email', email);
+    return this.http.post<{ message: string }>(`${this.api}/resend-activation`, null, { params });
   }
 
   /** Valida que el objeto cargado de localStorage tiene estructura Account válida.

@@ -28,6 +28,58 @@
   }
 }
 
+/* ── Estado de cuenta ──────────────────────────────────────── */
+.account-status {
+  display: inline-flex;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-full);
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &.status--active {
+    background: rgba(0, 179, 126, 0.12);
+    color: #059669;
+    border: 1px solid rgba(0, 179, 126, 0.3);
+  }
+
+  &.status--pending {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+  }
+
+  &.status--inactive {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+    border: 1px solid rgba(107, 114, 128, 0.25);
+  }
+
+  &.status--suspended {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  &.status--blocked {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+  }
+}
+
 /* ── Form layout ───────────────────────────────────────────── */
 .perfil-form {
   display: flex;

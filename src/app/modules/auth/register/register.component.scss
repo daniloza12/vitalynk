@@ -4,3 +4,31 @@
   max-width: 440px;
   width: 100%;
 }
+
+.confirm-card {
+  text-align: center;
+}
+
+.confirm-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.confirm-email {
+  color: var(--color-secondary);
+  font-weight: var(--font-semibold);
+}
+
+.confirm-hint {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.resend-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}

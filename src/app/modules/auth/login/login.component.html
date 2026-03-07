@@ -27,9 +27,46 @@
       <p class="auth-card__subtitle">Accede a tu cuenta VitaLink</p>
     </div>
 
+    @if (activatedBanner()) {
+      <div class="alert alert--success" role="alert">
+        ¡Cuenta activada correctamente! Ya puedes iniciar sesión.
+      </div>
+    }
+
     @if (errorMsg()) {
       <div class="alert alert--error" role="alert">
         <span aria-hidden="true">⚠️</span> {{ errorMsg() }}
+      </div>
+    }
+
+    @if (showResend()) {
+      <div class="resend-wrap">
+        <p class="resend-wrap__label">Reenviar enlace de activación:</p>
+        <input
+          type="email"
+          class="field__input"
+          placeholder="tu@correo.com"
+          [value]="resendEmail()"
+          (input)="onResendEmailChange($event)"
+          autocomplete="email"
+        />
+        <button
+          type="button"
+          class="btn btn--outline btn--sm btn--full"
+          [disabled]="resendLoading()"
+          (click)="resend()">
+          @if (resendLoading()) {
+            <span class="btn__spinner" aria-hidden="true"></span> Enviando…
+          } @else {
+            Reenviar enlace
+          }
+        </button>
+        @if (resendSuccess()) {
+          <div class="alert alert--success" role="alert">{{ resendSuccess() }}</div>
+        }
+        @if (resendError()) {
+          <div class="alert alert--error" role="alert">{{ resendError() }}</div>
+        }
       </div>
     }
 
@@ -80,16 +117,19 @@
         }
       </div>
 
-      <button
-        type="submit"
-        class="btn btn--primary btn--full"
-        [disabled]="loading()">
-        @if (loading()) {
-          <span class="btn__spinner" aria-hidden="true"></span> Iniciando…
-        } @else {
-          Iniciar sesión
-        }
-      </button>
+      <div class="login-form__actions">
+        <button
+          type="submit"
+          class="btn btn--primary btn--full"
+          [disabled]="loading()">
+          @if (loading()) {
+            <span class="btn__spinner" aria-hidden="true"></span> Iniciando…
+          } @else {
+            Iniciar sesión
+          }
+        </button>
+        <a routerLink="/forgot-password" class="forgot-link">¿Olvidaste tu contraseña?</a>
+      </div>
     </form>
 
     <p class="auth-card__footer">

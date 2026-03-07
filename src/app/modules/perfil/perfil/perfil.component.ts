@@ -60,6 +60,17 @@ export class PerfilComponent implements OnInit {
     this.loadProfile();
   }
 
+  get statusClass(): string {
+    const map: Record<string, string> = {
+      ACTIVO:      'status--active',
+      REGISTRADO:  'status--pending',
+      INACTIVO:    'status--inactive',
+      SUSPENDIDO:  'status--suspended',
+      BLOQUEADO:   'status--blocked',
+    };
+    return map[this.account()?.status ?? ''] ?? 'status--inactive';
+  }
+
   get publicUrl(): string {
     const acc = this.account();
     return acc ? this.qrService.publicUrl(acc.securityAccount) : '';

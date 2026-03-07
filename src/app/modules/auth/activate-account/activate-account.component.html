@@ -1,0 +1,64 @@
+<div class="activate-wrapper">
+  <div class="auth-card">
+
+    @if (state() === 'loading') {
+      <div class="activate-state">
+        <span class="btn__spinner activate-state__spinner" aria-hidden="true"></span>
+        <p class="activate-state__msg">Activando tu cuenta…</p>
+      </div>
+    }
+
+    @if (state() === 'success') {
+      <div class="activate-state">
+        <div class="activate-state__icon activate-state__icon--success" aria-hidden="true">✓</div>
+        <h1 class="auth-card__title">¡Cuenta activada!</h1>
+        <p class="activate-state__msg">Redirigiendo al inicio de sesión…</p>
+      </div>
+    }
+
+    @if (state() === 'error') {
+      <div class="activate-state">
+        <div class="activate-state__icon activate-state__icon--error" aria-hidden="true">✕</div>
+        <h1 class="auth-card__title">Enlace no válido</h1>
+        <div class="alert alert--error" role="alert">
+          <span aria-hidden="true">⚠️</span> {{ errorMsg() }}
+        </div>
+
+        @if (showResend()) {
+          <div class="resend-wrap">
+            <p class="resend-wrap__label">¿Necesitas un nuevo enlace? Ingresa tu correo:</p>
+            <input
+              type="email"
+              class="field__input"
+              placeholder="tu@correo.com"
+              [value]="resendEmail()"
+              (input)="onResendEmailChange($event)"
+              autocomplete="email"
+            />
+            <button
+              class="btn btn--outline btn--sm btn--full"
+              [disabled]="resendLoading()"
+              (click)="resend()">
+              @if (resendLoading()) {
+                <span class="btn__spinner" aria-hidden="true"></span> Enviando…
+              } @else {
+                Reenviar enlace de activación
+              }
+            </button>
+            @if (resendSuccess()) {
+              <div class="alert alert--success" role="alert">{{ resendSuccess() }}</div>
+            }
+            @if (resendError()) {
+              <div class="alert alert--error" role="alert">{{ resendError() }}</div>
+            }
+          </div>
+        }
+      </div>
+
+      <p class="auth-card__footer">
+        <a routerLink="/auth/login" class="auth-card__link">Volver al inicio de sesión</a>
+      </p>
+    }
+
+  </div>
+</div>
