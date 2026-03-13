@@ -2,8 +2,9 @@
 //  app.routes.ts — Routing principal con lazy loading
 // ============================================================
 import { Routes } from '@angular/router';
-import { authGuard }  from './core/guards/auth.guard';
-import { roleGuard }  from './core/guards/role.guard';
+import { authGuard }   from './core/guards/auth.guard';
+import { noAuthGuard } from './core/guards/no-auth.guard';
+import { roleGuard }   from './core/guards/role.guard';
 import { AuthLayoutComponent }  from './layout/auth-layout/auth-layout.component';
 import { MainLayoutComponent }  from './layout/main-layout/main-layout.component';
 
@@ -15,6 +16,7 @@ export const routes: Routes = [
   {
     path: 'auth',
     component: AuthLayoutComponent,
+    canActivate: [noAuthGuard],
     loadChildren: () =>
       import('./modules/auth/auth.routes').then(m => m.AUTH_ROUTES),
   },
@@ -58,6 +60,7 @@ export const routes: Routes = [
   {
     path: 'forgot-password',
     component: AuthLayoutComponent,
+    canActivate: [noAuthGuard],
     children: [{
       path: '',
       loadComponent: () =>
@@ -68,6 +71,7 @@ export const routes: Routes = [
   {
     path: 'reset-password',
     component: AuthLayoutComponent,
+    // Sin noAuthGuard — un usuario logueado también puede necesitar resetear su contraseña
     children: [{
       path: '',
       loadComponent: () =>
@@ -80,6 +84,7 @@ export const routes: Routes = [
   {
     path: 'activate',
     component: AuthLayoutComponent,
+    canActivate: [noAuthGuard],
     children: [{
       path: '',
       loadComponent: () =>

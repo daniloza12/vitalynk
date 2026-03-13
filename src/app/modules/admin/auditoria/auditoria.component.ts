@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { RouterLink }    from '@angular/router';
 import { DatePipe }      from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Subject }       from 'rxjs';
 import { debounceTime }  from 'rxjs/operators';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -30,13 +31,13 @@ function createdAtToIso(s: string): string {
   return m ? `${m[3]}-${m[2]}-${m[1]}` : s.slice(0, 10);
 }
 
-// ── Etiquetas UI ──────────────────────────────────────────────
+// ── Claves de traducción para badges de eventos ───────────────
 const EVENT_LABELS: Record<AuditEventType, string> = {
-  LOGIN_SUCCESS: 'Login OK',
-  LOGIN_FAILED:  'Fallo',
-  LOGOUT:        'Logout',
-  REGISTER:      'Registro',
-  TOKEN_EXPIRED: 'Token vencido',
+  LOGIN_SUCCESS: 'admin.audit.badge_login_success',
+  LOGIN_FAILED:  'admin.audit.badge_login_failed',
+  LOGOUT:        'admin.audit.badge_logout',
+  REGISTER:      'admin.audit.badge_register',
+  TOKEN_EXPIRED: 'admin.audit.badge_token_expired',
 };
 
 // ── Interfaces SVG ────────────────────────────────────────────
@@ -47,7 +48,7 @@ interface SvgGridLine { value: number; y: number }
 @Component({
   selector: 'app-auditoria',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, TranslocoModule],
   templateUrl: './auditoria.component.html',
   styleUrl: './auditoria.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -216,12 +217,12 @@ export class AuditoriaComponent implements OnInit {
 
   // ── Constantes de template ────────────────────────────────────
   readonly eventTypes: Array<{ value: AuditEventType | ''; label: string }> = [
-    { value: '',              label: 'Todos los eventos' },
-    { value: 'LOGIN_SUCCESS', label: 'Login exitoso' },
-    { value: 'LOGIN_FAILED',  label: 'Fallo de login' },
-    { value: 'LOGOUT',        label: 'Logout' },
-    { value: 'REGISTER',      label: 'Registro' },
-    { value: 'TOKEN_EXPIRED', label: 'Token vencido' },
+    { value: '',              label: 'admin.audit.filter_all' },
+    { value: 'LOGIN_SUCCESS', label: 'admin.audit.filter_login_success' },
+    { value: 'LOGIN_FAILED',  label: 'admin.audit.filter_login_failed' },
+    { value: 'LOGOUT',        label: 'admin.audit.filter_logout' },
+    { value: 'REGISTER',      label: 'admin.audit.filter_register' },
+    { value: 'TOKEN_EXPIRED', label: 'admin.audit.filter_token_expired' },
   ];
   readonly eventLabels = EVENT_LABELS;
 

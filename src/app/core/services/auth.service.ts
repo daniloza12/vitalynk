@@ -7,7 +7,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Account, LoginDTO, RegisterDTO } from '../models/account.model';
+import { Account, AuthResponse, LoginDTO, RegisterDTO } from '../models/account.model';
 import { QrService } from './qr.service';
 import { environment } from '../../../environments/environment';
 
@@ -15,6 +15,7 @@ import { environment } from '../../../environments/environment';
 export class AuthService {
 
   private readonly CURRENT_KEY = 'vl_current_user';
+  private readonly JWT_KEY     = 'vl_jwt_token';
   private readonly api         = `${environment.apiUrl}/auth`;
 
   private http      = inject(HttpClient);
@@ -25,7 +26,12 @@ export class AuthService {
 
   // ── Registro ────────────────────────────────────────────────
   async register(dto: RegisterDTO): Promise<Account> {
-    const payload = { email: dto.email.toLowerCase().trim(), password: dto.password };
+    // cfToken se incluye solo cuando el backend ya implementó la verificación Turnstile
+    const payload = {
+      email:    dto.email.toLowerCase().trim(),
+      password: dto.password,
+      ...(dto.cfToken ? { cfToken: dto.cfToken } : {}),
+    };
     const account = await firstValueFrom(
       this.http.post<Account>(`${this.api}/register`, payload)
     );
@@ -35,11 +41,18 @@ export class AuthService {
 
   // ── Login ────────────────────────────────────────────────────
   async login(dto: LoginDTO): Promise<Account> {
-    const payload = { email: dto.email.toLowerCase().trim(), password: dto.password };
-    const account = await firstValueFrom(
-      this.http.post<Account>(`${this.api}/login`, payload)
+    // cfToken se incluye solo cuando el backend ya implementó la verificación Turnstile
+    const payload = {
+      email:    dto.email.toLowerCase().trim(),
+      password: dto.password,
+      ...(dto.cfToken ? { cfToken: dto.cfToken } : {}),
+    };
+    const response = await firstValueFrom(
+      this.http.post<AuthResponse>(`${this.api}/login`, payload)
     );
 
+    try { localStorage.setItem(this.JWT_KEY, response.token); } catch { /* ignorar */ }
+    const account = response.account;
     this.setCurrentUser(account);
     // QR se genera en segundo plano — no bloquea la navegación
     if (!account.qrDataUrl) {
@@ -50,8 +63,16 @@ export class AuthService {
 
   // ── Logout ───────────────────────────────────────────────────
   logout(): void {
-    try { localStorage.removeItem(this.CURRENT_KEY); } catch { /* ignorar */ }
+    try {
+      localStorage.removeItem(this.CURRENT_KEY);
+      localStorage.removeItem(this.JWT_KEY);
+    } catch { /* ignorar */ }
     this.currentUser.set(null);
+  }
+
+  // ── Token ────────────────────────────────────────────────────
+  getToken(): string | null {
+    return localStorage.getItem(this.JWT_KEY);
   }
 
   // ── Estado ───────────────────────────────────────────────────
@@ -94,8 +115,9 @@ export class AuthService {
   }
 
   // ── Recuperación de contraseña ──────────────────────────────
-  forgotPassword(email: string): Observable<{ message: string }> {
-    const params = new HttpParams().set('email', email);
+  forgotPassword(email: string, cfToken?: string): Observable<{ message: string }> {
+    let params = new HttpParams().set('email', email);
+    if (cfToken) params = params.set('cfToken', cfToken);
     return this.http.post<{ message: string }>(`${this.api}/forgot-password`, null, { params });
   }
 
@@ -110,8 +132,9 @@ export class AuthService {
     return this.http.get<{ message: string }>(`${this.api}/activate`, { params });
   }
 
-  resendActivationEmail(email: string): Observable<{ message: string }> {
-    const params = new HttpParams().set('email', email);
+  resendActivationEmail(email: string, cfToken?: string): Observable<{ message: string }> {
+    let params = new HttpParams().set('email', email);
+    if (cfToken) params = params.set('cfToken', cfToken);
     return this.http.post<{ message: string }>(`${this.api}/resend-activation`, null, { params });
   }
 

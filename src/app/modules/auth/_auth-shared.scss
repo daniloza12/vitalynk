@@ -156,6 +156,12 @@
   }
 }
 
+/* ── Turnstile (Cloudflare) ────────────────────────────────── */
+.turnstile-wrap {
+  display: flex;
+  justify-content: center;
+}
+
 /* ── Btn spinner ───────────────────────────────────────────── */
 .btn__spinner {
   width: 16px;

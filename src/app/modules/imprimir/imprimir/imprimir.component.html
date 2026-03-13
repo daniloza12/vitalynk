@@ -1,3 +1,4 @@
+<ng-container *transloco="let t">
 <div class="imprimir-page">
 
   <!-- ══════════════════════════════════════════════════════════
@@ -6,13 +7,13 @@
   <aside class="imp-config no-print">
 
     <div class="imp-config__header">
-      <h1 class="imp-config__title">🖨️ Imprimir QR</h1>
-      <p class="imp-config__sub">Personaliza y descarga tu código QR listo para imprimir</p>
+      <h1 class="imp-config__title">🖨️ {{ t('imprimir.title') }}</h1>
+      <p class="imp-config__sub">{{ t('imprimir.subtitle') }}</p>
     </div>
 
     <!-- Propósito -->
     <div class="imp-section">
-      <label class="imp-label">Propósito del QR</label>
+      <label class="imp-label">{{ t('imprimir.purpose_label') }}</label>
       <div class="imp-purpose-grid">
         @for (opt of purposeOptions; track opt.value) {
           <button
@@ -20,7 +21,7 @@
             [class.is-active]="purpose() === opt.value"
             (click)="purpose.set(opt.value)">
             <span class="imp-purpose-btn__icon">{{ opt.icon }}</span>
-            <span class="imp-purpose-btn__label">{{ opt.label }}</span>
+            <span class="imp-purpose-btn__label">{{ t(opt.label) }}</span>
           </button>
         }
       </div>
@@ -29,7 +30,7 @@
     <!-- Tamaño del QR -->
     <div class="imp-section">
       <label class="imp-label">
-        Tamaño del QR
+        {{ t('imprimir.size_label') }}
         <span class="imp-label__value">{{ qrSize() }}px</span>
       </label>
       <input
@@ -42,16 +43,16 @@
         (input)="onSizeChange($event)"
       />
       <div class="imp-slider-labels">
-        <span>Pequeño</span>
-        <span>Grande</span>
+        <span>{{ t('imprimir.size_small') }}</span>
+        <span>{{ t('imprimir.size_large') }}</span>
       </div>
     </div>
 
     <!-- Cantidad de copias -->
     <div class="imp-section">
       <label class="imp-label" for="impCopies">
-        Cantidad de copias
-        <span class="imp-label__hint">máx. 20</span>
+        {{ t('imprimir.copies_label') }}
+        <span class="imp-label__hint">{{ t('imprimir.copies_max') }}</span>
       </label>
       <input
         type="number"
@@ -66,7 +67,7 @@
 
     <!-- Color -->
     <div class="imp-section">
-      <label class="imp-label">Tema de color</label>
+      <label class="imp-label">{{ t('imprimir.color_label') }}</label>
       <div class="imp-color-grid">
         @for (theme of colorThemes; track theme.value) {
           <button
@@ -76,7 +77,7 @@
             [style.color]="theme.text"
             [style.border-color]="colorTheme() === theme.value ? theme.accent : 'transparent'"
             (click)="colorTheme.set(theme.value)">
-            {{ theme.label }}
+            {{ t(theme.label) }}
           </button>
         }
       </div>
@@ -85,14 +86,14 @@
     <!-- Descripción adicional -->
     <div class="imp-section">
       <label class="imp-label">
-        Descripción adicional
-        <span class="imp-label__hint">Aparece debajo del QR</span>
+        {{ t('imprimir.desc_label') }}
+        <span class="imp-label__hint">{{ t('imprimir.desc_hint') }}</span>
       </label>
       <textarea
         class="imp-textarea"
         rows="3"
         maxlength="120"
-        placeholder="Ej. Juan Pérez · +51 999 888 777"
+        [placeholder]="t('imprimir.desc_placeholder')"
         [value]="description()"
         (input)="onDescChange($event)">
       </textarea>
@@ -106,7 +107,7 @@
   ══════════════════════════════════════════════════════════ -->
   <main class="imp-preview">
 
-    <p class="imp-preview__label no-print">Vista previa</p>
+    <p class="imp-preview__label no-print">{{ t('imprimir.preview_label') }}</p>
 
     <!-- ── STICKER(S) IMPRIMIBLE(S) ──────────────────────────── -->
     <div class="imp-stickers-wrap">
@@ -122,7 +123,7 @@
       <p class="qrs__type"
          [style.max-width.px]="qrSize()"
          [style.color]="selectedTheme().accent">
-        {{ selectedPurpose().icon }}&nbsp;{{ selectedPurpose().label }}
+        {{ selectedPurpose().icon }}&nbsp;{{ t(selectedPurpose().label) }}
       </p>
 
       <!-- QR -->
@@ -133,13 +134,13 @@
           [style.width.px]="qrSize()"
           [style.height.px]="qrSize()"
           [style.filter]="qrFilter()"
-          alt="Código QR VitaLink"
+          [attr.alt]="t('imprimir.title')"
         />
       } @else {
         <div class="qrs__placeholder"
              [style.width.px]="qrSize()"
              [style.height.px]="qrSize()">
-          <span>Sin QR</span>
+          <span>{{ t('imprimir.no_qr') }}</span>
         </div>
       }
 
@@ -166,15 +167,13 @@
 
     <!-- Botón imprimir -->
     <button class="btn btn--primary imp-print-btn no-print" (click)="print()">
-      🖨️ Imprimir
+      🖨️ {{ t('imprimir.print_btn') }}
     </button>
 
     <!-- Nota -->
-    <p class="imp-preview__note no-print">
-      💡 Para mejor resultado imprime en papel fotográfico o cartulina.<br>
-      Asegúrate de que el QR tenga buen contraste con el fondo.
-    </p>
+    <p class="imp-preview__note no-print">{{ t('imprimir.note') }}</p>
 
   </main>
 
 </div>
+</ng-container>

@@ -1,3 +1,4 @@
+<ng-container *transloco="let t">
 <div class="pbi-dashboard">
 
   <!-- ══ TOOLBAR ════════════════════════════════════════════════ -->
@@ -9,8 +10,8 @@
         </svg>
       </div>
       <div class="pbi-toolbar__text">
-        <span class="pbi-toolbar__title">Gestión de Cuentas</span>
-        <span class="pbi-toolbar__sub">VitaLink &middot; Gestión de cuentas</span>
+        <span class="pbi-toolbar__title">{{ t('admin.accounts.title') }}</span>
+        <span class="pbi-toolbar__sub">{{ t('admin.accounts.subtitle') }}</span>
       </div>
     </div>
     <div class="pbi-toolbar__actions">
@@ -19,13 +20,13 @@
           <circle cx="12" cy="12" r="10"/>
           <polyline points="12 6 12 12 16 14"/>
         </svg>
-        Act. {{ lastUpdate() | date:'HH:mm' }}
+        {{ t('admin.audit.update') }} {{ lastUpdate() | date:'HH:mm' }}
       </span>
       <a routerLink="/admin/auditoria" class="pbi-toolbar__btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
           <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
         </svg>
-        Auditoría
+        {{ t('admin.accounts.audit') }}
       </a>
     </div>
   </header>
@@ -40,17 +41,17 @@
           <line x1="8"  y1="2" x2="8"  y2="6"/>
           <line x1="3"  y1="10" x2="21" y2="10"/>
         </svg>
-        Período de registro
+        {{ t('admin.accounts.period') }}
       </div>
       <div class="filter-bar__dates">
         <div class="filter-bar__field">
-          <label class="filter-bar__lbl" for="acctDateFrom">Desde</label>
+          <label class="filter-bar__lbl" for="acctDateFrom">{{ t('common.from') }}</label>
           <input id="acctDateFrom" type="date" class="field__input filter-date-input"
                  [value]="dateFrom()" (change)="onDateFromChange($event)" />
         </div>
         <span class="filter-bar__sep">→</span>
         <div class="filter-bar__field">
-          <label class="filter-bar__lbl" for="acctDateTo">Hasta</label>
+          <label class="filter-bar__lbl" for="acctDateTo">{{ t('common.to') }}</label>
           <input id="acctDateTo" type="date" class="field__input filter-date-input"
                  [value]="dateTo()" (change)="onDateToChange($event)" />
         </div>
@@ -61,23 +62,23 @@
             <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
               <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
             </svg>
-            Cargando…
+            {{ t('common.loading') }}
           } @else {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
               <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-7"/>
             </svg>
-            Aplicar
+            {{ t('common.apply') }}
           }
         </button>
         <button class="btn btn--outline btn--sm"
                 [disabled]="loading()"
                 (click)="resetToToday()"
-                title="Restablecer al período actual y recargar">
+                [title]="t('common.today')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
             <polyline points="3 3 3 8 8 8"/>
           </svg>
-          Hoy
+          {{ t('common.today') }}
         </button>
       </div>
     </div>
@@ -98,12 +99,12 @@
       </div>
       <div class="kpi-card__content">
         <div class="kpi-card__value">{{ totalAccounts() }}</div>
-        <div class="kpi-card__label">Total de cuentas</div>
+        <div class="kpi-card__label">{{ t('admin.accounts.kpi_total') }}</div>
         <div class="kpi-card__trend kpi-trend--up">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11">
             <polyline points="18 15 12 9 6 15"/>
           </svg>
-          +{{ recentCount() }} esta semana
+          +{{ recentCount() }} {{ t('admin.accounts.kpi_new_week').toLowerCase() }}
         </div>
       </div>
     </div>
@@ -117,8 +118,8 @@
       </div>
       <div class="kpi-card__content">
         <div class="kpi-card__value">{{ adminCount() }}</div>
-        <div class="kpi-card__label">Administradores</div>
-        <div class="kpi-card__trend">{{ adminPct() }}% del total</div>
+        <div class="kpi-card__label">{{ t('admin.accounts.kpi_admins') }}</div>
+        <div class="kpi-card__trend">{{ adminPct() }}% {{ t('common.accounts') }}</div>
       </div>
     </div>
 
@@ -132,8 +133,8 @@
       </div>
       <div class="kpi-card__content">
         <div class="kpi-card__value">{{ userCount() }}</div>
-        <div class="kpi-card__label">Usuarios</div>
-        <div class="kpi-card__trend">{{ userPct() }}% del total</div>
+        <div class="kpi-card__label">{{ t('admin.accounts.kpi_users') }}</div>
+        <div class="kpi-card__trend">{{ userPct() }}% {{ t('common.accounts') }}</div>
       </div>
     </div>
 
@@ -149,8 +150,8 @@
       </div>
       <div class="kpi-card__content">
         <div class="kpi-card__value">{{ recentCount() }}</div>
-        <div class="kpi-card__label">Nuevos esta semana</div>
-        <div class="kpi-card__trend">Últimos 7 días</div>
+        <div class="kpi-card__label">{{ t('admin.accounts.kpi_new_week') }}</div>
+        <div class="kpi-card__trend">{{ t('admin.accounts.kpi_last_7') }}</div>
       </div>
     </div>
 
@@ -163,12 +164,12 @@
     <div class="pbi-panel">
       <div class="pbi-panel__header">
         <div>
-          <div class="pbi-panel__title">Registros por día</div>
-          <div class="pbi-panel__sub">Nuevas cuentas — últimos 7 días</div>
+          <div class="pbi-panel__title">{{ t('admin.accounts.chart_daily') }}</div>
+          <div class="pbi-panel__sub">{{ t('admin.accounts.chart_daily_sub') }}</div>
         </div>
       </div>
       <div class="pbi-panel__body">
-        <svg viewBox="0 0 520 180" class="bar-chart" aria-label="Gráfico de registros por día">
+        <svg viewBox="0 0 520 180" class="bar-chart" [attr.aria-label]="t('admin.accounts.chart_daily')">
           <defs>
             <linearGradient id="bar-grad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%"   stop-color="#0052CC" stop-opacity="0.95"/>
@@ -194,7 +195,7 @@
           @for (bar of barChartData(); track bar.label) {
             @if (bar.barHeight > 0) {
               <g>
-                <title>{{ bar.label }}: {{ bar.count }} registro(s)</title>
+                <title>{{ bar.label }}: {{ bar.count }}</title>
                 <rect
                   [attr.x]="bar.x" [attr.y]="bar.barY"
                   [attr.width]="bar.width" [attr.height]="bar.barHeight"
@@ -220,15 +221,15 @@
     <div class="pbi-panel">
       <div class="pbi-panel__header">
         <div>
-          <div class="pbi-panel__title">Distribución de roles</div>
-          <div class="pbi-panel__sub">Admins vs Usuarios</div>
+          <div class="pbi-panel__title">{{ t('admin.accounts.chart_roles') }}</div>
+          <div class="pbi-panel__sub">{{ t('admin.accounts.chart_roles_sub') }}</div>
         </div>
       </div>
       <div class="pbi-panel__body pbi-panel__body--donut">
-        <svg viewBox="0 0 200 200" class="donut-chart" aria-label="Distribución de roles">
+        <svg viewBox="0 0 200 200" class="donut-chart" [attr.aria-label]="t('admin.accounts.chart_roles')">
           @if (donutData().total === 0) {
             <circle cx="100" cy="100" r="60" fill="none" stroke="#E2E8F0" stroke-width="24"/>
-            <text x="100" y="105" text-anchor="middle" font-size="12" fill="#9AA5B1">Sin datos</text>
+            <text x="100" y="105" text-anchor="middle" font-size="12" fill="#9AA5B1">{{ t('common.no_data') }}</text>
           } @else {
             <!-- Background ring -->
             <circle cx="100" cy="100" r="60" fill="none" stroke="#F1F5F9" stroke-width="24"/>
@@ -246,19 +247,19 @@
             <text x="100" y="94" text-anchor="middle" font-size="28" font-weight="800" fill="#0D1B2A">
               {{ donutData().total }}
             </text>
-            <text x="100" y="113" text-anchor="middle" font-size="11" fill="#6B7A8D">cuentas</text>
+            <text x="100" y="113" text-anchor="middle" font-size="11" fill="#6B7A8D">{{ t('common.accounts') }}</text>
           }
         </svg>
 
         <div class="donut-legend">
           <div class="donut-legend__item">
             <span class="donut-legend__dot donut-legend__dot--gold"></span>
-            <span class="donut-legend__label">Administrador</span>
+            <span class="donut-legend__label">{{ t('admin.accounts.chart_admin') }}</span>
             <span class="donut-legend__val">{{ adminCount() }} &middot; {{ adminPct() }}%</span>
           </div>
           <div class="donut-legend__item">
             <span class="donut-legend__dot donut-legend__dot--green"></span>
-            <span class="donut-legend__label">Usuario</span>
+            <span class="donut-legend__label">{{ t('admin.accounts.chart_user') }}</span>
             <span class="donut-legend__val">{{ userCount() }} &middot; {{ userPct() }}%</span>
           </div>
         </div>
@@ -271,7 +272,7 @@
   <div class="pbi-panel">
     <div class="pbi-panel__header">
       <div>
-        <div class="pbi-panel__title">Gestión de cuentas</div>
+        <div class="pbi-panel__title">{{ t('admin.accounts.table_title') }}</div>
         <div class="pbi-panel__sub">{{ filtered().length }} de {{ accounts().length }} registros</div>
 
       </div>
@@ -284,10 +285,10 @@
           <input
             type="search"
             class="field__input search-input"
-            placeholder="Buscar por email o rol…"
+            [placeholder]="t('admin.accounts.search_placeholder')"
             [value]="search()"
             (input)="onSearch($event)"
-            aria-label="Buscar cuentas"
+            [attr.aria-label]="t('admin.accounts.search_placeholder')"
           />
         </div>
       </div>
@@ -301,7 +302,7 @@
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
           <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
-        <p>No hay cuentas registradas</p>
+        <p>{{ t('admin.accounts.no_accounts') }}</p>
       </div>
     } @else {
       <div class="table-wrap">
@@ -309,12 +310,12 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              <th>Security Account</th>
-              <th>Creado</th>
-              <th>Acción</th>
+              <th>{{ t('admin.accounts.col_email') }}</th>
+              <th>{{ t('admin.accounts.col_role') }}</th>
+              <th>{{ t('admin.accounts.col_status') }}</th>
+              <th>{{ t('admin.accounts.col_security') }}</th>
+              <th>{{ t('admin.accounts.col_created') }}</th>
+              <th>{{ t('admin.accounts.col_action') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -338,7 +339,7 @@
                 </td>
                 <td>
                   <button class="status-badge status-badge--{{ account.status | lowercase }} status-badge--btn"
-                          title="Cambiar estado"
+                          [title]="t('admin.accounts.change_status')"
                           (click)="openStatusModal(account)">
                     {{ account.status }}
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10">
@@ -354,7 +355,7 @@
                 <td class="col-actions">
                   <a class="btn btn--outline btn--sm"
                      [routerLink]="['/admin/account', account.id]">
-                    Ver detalle
+                    {{ t('admin.accounts.view_detail') }}
                   </a>
                 </td>
               </tr>
@@ -376,7 +377,7 @@
               <polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/>
             </svg>
           </button>
-          <button class="pagination__btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)" title="Anterior">
+          <button class="pagination__btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
@@ -392,12 +393,12 @@
             }
           }
 
-          <button class="pagination__btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)" title="Siguiente">
+          <button class="pagination__btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
               <polyline points="9 18 15 12 9 6"/>
             </svg>
           </button>
-          <button class="pagination__btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(totalPages())" title="Última página">
+          <button class="pagination__btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(totalPages())">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
               <polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/>
             </svg>
@@ -405,7 +406,7 @@
         </div>
 
         <div class="pagination__size">
-          <label class="pagination__size-lbl" for="acctPageSize">Filas:</label>
+          <label class="pagination__size-lbl" for="acctPageSize">{{ t('common.rows') }}</label>
           <select id="acctPageSize" class="field__select pagination__size-select"
                   (change)="onPageSizeChange($event)">
             <option value="10"  [selected]="pageSize() === 10">10</option>
@@ -418,9 +419,9 @@
       @if (filtered().length === 0) {
         <p class="no-results">
           @if (search()) {
-            Sin resultados para "{{ search() }}" en el período seleccionado
+            {{ t('admin.accounts.no_results_search', { q: search() }) }}
           } @else {
-            Sin registros en el período seleccionado
+            {{ t('admin.accounts.no_results_period') }}
           }
         </p>
       }
@@ -434,8 +435,8 @@
            aria-modal="true" aria-labelledby="modal-title">
 
         <div class="modal-header">
-          <h3 class="modal-title" id="modal-title">Cambiar estado de cuenta</h3>
-          <button class="modal-close" [disabled]="modalLoading()" (click)="closeStatusModal()" aria-label="Cerrar">
+          <h3 class="modal-title" id="modal-title">{{ t('admin.accounts.modal_title') }}</h3>
+          <button class="modal-close" [disabled]="modalLoading()" (click)="closeStatusModal()" [attr.aria-label]="t('modal.close')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -452,14 +453,14 @@
           </p>
 
           <div class="modal-status-row">
-            <span class="modal-status-lbl">Estado actual:</span>
+            <span class="modal-status-lbl">{{ t('admin.accounts.current_status') }}</span>
             <span class="status-badge status-badge--{{ modalAccount()?.status | lowercase }}">
               {{ modalAccount()?.status }}
             </span>
           </div>
 
           <div class="field">
-            <label class="field__label" for="modalStatusSelect">Nuevo estado</label>
+            <label class="field__label" for="modalStatusSelect">{{ t('admin.accounts.new_status') }}</label>
             <select id="modalStatusSelect" class="field__select"
                     [value]="modalSelectedStatus()"
                     (change)="onModalStatusChange($event)"
@@ -477,7 +478,7 @@
 
         <div class="modal-footer">
           <button class="btn btn--ghost btn--sm" [disabled]="modalLoading()" (click)="closeStatusModal()">
-            Cancelar
+            {{ t('common.cancel') }}
           </button>
           <button class="btn btn--primary btn--sm"
                   [disabled]="modalLoading() || modalSelectedStatus() === modalAccount()?.status"
@@ -486,9 +487,9 @@
               <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
                 <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
               </svg>
-              Guardando…
+              {{ t('common.saving') }}
             } @else {
-              Confirmar
+              {{ t('common.confirm') }}
             }
           </button>
         </div>
@@ -498,3 +499,4 @@
   }
 
 </div>
+</ng-container>

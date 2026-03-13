@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { forkJoin } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AccountService } from '../../../core/services/account.service';
@@ -21,7 +22,7 @@ import { Profile }        from '../../../core/models/profile.model';
 @Component({
   selector: 'app-account-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, TranslocoModule],
   templateUrl: './account-detail.component.html',
   styleUrl: './account-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +33,7 @@ export class AccountDetailComponent implements OnInit {
   private accountService = inject(AccountService);
   private qrService      = inject(QrService);
   private destroyRef     = inject(DestroyRef);
+  private transloco      = inject(TranslocoService);
 
   account  = signal<Account | undefined>(undefined);
   profile  = signal<Profile | null>(null);
@@ -68,8 +70,13 @@ export class AccountDetailComponent implements OnInit {
 
   /** Etiqueta amigable para sexo */
   sexLabel(sex: string | undefined): string {
-    const map: Record<string, string> = { M: 'Masculino', F: 'Femenino', OTHER: 'Otro' };
-    return sex ? (map[sex] ?? sex) : '—';
+    if (!sex) return '—';
+    const map: Record<string, string> = {
+      M:     this.transloco.translate('public.sex_m'),
+      F:     this.transloco.translate('public.sex_f'),
+      OTHER: this.transloco.translate('public.sex_other'),
+    };
+    return map[sex] ?? sex;
   }
 
   get statusClass(): string {

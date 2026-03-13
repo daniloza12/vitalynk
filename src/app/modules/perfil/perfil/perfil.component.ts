@@ -20,6 +20,7 @@ import {
 } from '@angular/forms';
 import { Router }         from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AuthService }    from '../../../core/services/auth.service';
 import { ProfileService } from '../../../core/services/profile.service';
 import { QrService }      from '../../../core/services/qr.service';
@@ -32,7 +33,7 @@ import {
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslocoModule],
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +45,7 @@ export class PerfilComponent implements OnInit {
   private qrService      = inject(QrService);
   private router         = inject(Router);
   private destroyRef     = inject(DestroyRef);
+  private transloco      = inject(TranslocoService);
 
   /** Signal reactivo del usuario — se actualiza cuando el QR se genera en segundo plano */
   account = this.auth.currentUser;
@@ -254,7 +256,7 @@ export class PerfilComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next:  () => { this.saved.set(true);  this.saving.set(false); },
-        error: () => { this.errorMsg.set('Error al guardar el perfil.'); this.saving.set(false); },
+        error: () => { this.errorMsg.set(this.transloco.translate('profile.error_save')); this.saving.set(false); },
       });
   }
 }

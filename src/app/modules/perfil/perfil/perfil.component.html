@@ -1,18 +1,19 @@
+<ng-container *transloco="let t">
 <div class="perfil-page">
 
   <!-- ── Encabezado ─────────────────────────────────────────────── -->
   <header class="page-header">
     <div>
-      <h1 class="page-header__title">Mi Perfil</h1>
-      <p class="page-header__sub">Mantén tus datos actualizados para emergencias</p>
+      <h1 class="page-header__title">{{ t('profile.title') }}</h1>
+      <p class="page-header__sub">{{ t('profile.subtitle') }}</p>
     </div>
     <button class="btn btn--primary"
             (click)="onSubmit()"
             [disabled]="saving()">
       @if (saving()) {
-        <span class="btn-spin" aria-hidden="true"></span> Guardando…
+        <span class="btn-spin" aria-hidden="true"></span> {{ t('common.saving') }}
       } @else {
-        💾 Guardar cambios
+        💾 {{ t('common.save') }}
       }
     </button>
   </header>
@@ -32,133 +33,133 @@
       <section class="card" formGroupName="personal">
         <div class="card__header">
           <div class="card__icon card__icon--primary">👤</div>
-          <h2>Datos personales</h2>
+          <h2>{{ t('profile.personal.title') }}</h2>
           <span class="account-status" [class]="statusClass">{{ account()?.status }}</span>
         </div>
 
         <div class="field-vis-row">
           <div class="field">
-            <label class="field__label" for="fullName">Nombre completo *</label>
+            <label class="field__label" for="fullName">{{ t('profile.personal.full_name') }}</label>
             <input id="fullName" type="text" class="field__input"
                    [class.is-invalid]="fieldOf(personal,'fullName').invalid && fieldOf(personal,'fullName').touched"
-                   formControlName="fullName" placeholder="Ej. Juan Pérez García" />
+                   formControlName="fullName" [placeholder]="t('profile.personal.full_name_placeholder')" />
             @if (fieldOf(personal,'fullName').hasError('required') && fieldOf(personal,'fullName').touched) {
-              <span class="field__error">Campo obligatorio.</span>
+              <span class="field__error">{{ t('common.required_field') }}</span>
             } @else if (fieldOf(personal,'fullName').hasError('minlength') && fieldOf(personal,'fullName').touched) {
-              <span class="field__error">Mínimo 3 caracteres.</span>
+              <span class="field__error">{{ t('profile.personal.full_name_min') }}</span>
             }
           </div>
-          <label class="vis-toggle" title="Mostrar en ficha QR">
+          <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('fullName')" />
           </label>
         </div>
 
         <div class="field-vis-row">
           <div class="field">
-            <label class="field__label" for="sex">Sexo *</label>
+            <label class="field__label" for="sex">{{ t('profile.personal.sex') }}</label>
             <select id="sex" class="field__select"
                     [class.is-invalid]="fieldOf(personal,'sex').invalid && fieldOf(personal,'sex').touched"
                     formControlName="sex">
-              <option value="" disabled>Seleccionar…</option>
-              <option value="M">Masculino</option>
-              <option value="F">Femenino</option>
-              <option value="OTHER">Otro / No especificar</option>
+              <option value="" disabled>{{ t('profile.personal.sex_select') }}</option>
+              <option value="M">{{ t('profile.personal.sex_m') }}</option>
+              <option value="F">{{ t('profile.personal.sex_f') }}</option>
+              <option value="OTHER">{{ t('profile.personal.sex_other') }}</option>
             </select>
             @if (fieldOf(personal,'sex').invalid && fieldOf(personal,'sex').touched) {
-              <span class="field__error">Campo obligatorio.</span>
+              <span class="field__error">{{ t('common.required_field') }}</span>
             }
           </div>
-          <label class="vis-toggle" title="Mostrar en ficha QR">
+          <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('sex')" />
           </label>
         </div>
 
         <div class="field-vis-row">
           <div class="field">
-            <label class="field__label" for="birthDate">Fecha de nacimiento *</label>
+            <label class="field__label" for="birthDate">{{ t('profile.personal.birth_date') }}</label>
             <input id="birthDate" type="date" class="field__input"
                    [class.is-invalid]="fieldOf(personal,'birthDate').invalid && fieldOf(personal,'birthDate').touched"
                    formControlName="birthDate" />
             @if (fieldOf(personal,'birthDate').invalid && fieldOf(personal,'birthDate').touched) {
-              <span class="field__error">Campo obligatorio.</span>
+              <span class="field__error">{{ t('common.required_field') }}</span>
             }
           </div>
-          <label class="vis-toggle" title="Mostrar en ficha QR">
+          <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('birthDate')" />
           </label>
         </div>
 
         <div class="field-vis-row">
           <div class="field">
-            <label class="field__label" for="phone">Teléfono *</label>
+            <label class="field__label" for="phone">{{ t('profile.personal.phone') }}</label>
             <input id="phone" type="tel" class="field__input"
                    [class.is-invalid]="fieldOf(personal,'phone').invalid && fieldOf(personal,'phone').touched"
-                   formControlName="phone" placeholder="+51 999 999 999" />
+                   formControlName="phone" [placeholder]="t('profile.personal.phone_placeholder')" />
             @if (fieldOf(personal,'phone').invalid && fieldOf(personal,'phone').touched) {
-              <span class="field__error">Campo obligatorio.</span>
+              <span class="field__error">{{ t('common.required_field') }}</span>
             }
           </div>
-          <label class="vis-toggle" title="Mostrar en ficha QR">
+          <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('phone')" />
           </label>
         </div>
 
         <div class="field-vis-row">
           <div class="field">
-            <label class="field__label" for="personalEmail">Correo personal</label>
+            <label class="field__label" for="personalEmail">{{ t('profile.personal.personal_email') }}</label>
             <input id="personalEmail" type="email" class="field__input"
                    [class.is-invalid]="fieldOf(personal,'personalEmail').invalid && fieldOf(personal,'personalEmail').touched"
-                   formControlName="personalEmail" placeholder="correo@personal.com" />
+                   formControlName="personalEmail" [placeholder]="t('profile.personal.personal_email_placeholder')" />
             @if (fieldOf(personal,'personalEmail').hasError('email') && fieldOf(personal,'personalEmail').touched) {
-              <span class="field__error">Correo inválido.</span>
+              <span class="field__error">{{ t('common.email_invalid_short') }}</span>
             }
           </div>
-          <label class="vis-toggle" title="Mostrar en ficha QR">
+          <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('personalEmail')" />
           </label>
         </div>
 
         <div class="field-vis-row">
           <div class="field">
-            <label class="field__label" for="workEmail">Correo de trabajo</label>
+            <label class="field__label" for="workEmail">{{ t('profile.personal.work_email') }}</label>
             <input id="workEmail" type="email" class="field__input"
                    [class.is-invalid]="fieldOf(personal,'workEmail').invalid && fieldOf(personal,'workEmail').touched"
-                   formControlName="workEmail" placeholder="correo@empresa.com" />
+                   formControlName="workEmail" [placeholder]="t('profile.personal.work_email_placeholder')" />
             @if (fieldOf(personal,'workEmail').hasError('email') && fieldOf(personal,'workEmail').touched) {
-              <span class="field__error">Correo inválido.</span>
+              <span class="field__error">{{ t('common.email_invalid_short') }}</span>
             }
           </div>
-          <label class="vis-toggle" title="Mostrar en ficha QR">
+          <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('workEmail')" />
           </label>
         </div>
 
         <div class="field-vis-row">
           <div class="field">
-            <label class="field__label" for="city">Ciudad *</label>
+            <label class="field__label" for="city">{{ t('profile.personal.city') }}</label>
             <input id="city" type="text" class="field__input"
                    [class.is-invalid]="fieldOf(personal,'city').invalid && fieldOf(personal,'city').touched"
-                   formControlName="city" placeholder="Lima" />
+                   formControlName="city" [placeholder]="t('profile.personal.city_placeholder')" />
             @if (fieldOf(personal,'city').invalid && fieldOf(personal,'city').touched) {
-              <span class="field__error">Campo obligatorio.</span>
+              <span class="field__error">{{ t('common.required_field') }}</span>
             }
           </div>
-          <label class="vis-toggle" title="Mostrar en ficha QR">
+          <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('city')" />
           </label>
         </div>
 
         <div class="field-vis-row">
           <div class="field">
-            <label class="field__label" for="district">Distrito *</label>
+            <label class="field__label" for="district">{{ t('profile.personal.district') }}</label>
             <input id="district" type="text" class="field__input"
                    [class.is-invalid]="fieldOf(personal,'district').invalid && fieldOf(personal,'district').touched"
-                   formControlName="district" placeholder="Miraflores" />
+                   formControlName="district" [placeholder]="t('profile.personal.district_placeholder')" />
             @if (fieldOf(personal,'district').invalid && fieldOf(personal,'district').touched) {
-              <span class="field__error">Campo obligatorio.</span>
+              <span class="field__error">{{ t('common.required_field') }}</span>
             }
           </div>
-          <label class="vis-toggle" title="Mostrar en ficha QR">
+          <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
             <input type="checkbox" class="vis-toggle__input" [formControl]="visPersonalCtrl('district')" />
           </label>
         </div>
@@ -169,33 +170,31 @@
       @if (account()?.qrDataUrl) {
         <aside class="perfil-qr">
           <div class="qr-card">
-            <h3 class="qr-card__title">🔐 QR de emergencia</h3>
+            <h3 class="qr-card__title">🔐 {{ t('profile.qr.title') }}</h3>
 
             <div class="qr-card__img-wrap">
               <img [src]="account()!.qrDataUrl"
-                   alt="Código QR de tu ficha VitaLink"
+                   [alt]="t('profile.qr.alt')"
                    width="180" height="180" />
             </div>
 
-            <p class="qr-card__desc">
-              Escanea o comparte este QR para acceder a tu ficha médica sin iniciar sesión.
-            </p>
+            <p class="qr-card__desc">{{ t('profile.qr.desc') }}</p>
 
             <div class="qr-card__url">
-              <span class="qr-card__url-label">URL pública</span>
+              <span class="qr-card__url-label">{{ t('profile.qr.public_url') }}</span>
               <a class="qr-card__url-link" (click)="openPublicProfile()">
                 {{ publicUrl }}
               </a>
             </div>
 
             <div class="qr-card__code">
-              <span class="qr-card__code-label">Security Account</span>
+              <span class="qr-card__code-label">{{ t('profile.qr.security_account') }}</span>
               <code>{{ account()!.securityAccount }}</code>
             </div>
 
             <button class="btn btn--secondary btn--sm qr-card__download"
                     (click)="downloadQr()">
-              ⬇️ Descargar QR
+              ⬇️ {{ t('profile.qr.download') }}
             </button>
           </div>
         </aside>
@@ -212,29 +211,29 @@
       <section class="card" formGroupName="medical">
         <div class="card__header">
           <div class="card__icon card__icon--secondary">🏥</div>
-          <h2>Datos médicos</h2>
+          <h2>{{ t('profile.medical.title') }}</h2>
         </div>
 
         <div class="form-grid form-grid--single">
           <div class="field">
-            <label class="field__label" for="diseases">Enfermedades</label>
+            <label class="field__label" for="diseases">{{ t('profile.medical.diseases') }}</label>
             <textarea id="diseases" class="field__textarea"
                       formControlName="diseases"
-                      placeholder="Ej. Diabetes tipo 2, hipertensión…"></textarea>
+                      [placeholder]="t('profile.medical.diseases_placeholder')"></textarea>
           </div>
 
           <div class="field">
-            <label class="field__label" for="allergies">Alergias</label>
+            <label class="field__label" for="allergies">{{ t('profile.medical.allergies') }}</label>
             <textarea id="allergies" class="field__textarea"
                       formControlName="allergies"
-                      placeholder="Ej. Penicilina, mariscos…"></textarea>
+                      [placeholder]="t('profile.medical.allergies_placeholder')"></textarea>
           </div>
 
           <div class="field">
-            <label class="field__label" for="others">Otros (medicamentos, notas)</label>
+            <label class="field__label" for="others">{{ t('profile.medical.others') }}</label>
             <textarea id="others" class="field__textarea"
                       formControlName="others"
-                      placeholder="Ej. Toma 10mg de Metformina diaria…"></textarea>
+                      [placeholder]="t('profile.medical.others_placeholder')"></textarea>
           </div>
         </div>
       </section>
@@ -243,18 +242,18 @@
       <section class="card" formArrayName="contacts">
         <div class="card__header">
           <div class="card__icon card__icon--accent">📞</div>
-          <h2>Contactos de emergencia</h2>
+          <h2>{{ t('profile.contacts.title') }}</h2>
           <button type="button" class="btn btn--secondary btn--sm contact-add-btn"
                   (click)="addContact()">
-            + Agregar contacto
+            {{ t('profile.contacts.add') }}
           </button>
         </div>
 
         @if (contacts.length === 0) {
           <p class="contacts-empty">
-            Sin contactos registrados.
+            {{ t('profile.contacts.empty') }}
             <button type="button" class="btn btn--outline btn--sm" (click)="addContact()">
-              Agregar primero
+              {{ t('profile.contacts.add_first') }}
             </button>
           </p>
         }
@@ -263,70 +262,70 @@
           @for (contact of contacts.controls; track contact) {
             <div class="contact-card" [formGroupName]="$index">
               <div class="contact-card__header">
-                <span class="contact-card__num">Contacto #{{ $index + 1 }}</span>
+                <span class="contact-card__num">{{ t('profile.contacts.num') }}{{ $index + 1 }}</span>
                 <button type="button" class="btn btn--danger btn--sm"
                         (click)="requestDeleteContact($index)"
-                        [attr.aria-label]="'Eliminar contacto ' + ($index + 1)">
-                  🗑️ Eliminar
+                        [attr.aria-label]="t('profile.contacts.delete') + ' ' + ($index + 1)">
+                  🗑️ {{ t('profile.contacts.delete') }}
                 </button>
               </div>
 
               <div class="field-vis-row">
                 <div class="field">
-                  <label class="field__label">Nombre completo *</label>
+                  <label class="field__label">{{ t('profile.contacts.full_name') }}</label>
                   <input type="text" class="field__input"
                          [class.is-invalid]="fieldOf(contact,'fullName').invalid && fieldOf(contact,'fullName').touched"
-                         formControlName="fullName" placeholder="Nombre completo" />
+                         formControlName="fullName" [placeholder]="t('profile.contacts.full_name_placeholder')" />
                   @if (fieldOf(contact,'fullName').invalid && fieldOf(contact,'fullName').touched) {
-                    <span class="field__error">Campo obligatorio.</span>
+                    <span class="field__error">{{ t('common.required_field') }}</span>
                   }
                 </div>
-                <label class="vis-toggle" title="Mostrar en ficha QR">
+                <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
                   <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'fullName')" />
                       </label>
               </div>
 
               <div class="field-vis-row">
                 <div class="field">
-                  <label class="field__label">Teléfono *</label>
+                  <label class="field__label">{{ t('profile.contacts.phone') }}</label>
                   <input type="tel" class="field__input"
                          [class.is-invalid]="fieldOf(contact,'phone').invalid && fieldOf(contact,'phone').touched"
-                         formControlName="phone" placeholder="+51 999 000 000" />
+                         formControlName="phone" [placeholder]="t('profile.personal.phone_placeholder')" />
                   @if (fieldOf(contact,'phone').invalid && fieldOf(contact,'phone').touched) {
-                    <span class="field__error">Campo obligatorio.</span>
+                    <span class="field__error">{{ t('common.required_field') }}</span>
                   }
                 </div>
-                <label class="vis-toggle" title="Mostrar en ficha QR">
+                <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
                   <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'phone')" />
                       </label>
               </div>
 
               <div class="field-vis-row">
                 <div class="field">
-                  <label class="field__label">Correo personal</label>
+                  <label class="field__label">{{ t('profile.contacts.personal_email') }}</label>
                   <input type="email" class="field__input"
                          [class.is-invalid]="fieldOf(contact,'personalEmail').invalid && fieldOf(contact,'personalEmail').touched"
-                         formControlName="personalEmail" placeholder="correo@personal.com" />
+                         formControlName="personalEmail" [placeholder]="t('profile.personal.personal_email_placeholder')" />
                   @if (fieldOf(contact,'personalEmail').hasError('email') && fieldOf(contact,'personalEmail').touched) {
-                    <span class="field__error">Correo inválido.</span>
+                    <span class="field__error">{{ t('common.email_invalid_short') }}</span>
                   }
                 </div>
-                <label class="vis-toggle" title="Mostrar en ficha QR">
+                <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
                   <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'personalEmail')" />
                       </label>
               </div>
 
               <div class="field-vis-row">
                 <div class="field">
-                  <label class="field__label">Correo de trabajo</label>
+                  <label class="field__label">{{ t('profile.contacts.work_email') }}</label>
                   <input type="email" class="field__input"
                          [class.is-invalid]="fieldOf(contact,'workEmail').invalid && fieldOf(contact,'workEmail').touched"
-                         formControlName="workEmail" placeholder="correo@empresa.com" />
+                         formControlName="workEmail" [placeholder]="t('profile.personal.work_email_placeholder')" />
                   @if (fieldOf(contact,'workEmail').hasError('email') && fieldOf(contact,'workEmail').touched) {
-                    <span class="field__error">Correo inválido.</span>
+                    <span class="field__error">{{ t('common.email_invalid_short') }}</span>
                   }
                 </div>
-                <label class="vis-toggle" title="Mostrar en ficha QR">
+                <label class="vis-toggle" [title]="t('profile.personal.show_qr_title')">
                   <input type="checkbox" class="vis-toggle__input" [formControl]="visContactCtrl($index, 'workEmail')" />
                       </label>
               </div>
@@ -346,9 +345,9 @@
             (click)="onSubmit()"
             [disabled]="saving()">
       @if (saving()) {
-        <span class="btn-spin" aria-hidden="true"></span> Guardando…
+        <span class="btn-spin" aria-hidden="true"></span> {{ t('common.saving') }}
       } @else {
-        💾 Guardar cambios
+        💾 {{ t('common.save') }}
       }
     </button>
   </div>
@@ -358,35 +357,38 @@
 <!-- ── Modal: confirmar eliminación de contacto ───────────────── -->
 @if (confirmDeleteIndex() !== null) {
   <div class="delete-modal" role="dialog" aria-modal="true" aria-labelledby="del-modal-title">
+    <ng-container *transloco="let t">
     <div class="delete-modal__backdrop" (click)="cancelDeleteContact()"></div>
     <div class="delete-modal__box">
       <div class="delete-modal__icon">🗑️</div>
-      <h2 class="delete-modal__title" id="del-modal-title">¿Eliminar contacto?</h2>
+      <h2 class="delete-modal__title" id="del-modal-title">{{ t('profile.delete_modal.title') }}</h2>
       <p class="delete-modal__msg">
-        Se eliminará <strong>Contacto #{{ confirmDeleteIndex()! + 1 }}</strong> de tu perfil de emergencia.
+        Se eliminará <strong>{{ t('profile.contacts.num') }}{{ confirmDeleteIndex()! + 1 }}</strong> de tu perfil de emergencia.
         Esta acción no se puede deshacer.
       </p>
       <div class="delete-modal__actions">
-        <button class="btn btn--ghost" (click)="cancelDeleteContact()">Cancelar</button>
-        <button class="btn btn--danger" (click)="confirmDeleteContact()">Sí, eliminar</button>
+        <button class="btn btn--ghost" (click)="cancelDeleteContact()">{{ t('profile.delete_modal.cancel') }}</button>
+        <button class="btn btn--danger" (click)="confirmDeleteContact()">{{ t('profile.delete_modal.confirm') }}</button>
       </div>
     </div>
+    </ng-container>
   </div>
 }
 
 <!-- ── Modal de éxito al guardar ─────────────────────────────── -->
 @if (saved()) {
   <div class="success-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <ng-container *transloco="let t">
     <div class="success-modal__backdrop" (click)="closeModal()"></div>
     <div class="success-modal__box">
       <div class="success-modal__icon">✅</div>
-      <h2 class="success-modal__title" id="modal-title">¡Perfil guardado!</h2>
-      <p class="success-modal__msg">
-        Tus datos de emergencia han sido actualizados correctamente.
-      </p>
+      <h2 class="success-modal__title" id="modal-title">{{ t('profile.save_modal.title') }}</h2>
+      <p class="success-modal__msg">{{ t('profile.save_modal.msg') }}</p>
       <button class="btn btn--primary success-modal__btn" (click)="closeModal()">
-        Aceptar
+        {{ t('profile.save_modal.accept') }}
       </button>
     </div>
+    </ng-container>
   </div>
 }
+</ng-container>

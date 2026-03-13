@@ -1,3 +1,4 @@
+<ng-container *transloco="let t">
 <div class="emergency-shell">
 
   <!-- ── Header de emergencia ──────────────────────────────────── -->
@@ -6,7 +7,7 @@
       Vita<span>Link</span>
     </div>
     <div class="emergency-header__badge">
-      🪪 Ficha Personal
+      🪪 {{ t('public.header_badge') }}
     </div>
   </header>
 
@@ -26,8 +27,8 @@
     <main class="emergency-main">
       <div class="emergency-card not-found-card">
         <div class="not-found-card__icon">❌</div>
-        <h2>Registro no encontrado</h2>
-        <p>El código QR no corresponde a ninguna cuenta VitaLink activa.</p>
+        <h2>{{ t('public.not_found') }}</h2>
+        <p>{{ t('public.not_found_desc') }}</p>
       </div>
     </main>
   }
@@ -37,9 +38,9 @@
     <main class="emergency-main">
       <div class="emergency-card rate-limit-card">
         <div class="rate-limit-card__icon">🚫</div>
-        <h2>Acceso bloqueado temporalmente</h2>
-        <p>Se han realizado demasiadas consultas a esta ficha desde tu dispositivo.</p>
-        <p class="rate-limit-card__sub">Intenta nuevamente más tarde.</p>
+        <h2>{{ t('public.rate_limited') }}</h2>
+        <p>{{ t('public.rate_limited_desc') }}</p>
+        <p class="rate-limit-card__sub">{{ t('public.rate_limited_hint') }}</p>
       </div>
     </main>
   }
@@ -60,12 +61,12 @@
             </div>
             <div>
               @if (pVis('fullName')) {
-                <h1 class="e-card__name">{{ profile()!.personal.fullName || 'Sin nombre' }}</h1>
+                <h1 class="e-card__name">{{ profile()!.personal.fullName || t('public.no_name') }}</h1>
               }
               <p class="e-card__sub">
                 @if (pVis('sex')) { {{ sexLabel(profile()!.personal.sex) }} }
                 @if (pVis('birthDate') && profile()!.personal.birthDate) {
-                  · Nac. {{ profile()!.personal.birthDate }}
+                  · {{ t('public.birth_prefix') }} {{ profile()!.personal.birthDate }}
                 }
               </p>
             </div>
@@ -75,7 +76,7 @@
             @if (pVis('phone') && profile()!.personal.phone) {
               <a [href]="'tel:' + profile()!.personal.phone"
                  class="e-call-btn"
-                 [attr.aria-label]="'Llamar a ' + profile()!.personal.phone">
+                 [attr.aria-label]="t('public.call_label') + ' ' + profile()!.personal.phone">
                 <span class="e-call-btn__icon">📱</span>
                 <span>{{ profile()!.personal.phone }}</span>
               </a>
@@ -110,28 +111,28 @@
              DATOS MÉDICOS
         ══════════════════════════════════════════════════════ -->
         <section class="e-card e-card--medical">
-          <h2 class="e-card__title">🏥 Datos médicos</h2>
+          <h2 class="e-card__title">🏥 {{ t('public.medical_title') }}</h2>
 
           <div class="e-medical-grid">
             <div class="e-medical-item e-medical-item--alert"
                  [class.e-medical-item--empty]="!profile()!.medical.diseases">
-              <h3 class="e-medical-item__label">Enfermedades</h3>
+              <h3 class="e-medical-item__label">{{ t('public.diseases') }}</h3>
               <p class="e-medical-item__text">
-                {{ profile()!.medical.diseases || 'Ninguna registrada' }}
+                {{ profile()!.medical.diseases || t('public.no_disease') }}
               </p>
             </div>
 
             <div class="e-medical-item e-medical-item--warning"
                  [class.e-medical-item--empty]="!profile()!.medical.allergies">
-              <h3 class="e-medical-item__label">Alergias</h3>
+              <h3 class="e-medical-item__label">{{ t('public.allergies') }}</h3>
               <p class="e-medical-item__text">
-                {{ profile()!.medical.allergies || 'Ninguna registrada' }}
+                {{ profile()!.medical.allergies || t('public.no_disease') }}
               </p>
             </div>
 
             @if (profile()!.medical.others) {
               <div class="e-medical-item e-medical-item--info e-medical-item--full">
-                <h3 class="e-medical-item__label">Otros / Medicamentos</h3>
+                <h3 class="e-medical-item__label">{{ t('public.others') }}</h3>
                 <p class="e-medical-item__text">{{ profile()!.medical.others }}</p>
               </div>
             }
@@ -143,7 +144,7 @@
         ══════════════════════════════════════════════════════ -->
         @if (profile()!.contacts.length > 0) {
           <section class="e-card">
-            <h2 class="e-card__title">📞 Contactos de emergencia</h2>
+            <h2 class="e-card__title">📞 {{ t('public.contacts_title') }}</h2>
             <div class="e-contacts">
               @for (c of profile()!.contacts; track c.phone + c.fullName) {
                 <div class="e-contact">
@@ -158,7 +159,7 @@
                       @if (cVis($index, 'phone') && c.phone) {
                         <a [href]="'tel:' + c.phone"
                            class="e-call-btn e-call-btn--sm"
-                           [attr.aria-label]="'Llamar a ' + c.fullName">
+                           [attr.aria-label]="t('public.call_label') + ' ' + c.fullName">
                           <span class="e-call-btn__icon">📱</span>
                           <span>{{ c.phone }}</span>
                         </a>
@@ -185,14 +186,14 @@
         <!-- Sin perfil registrado -->
         <section class="e-card no-profile-card">
           <div class="e-avatar e-avatar--lg">?</div>
-          <p>El titular de esta cuenta aún no ha completado su perfil de emergencia.</p>
-          <p class="no-profile-card__email">Cuenta: {{ account()!.email }}</p>
+          <p>{{ t('public.no_profile') }}</p>
+          <p class="no-profile-card__email">{{ t('public.account_label') }} {{ account()!.email }}</p>
         </section>
       }
 
       <!-- Código de verificación -->
       <div class="emergency-footer">
-        <p class="emergency-footer__label">Código de verificación VitaLink</p>
+        <p class="emergency-footer__label">{{ t('public.verification_label') }}</p>
         <code class="emergency-footer__code">{{ account()!.securityAccount }}</code>
       </div>
 
@@ -201,7 +202,8 @@
 
   <!-- ── Footer VitaLink ───────────────────────────────────────── -->
   <footer class="emergency-brand-footer">
-    <p>Powered by <strong>VitaLink</strong> — Identidad Inteligente para Emergencias</p>
+    <p>{{ t('public.footer') }}</p>
   </footer>
 
 </div>
+</ng-container>

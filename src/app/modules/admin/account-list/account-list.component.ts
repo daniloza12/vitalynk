@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe, LowerCasePipe } from '@angular/common';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subject }    from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -50,7 +51,7 @@ export interface GridLine {
 @Component({
   selector: 'app-account-list',
   standalone: true,
-  imports: [RouterLink, DatePipe, LowerCasePipe],
+  imports: [RouterLink, DatePipe, LowerCasePipe, TranslocoModule],
   templateUrl: './account-list.component.html',
   styleUrl: './account-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,6 +59,7 @@ export interface GridLine {
 export class AccountListComponent implements OnInit {
   private accountService = inject(AccountService);
   private destroyRef     = inject(DestroyRef);
+  private transloco      = inject(TranslocoService);
 
   accounts   = signal<Account[]>([]);
   loading    = signal(false);
@@ -261,7 +263,7 @@ export class AccountListComponent implements OnInit {
           this.modalAccount.set(null);
         },
         error: () => {
-          this.modalError.set('No se pudo actualizar el estado. Intente nuevamente.');
+          this.modalError.set(this.transloco.translate('admin.accounts.error_update'));
           this.modalLoading.set(false);
         },
       });

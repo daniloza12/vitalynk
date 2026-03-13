@@ -66,6 +66,14 @@
     span { color: var(--color-secondary); }
   }
 
+  /* ── Selector de idioma (esquina superior derecha) ───── */
+  &__lang {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 10;
+  }
+
   /* ── Footer ──────────────────────────────────────────── */
   &__footer {
     position: relative;

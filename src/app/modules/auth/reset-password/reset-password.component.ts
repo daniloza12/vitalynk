@@ -18,6 +18,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../../../core/services/auth.service';
 
 const passwordMatchValidator: ValidatorFn = (
@@ -31,16 +32,17 @@ const passwordMatchValidator: ValidatorFn = (
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslocoModule],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent implements OnInit {
-  private fb    = inject(FormBuilder);
-  private auth  = inject(AuthService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  private fb        = inject(FormBuilder);
+  private auth      = inject(AuthService);
+  private route     = inject(ActivatedRoute);
+  private router    = inject(Router);
+  private transloco = inject(TranslocoService);
 
   private token = '';
 
@@ -69,7 +71,7 @@ export class ResetPasswordComponent implements OnInit {
     this.token = this.route.snapshot.queryParamMap.get('token') ?? '';
     if (!this.token) {
       this.tokenValid.set(false);
-      this.errorMsg.set('El enlace de recuperación no es válido o ya expiró.');
+      this.errorMsg.set(this.transloco.translate('auth.reset_password.error_invalid'));
     }
   }
 
@@ -89,7 +91,7 @@ export class ResetPasswordComponent implements OnInit {
         setTimeout(() => this.router.navigate(['/auth/login']), 2500);
       },
       error: (err) => {
-        this.errorMsg.set(err?.error?.message ?? 'El enlace expiró o no es válido. Solicita uno nuevo.');
+        this.errorMsg.set(err?.error?.message ?? this.transloco.translate('auth.reset_password.error_expired'));
         this.loading.set(false);
       },
     });

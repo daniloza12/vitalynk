@@ -24,12 +24,19 @@ export interface Account {
 }
 
 export interface RegisterDTO {
-  email: string;
-  password: string;
+  email:           string;
+  password:        string;
   confirmPassword: string;
+  cfToken?:        string;
 }
 
 export interface LoginDTO {
-  email: string;
+  email:    string;
   password: string;
+  cfToken?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  account: Account;
 }

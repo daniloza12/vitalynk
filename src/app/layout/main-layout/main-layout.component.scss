@@ -98,14 +98,28 @@
   }
 
 
-  /* ── Usuario ────────────────────────────────────────────── */
+  /* ── Menú de usuario ────────────────────────────────────── */
+  &__user-wrap {
+    position: relative;
+    border-top: 1px solid var(--color-border-dark);
+    z-index: var(--z-header);
+  }
+
+  /* Trigger */
   &__user {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-4) var(--space-6);
-    border-top: 1px solid var(--color-border-dark);
-    margin-top: var(--space-4);
+    padding: var(--space-4) var(--space-4) var(--space-4) var(--space-6);
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+
+    &:hover { background: var(--color-surface-dark); }
+
+    &.is-open { background: var(--color-surface-dark); }
   }
 
   &__avatar {
@@ -124,9 +138,11 @@
 
   &__user-info {
     min-width: 0;
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
+    text-align: left;
   }
 
   &__user-email {
@@ -135,24 +151,58 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 140px;
+    max-width: 130px;
+  }
+
+  &__user-chevron {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+
+    .is-open & { transform: rotate(180deg); }
+  }
+
+  /* Dropdown (se abre hacia arriba) */
+  &__user-menu {
+    position: absolute;
+    bottom: 100%;
+    left: var(--space-3);
+    right: var(--space-3);
+    background: var(--color-surface-dark);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.15s ease;
+    z-index: 1;
   }
 
   /* ── Logout ─────────────────────────────────────────────── */
   &__logout {
-    margin: var(--space-2) var(--space-3) 0;
     color: rgba(255, 255, 255, 0.5) !important;
     font-size: var(--text-sm);
     justify-content: flex-start;
     gap: var(--space-2);
-    padding: var(--space-3) var(--space-4);
-    width: calc(100% - var(--space-6));
+    padding: var(--space-2) var(--space-3);
+    width: 100%;
+    border-radius: var(--radius-lg);
 
     &:hover {
       background: rgba(var(--color-accent-rgb), 0.12) !important;
       color: var(--color-accent) !important;
     }
   }
+}
+
+/* Backdrop transparente para cerrar el menú */
+.sidebar__user-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-header) - 1);
 }
 
 /* ── Contenido ─────────────────────────────────────────────── */
@@ -213,6 +263,23 @@
   &__logout {
     color: var(--color-gray-500) !important;
     font-size: 1.1rem;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+
+    // Adaptar trigger del lang-switcher al tema claro del header
+    ::ng-deep .ls__trigger {
+      border-color: rgba(0, 0, 0, 0.15);
+      color: var(--color-gray-700);
+
+      &:hover {
+        border-color: rgba(0, 0, 0, 0.3);
+        background: rgba(0, 0, 0, 0.04);
+      }
+    }
   }
 }
 
@@ -457,6 +524,9 @@
     padding-bottom: env(safe-area-inset-bottom, 0px);
 
     &.is-open { transform: translateX(0); }
+
+    // En mobile el header ya muestra el lang-switcher; evitar duplicación en el menú de usuario
+    &__user-menu app-lang-switcher { display: none; }
   }
 
   .app-header {

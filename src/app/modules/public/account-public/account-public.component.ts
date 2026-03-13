@@ -12,6 +12,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { switchMap, of, catchError, EMPTY } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -25,7 +26,7 @@ const SA_REGEX = /^[0-9a-f]{32}$/;
 @Component({
   selector: 'app-account-public',
   standalone: true,
-  imports: [],
+  imports: [TranslocoModule],
   templateUrl: './account-public.component.html',
   styleUrl: './account-public.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +35,7 @@ export class AccountPublicComponent implements OnInit {
   private route          = inject(ActivatedRoute);
   private accountService = inject(AccountService);
   private destroyRef     = inject(DestroyRef);
+  private transloco      = inject(TranslocoService);
 
   account    = signal<Account | undefined>(undefined);
   profile    = signal<Profile | null>(null);
@@ -72,8 +74,13 @@ export class AccountPublicComponent implements OnInit {
   }
 
   sexLabel(sex: string | undefined): string {
-    const map: Record<string, string> = { M: 'Masculino', F: 'Femenino', OTHER: 'Otro' };
-    return sex ? (map[sex] ?? sex) : '—';
+    if (!sex) return '—';
+    const map: Record<string, string> = {
+      M:     this.transloco.translate('public.sex_m'),
+      F:     this.transloco.translate('public.sex_f'),
+      OTHER: this.transloco.translate('public.sex_other'),
+    };
+    return map[sex] ?? sex;
   }
 
   /** Indica si un campo de datos personales es visible en la ficha QR. */

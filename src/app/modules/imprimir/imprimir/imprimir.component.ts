@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { NgStyle } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../../core/services/auth.service';
 
 interface PurposeOption {
@@ -21,7 +22,7 @@ interface ColorTheme {
 @Component({
   selector: 'app-imprimir',
   standalone: true,
-  imports: [NgStyle],
+  imports: [NgStyle, TranslocoModule],
   templateUrl: './imprimir.component.html',
   styleUrl:    './imprimir.component.scss',
 })
@@ -32,19 +33,19 @@ export class ImprimirComponent {
 
   /* ── Opciones de propósito ──────────────────────────────────── */
   purposeOptions: PurposeOption[] = [
-    { value: 'medica',   icon: '🆔', label: 'ID Médica',            hint: 'Información médica de emergencia' },
-    { value: 'objetos',  icon: '🔑', label: 'Objetos perdidos',      hint: 'Si encontraste este objeto, contacta al dueño' },
-    { value: 'mascotas', icon: '🐾', label: 'Mascota',               hint: 'Si encontraste esta mascota, contacta a su dueño' },
-    { value: 'equipaje', icon: '🧳', label: 'Equipaje y viajes',      hint: 'Equipaje — contacta al propietario' },
-    { value: 'activos',  icon: '🏢', label: 'Activo corporativo',     hint: 'Activo de empresa — contactar al responsable' },
+    { value: 'medica',   icon: '🆔', label: 'imprimir.purpose_medica',   hint: '' },
+    { value: 'objetos',  icon: '🔑', label: 'imprimir.purpose_objetos',  hint: '' },
+    { value: 'mascotas', icon: '🐾', label: 'imprimir.purpose_mascotas', hint: '' },
+    { value: 'equipaje', icon: '🧳', label: 'imprimir.purpose_equipaje', hint: '' },
+    { value: 'activos',  icon: '🏢', label: 'imprimir.purpose_activos',  hint: '' },
   ];
 
   /* ── Temas de color ─────────────────────────────────────────── */
   colorThemes: ColorTheme[] = [
-    { value: 'clasico', label: 'Clásico',  bg: '#ffffff', text: '#0f172a', accent: '#0052CC', invertQr: false },
-    { value: 'azul',    label: 'Azul',     bg: '#0052CC', text: '#ffffff', accent: '#ffffff', invertQr: true  },
-    { value: 'verde',   label: 'Verde',    bg: '#00B37E', text: '#ffffff', accent: '#ffffff', invertQr: true  },
-    { value: 'oscuro',  label: 'Oscuro',   bg: '#0d1117', text: '#ffffff', accent: '#00B37E', invertQr: true  },
+    { value: 'clasico', label: 'imprimir.theme_clasico', bg: '#ffffff', text: '#0f172a', accent: '#0052CC', invertQr: false },
+    { value: 'azul',    label: 'imprimir.theme_azul',    bg: '#0052CC', text: '#ffffff', accent: '#ffffff', invertQr: true  },
+    { value: 'verde',   label: 'imprimir.theme_verde',   bg: '#00B37E', text: '#ffffff', accent: '#ffffff', invertQr: true  },
+    { value: 'oscuro',  label: 'imprimir.theme_oscuro',  bg: '#0d1117', text: '#ffffff', accent: '#00B37E', invertQr: true  },
   ];
 
   /* ── Estado reactivo ────────────────────────────────────────── */

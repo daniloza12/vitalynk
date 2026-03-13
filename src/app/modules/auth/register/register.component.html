@@ -1,3 +1,4 @@
+<ng-container *transloco="let t">
 <div class="register-wrapper">
 
   @if (registeredEmail()) {
@@ -5,26 +6,33 @@
     <div class="auth-card confirm-card">
       <div class="confirm-icon" aria-hidden="true">✉</div>
       <div class="auth-card__header">
-        <h1 class="auth-card__title">Revisa tu correo</h1>
+        <h1 class="auth-card__title">{{ t('auth.register.confirm_title') }}</h1>
         <p class="auth-card__subtitle">
-          Te enviamos un email a <strong class="confirm-email">{{ registeredEmail() }}</strong>
+          {{ t('auth.register.confirm_subtitle') }} <strong class="confirm-email">{{ registeredEmail() }}</strong>
         </p>
       </div>
 
       <p class="confirm-hint">
-        Haz clic en el enlace del correo para activar tu cuenta.<br>
-        El enlace expira en 24 horas.
+        {{ t('auth.register.confirm_hint') }}<br>
+        {{ t('auth.register.confirm_expiry') }}
       </p>
 
       <div class="resend-wrap">
+        <app-turnstile
+          #resendTurnstile
+          theme="dark"
+          (resolved)="onResendTurnstileResolved($event)"
+          (errored)="onResendTurnstileError()">
+        </app-turnstile>
+
         <button
           class="btn btn--outline btn--full"
-          [disabled]="resendLoading()"
+          [disabled]="resendLoading() || !cfTokenResend()"
           (click)="resend()">
           @if (resendLoading()) {
-            <span class="btn__spinner" aria-hidden="true"></span> Enviando…
+            <span class="btn__spinner" aria-hidden="true"></span> {{ t('common.sending') }}
           } @else {
-            Reenviar email de activación
+            {{ t('auth.register.resend_btn') }}
           }
         </button>
         @if (resendSuccess()) {
@@ -36,7 +44,7 @@
       </div>
 
       <p class="auth-card__footer">
-        <a routerLink="/auth/login" class="auth-card__link">Volver al inicio de sesión</a>
+        <a routerLink="/auth/login" class="auth-card__link">{{ t('auth.register.back_login') }}</a>
       </p>
     </div>
 
@@ -44,8 +52,8 @@
     <!-- Formulario de registro -->
     <div class="auth-card">
       <div class="auth-card__header">
-        <h1 class="auth-card__title">Crear cuenta</h1>
-        <p class="auth-card__subtitle">Únete a VitaLink y protege tu identidad</p>
+        <h1 class="auth-card__title">{{ t('auth.register.title') }}</h1>
+        <p class="auth-card__subtitle">{{ t('auth.register.subtitle') }}</p>
       </div>
 
       <!-- Error global -->
@@ -59,26 +67,26 @@
 
         <!-- Correo -->
         <div class="field">
-          <label class="field__label" for="reg-email">Correo electrónico</label>
+          <label class="field__label" for="reg-email">{{ t('common.email_label') }}</label>
           <input
             id="reg-email"
             type="email"
             class="field__input"
             [class.is-invalid]="email.invalid && email.touched"
             formControlName="email"
-            placeholder="tu@correo.com"
+            [placeholder]="t('common.email_placeholder')"
             autocomplete="email"
           />
           @if (email.hasError('required') && email.touched) {
-            <span class="field__error">El correo es obligatorio.</span>
+            <span class="field__error">{{ t('common.email_required') }}</span>
           } @else if (email.hasError('email') && email.touched) {
-            <span class="field__error">Ingresa un correo válido.</span>
+            <span class="field__error">{{ t('common.email_invalid') }}</span>
           }
         </div>
 
         <!-- Contraseña -->
         <div class="field">
-          <label class="field__label" for="reg-pass">Contraseña</label>
+          <label class="field__label" for="reg-pass">{{ t('common.password_label') }}</label>
           <div class="field__pass-wrap">
             <input
               id="reg-pass"
@@ -86,25 +94,25 @@
               class="field__input"
               [class.is-invalid]="password.invalid && password.touched"
               formControlName="password"
-              placeholder="Mínimo 8 caracteres"
+              [placeholder]="t('common.password_min8')"
               autocomplete="new-password"
             />
             <button type="button" class="field__pass-toggle"
                     (click)="togglePassword()"
-                    [attr.aria-label]="showPass() ? 'Ocultar' : 'Mostrar'">
+                    [attr.aria-label]="showPass() ? t('common.hide') : t('common.show')">
               {{ showPass() ? '🙈' : '👁️' }}
             </button>
           </div>
           @if (password.hasError('required') && password.touched) {
-            <span class="field__error">La contraseña es obligatoria.</span>
+            <span class="field__error">{{ t('common.password_required') }}</span>
           } @else if (password.hasError('minlength') && password.touched) {
-            <span class="field__error">Mínimo 8 caracteres.</span>
+            <span class="field__error">{{ t('common.password_min8') }}</span>
           }
         </div>
 
         <!-- Confirmar contraseña -->
         <div class="field">
-          <label class="field__label" for="reg-confirm">Confirmar contraseña</label>
+          <label class="field__label" for="reg-confirm">{{ t('auth.reset_password.confirm_label') }}</label>
           <div class="field__pass-wrap">
             <input
               id="reg-confirm"
@@ -112,40 +120,51 @@
               class="field__input"
               [class.is-invalid]="(confirmPassword.invalid && confirmPassword.touched) || (form.hasError('passwordMismatch') && confirmPassword.touched)"
               formControlName="confirmPassword"
-              placeholder="Repite tu contraseña"
+              [placeholder]="t('common.password_min8')"
               autocomplete="new-password"
             />
             <button type="button" class="field__pass-toggle"
                     (click)="toggleConfirm()"
-                    [attr.aria-label]="showConfirm() ? 'Ocultar' : 'Mostrar'">
+                    [attr.aria-label]="showConfirm() ? t('common.hide') : t('common.show')">
               {{ showConfirm() ? '🙈' : '👁️' }}
             </button>
           </div>
           @if (confirmPassword.hasError('required') && confirmPassword.touched) {
-            <span class="field__error">Confirma tu contraseña.</span>
+            <span class="field__error">{{ t('common.confirm_required') }}</span>
           } @else if (form.hasError('passwordMismatch') && confirmPassword.touched) {
-            <span class="field__error">Las contraseñas no coinciden.</span>
+            <span class="field__error">{{ t('common.passwords_mismatch') }}</span>
           }
+        </div>
+
+        <!-- Desafío anti-bot Cloudflare Turnstile -->
+        <div class="turnstile-wrap">
+          <app-turnstile
+            #registerTurnstile
+            theme="dark"
+            (resolved)="onTurnstileResolved($event)"
+            (errored)="onTurnstileError()">
+          </app-turnstile>
         </div>
 
         <!-- Submit -->
         <button
           type="submit"
           class="btn btn--primary btn--full"
-          [disabled]="loading()">
+          [disabled]="loading() || !cfToken()">
           @if (loading()) {
-            <span class="btn__spinner" aria-hidden="true"></span> Creando cuenta…
+            <span class="btn__spinner" aria-hidden="true"></span> {{ t('auth.register.creating') }}
           } @else {
-            Crear cuenta
+            {{ t('auth.register.submit') }}
           }
         </button>
       </form>
 
       <p class="auth-card__footer">
-        ¿Ya tienes cuenta?
-        <a routerLink="/auth/login" class="auth-card__link">Iniciar sesión</a>
+        {{ t('auth.register.has_account') }}
+        <a routerLink="/auth/login" class="auth-card__link">{{ t('auth.register.login') }}</a>
       </p>
     </div>
   }
 
 </div>
+</ng-container>

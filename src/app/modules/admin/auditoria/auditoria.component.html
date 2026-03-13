@@ -1,3 +1,4 @@
+<ng-container *transloco="let t">
 <div class="pbi-dashboard">
 
   <!-- ══ TOOLBAR ═════════════════════════════════════════════ -->
@@ -12,8 +13,8 @@
         </svg>
       </div>
       <div class="pbi-toolbar__text">
-        <span class="pbi-toolbar__title">Auditoría de Accesos</span>
-        <span class="pbi-toolbar__sub">VitaLink &middot; Monitoreo de seguridad</span>
+        <span class="pbi-toolbar__title">{{ t('admin.audit.title') }}</span>
+        <span class="pbi-toolbar__sub">{{ t('admin.audit.subtitle') }}</span>
       </div>
     </div>
     <div class="pbi-toolbar__actions">
@@ -21,13 +22,13 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12">
           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
         </svg>
-        Act. {{ lastUpdate() | date:'HH:mm' }}
+        {{ t('admin.audit.update') }} {{ lastUpdate() | date:'HH:mm' }}
       </span>
       <a routerLink="/admin" class="pbi-toolbar__btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
-        Dashboard
+        {{ t('admin.audit.dashboard') }}
       </a>
     </div>
   </header>
@@ -42,17 +43,17 @@
           <line x1="8"  y1="2" x2="8"  y2="6"/>
           <line x1="3"  y1="10" x2="21" y2="10"/>
         </svg>
-        Período de análisis
+        {{ t('admin.audit.period') }}
       </div>
       <div class="filter-bar__dates">
         <div class="filter-bar__field">
-          <label class="filter-bar__lbl" for="dateFrom">Desde</label>
+          <label class="filter-bar__lbl" for="dateFrom">{{ t('common.from') }}</label>
           <input id="dateFrom" type="date" class="field__input filter-date-input"
                  [value]="dateFrom()" (change)="onDateFromChange($event)" />
         </div>
         <span class="filter-bar__sep">→</span>
         <div class="filter-bar__field">
-          <label class="filter-bar__lbl" for="dateTo">Hasta</label>
+          <label class="filter-bar__lbl" for="dateTo">{{ t('common.to') }}</label>
           <input id="dateTo" type="date" class="field__input filter-date-input"
                  [value]="dateTo()" (change)="onDateToChange($event)" />
         </div>
@@ -63,23 +64,23 @@
             <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
               <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
             </svg>
-            Cargando…
+            {{ t('common.loading') }}
           } @else {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
               <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-7"/>
             </svg>
-            Aplicar
+            {{ t('common.apply') }}
           }
         </button>
         <button class="btn btn--outline btn--sm"
                 [disabled]="loading()"
                 (click)="resetToToday()"
-                title="Restablecer al período actual y recargar">
+                [title]="t('common.today')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
             <polyline points="3 3 3 8 8 8"/>
           </svg>
-          Hoy
+          {{ t('common.today') }}
         </button>
       </div>
     </div>
@@ -106,8 +107,8 @@
         </div>
         <div class="kpi-card__content">
           <div class="kpi-card__value">{{ totalPeriodo() }}</div>
-          <div class="kpi-card__label">Total de eventos</div>
-          <div class="kpi-card__trend">En el período seleccionado</div>
+          <div class="kpi-card__label">{{ t('admin.audit.kpi_total') }}</div>
+          <div class="kpi-card__trend">{{ t('admin.audit.kpi_period') }}</div>
         </div>
       </div>
 
@@ -121,8 +122,8 @@
         </div>
         <div class="kpi-card__content">
           <div class="kpi-card__value">{{ exitosos() }}</div>
-          <div class="kpi-card__label">Logins exitosos</div>
-          <div class="kpi-card__trend kpi-trend--up">{{ successRate() }}% tasa de éxito</div>
+          <div class="kpi-card__label">{{ t('admin.audit.kpi_successful') }}</div>
+          <div class="kpi-card__trend kpi-trend--up">{{ successRate() }}% {{ t('admin.audit.success_rate') }}</div>
         </div>
       </div>
 
@@ -137,8 +138,8 @@
         </div>
         <div class="kpi-card__content">
           <div class="kpi-card__value">{{ fallos() }}</div>
-          <div class="kpi-card__label">Fallos de login</div>
-          <div class="kpi-card__trend kpi-trend--warn">{{ failureRate() }}% tasa de fallos</div>
+          <div class="kpi-card__label">{{ t('admin.audit.kpi_failures') }}</div>
+          <div class="kpi-card__trend kpi-trend--warn">{{ failureRate() }}% {{ t('admin.audit.failure_rate') }}</div>
         </div>
       </div>
 
@@ -154,8 +155,8 @@
         </div>
         <div class="kpi-card__content">
           <div class="kpi-card__value">{{ usuariosUnicos() }}</div>
-          <div class="kpi-card__label">Usuarios únicos</div>
-          <div class="kpi-card__trend">Con actividad en el período</div>
+          <div class="kpi-card__label">{{ t('admin.audit.kpi_unique') }}</div>
+          <div class="kpi-card__trend">{{ t('admin.audit.kpi_unique_period') }}</div>
         </div>
       </div>
 
@@ -169,16 +170,16 @@
         <div class="pbi-panel">
           <div class="pbi-panel__header">
             <div>
-              <div class="pbi-panel__title">Actividad diaria</div>
-              <div class="pbi-panel__sub">Logins exitosos vs fallos por día</div>
+              <div class="pbi-panel__title">{{ t('admin.audit.chart_daily') }}</div>
+              <div class="pbi-panel__sub">{{ t('admin.audit.chart_daily_sub') }}</div>
             </div>
             <div class="chart-legend">
-              <span class="lgnd-dot lgnd-dot--success"></span><span>Exitosos</span>
-              <span class="lgnd-dot lgnd-dot--failed"></span><span>Fallos</span>
+              <span class="lgnd-dot lgnd-dot--success"></span><span>{{ t('admin.audit.legend_successful') }}</span>
+              <span class="lgnd-dot lgnd-dot--failed"></span><span>{{ t('admin.audit.legend_failed') }}</span>
             </div>
           </div>
           <div class="pbi-panel__body">
-            <svg viewBox="0 0 560 185" class="bar-chart" aria-label="Actividad diaria">
+            <svg viewBox="0 0 560 185" class="bar-chart" [attr.aria-label]="t('admin.audit.chart_daily')">
               <defs>
                 <linearGradient id="grad-success" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%"   stop-color="#00B37E" stop-opacity="0.95"/>
@@ -206,7 +207,7 @@
                 <!-- Success bar -->
                 @if (grp.success.h > 0) {
                   <g>
-                    <title>{{ grp.label }} — Exitosos: {{ grp.success.count }}</title>
+                    <title>{{ grp.label }} — {{ t('admin.audit.legend_successful') }}: {{ grp.success.count }}</title>
                     <rect [attr.x]="grp.success.x" [attr.y]="grp.success.y"
                           [attr.width]="grp.success.w" [attr.height]="grp.success.h"
                           rx="2" fill="url(#grad-success)" style="cursor:pointer"/>
@@ -219,7 +220,7 @@
                 <!-- Failed bar -->
                 @if (grp.failed.h > 0) {
                   <g>
-                    <title>{{ grp.label }} — Fallidos: {{ grp.failed.count }}</title>
+                    <title>{{ grp.label }} — {{ t('admin.audit.legend_failed') }}: {{ grp.failed.count }}</title>
                     <rect [attr.x]="grp.failed.x" [attr.y]="grp.failed.y"
                           [attr.width]="grp.failed.w" [attr.height]="grp.failed.h"
                           rx="2" fill="url(#grad-failed)" style="cursor:pointer"/>
@@ -245,12 +246,12 @@
         <div class="pbi-panel">
           <div class="pbi-panel__header">
             <div>
-              <div class="pbi-panel__title">Distribución de eventos</div>
-              <div class="pbi-panel__sub">Exitosos · Fallos · Otros</div>
+              <div class="pbi-panel__title">{{ t('admin.audit.chart_events') }}</div>
+              <div class="pbi-panel__sub">{{ t('admin.audit.chart_events_sub') }}</div>
             </div>
           </div>
           <div class="pbi-panel__body pbi-panel__body--donut">
-            <svg viewBox="0 0 200 200" class="donut-chart" aria-label="Distribución de eventos">
+            <svg viewBox="0 0 200 200" class="donut-chart" [attr.aria-label]="t('admin.audit.chart_events')">
               <!-- Background ring -->
               <circle cx="100" cy="100" r="60" fill="none" stroke="#F1F5F9" stroke-width="24"/>
               <!-- Success arc (green) -->
@@ -272,23 +273,23 @@
               <text x="100" y="94" text-anchor="middle" font-size="26" font-weight="800" fill="#0D1B2A">
                 {{ eventDistribution().successPct }}%
               </text>
-              <text x="100" y="113" text-anchor="middle" font-size="10" fill="#6B7A8D">tasa de éxito</text>
+              <text x="100" y="113" text-anchor="middle" font-size="10" fill="#6B7A8D">{{ t('admin.audit.success_rate') }}</text>
             </svg>
 
             <div class="donut-legend">
               <div class="donut-legend__item">
                 <span class="donut-legend__dot donut-legend__dot--green"></span>
-                <span class="donut-legend__label">Exitosos</span>
+                <span class="donut-legend__label">{{ t('admin.audit.legend_successful') }}</span>
                 <span class="donut-legend__val">{{ exitosos() }}</span>
               </div>
               <div class="donut-legend__item">
                 <span class="donut-legend__dot donut-legend__dot--orange"></span>
-                <span class="donut-legend__label">Fallos</span>
+                <span class="donut-legend__label">{{ t('admin.audit.legend_failed') }}</span>
                 <span class="donut-legend__val">{{ fallos() }}</span>
               </div>
               <div class="donut-legend__item">
                 <span class="donut-legend__dot donut-legend__dot--gray"></span>
-                <span class="donut-legend__label">Otros</span>
+                <span class="donut-legend__label">{{ t('admin.audit.legend_other') }}</span>
                 <span class="donut-legend__val">{{ eventDistribution().other }}</span>
               </div>
             </div>
@@ -303,14 +304,14 @@
   <div class="pbi-panel">
     <div class="pbi-panel__header pbi-panel__header--wrap">
       <div>
-        <div class="pbi-panel__title">Registro de eventos</div>
-        <div class="pbi-panel__sub">{{ filtered().length }} de {{ logs().length }} entradas</div>
+        <div class="pbi-panel__title">{{ t('admin.audit.table_title') }}</div>
+        <div class="pbi-panel__sub">{{ t('admin.audit.table_of', { filtered: filtered().length, total: logs().length }) }}</div>
       </div>
       <div class="local-filters">
         <div class="local-filter">
           <select class="field__select local-filter__select" (change)="onEventChange($event)">
             @for (opt of eventTypes; track opt.value) {
-              <option [value]="opt.value">{{ opt.label }}</option>
+              <option [value]="opt.value">{{ t(opt.label) }}</option>
             }
           </select>
         </div>
@@ -319,7 +320,7 @@
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input type="text" class="field__input search-input"
-                 placeholder="Buscar email…"
+                 [placeholder]="t('admin.audit.search_placeholder')"
                  (input)="onEmailInput($event)" />
         </div>
       </div>
@@ -333,18 +334,18 @@
           <line x1="9" y1="12" x2="15" y2="12"/>
           <line x1="9" y1="16" x2="12" y2="16"/>
         </svg>
-        <p>Sin registros para los filtros seleccionados</p>
+        <p>{{ t('admin.audit.no_records') }}</p>
       </div>
     } @else {
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Fecha / hora</th>
-              <th>Email</th>
-              <th>Evento</th>
-              <th>IP</th>
-              <th>Motivo</th>
+              <th>{{ t('admin.audit.col_datetime') }}</th>
+              <th>{{ t('admin.audit.col_email') }}</th>
+              <th>{{ t('admin.audit.col_event') }}</th>
+              <th>{{ t('admin.audit.col_ip') }}</th>
+              <th>{{ t('admin.audit.col_reason') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -354,7 +355,7 @@
                 <td class="col-email">{{ log.email }}</td>
                 <td>
                   <span [class]="'abadge ' + eventBadgeClass(log.eventType)">
-                    {{ eventLabels[log.eventType] }}
+                    {{ t(eventLabels[log.eventType]) }}
                   </span>
                 </td>
                 <td class="col-ip">{{ log.ipAddress ?? '—' }}</td>
@@ -412,7 +413,7 @@
         </div>
 
         <div class="pagination__size">
-          <label class="pagination__size-lbl" for="pageSize">Filas:</label>
+          <label class="pagination__size-lbl" for="pageSize">{{ t('common.rows') }}</label>
           <select id="pageSize" class="field__select pagination__size-select"
                   (change)="onPageSizeChange($event)">
             <option value="10"  [selected]="pageSize() === 10">10</option>
@@ -425,3 +426,4 @@
   </div>
 
 </div>
+</ng-container>

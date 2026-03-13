@@ -1,9 +1,10 @@
+<ng-container *transloco="let t">
 <div class="detail-page">
 
   <!-- Botón volver -->
   <div class="detail-back">
     <button class="btn btn--ghost btn--sm" (click)="goBack()">
-      ← Volver a la lista
+      {{ t('admin.detail.back') }}
     </button>
   </div>
 
@@ -19,8 +20,8 @@
   <!-- ── Not found ─────────────────────────────────────────── -->
   @if (notFound()) {
     <div class="card not-found">
-      <p>❌ Cuenta no encontrada.</p>
-      <a routerLink="/admin" class="btn btn--primary btn--sm">Ir al listado</a>
+      <p>❌ {{ t('admin.detail.not_found') }}</p>
+      <a routerLink="/admin" class="btn btn--primary btn--sm">{{ t('admin.detail.go_list') }}</a>
     </div>
   }
 
@@ -34,7 +35,7 @@
       <section class="card card--account">
         <div class="card__header">
           <div class="card__icon card__icon--primary">🔑</div>
-          <h2>Datos de la cuenta</h2>
+          <h2>{{ t('admin.detail.account_data') }}</h2>
           <span class="badge"
                 [class.badge--admin]="account()!.role === 'ADMIN'"
                 [class.badge--user]="account()!.role === 'USER'">
@@ -43,23 +44,23 @@
         </div>
         <div class="info-grid">
           <div class="info-item">
-            <span class="info-item__label">Estado</span>
+            <span class="info-item__label">{{ t('admin.detail.status') }}</span>
             <span class="account-status" [class]="statusClass">{{ account()!.status }}</span>
           </div>
           <div class="info-item">
-            <span class="info-item__label">Creado el</span>
+            <span class="info-item__label">{{ t('admin.detail.created') }}</span>
             <span class="info-item__value">{{ account()!.createdAt | date:'dd/MM/yyyy, HH:mm' }}</span>
           </div>
           <div class="info-item info-item--full">
-            <span class="info-item__label">Security Account</span>
+            <span class="info-item__label">{{ t('admin.detail.security_account') }}</span>
             <code class="info-item__value mono security">{{ account()!.securityAccount }}</code>
           </div>
           <div class="info-item">
-            <span class="info-item__label">Rol</span>
+            <span class="info-item__label">{{ t('admin.detail.role') }}</span>
             <span class="info-item__value">{{ account()!.role }}</span>
           </div>
           <div class="info-item">
-            <span class="info-item__label">Email</span>
+            <span class="info-item__label">{{ t('admin.detail.email') }}</span>
             <span class="info-item__value">{{ account()!.email }}</span>
           </div>
         </div>
@@ -69,29 +70,29 @@
         <section class="card qr-section">
           <div class="card__header">
             <div class="card__icon card__icon--secondary">📱</div>
-            <h2>QR de emergencia</h2>
+            <h2>{{ t('admin.detail.qr_title') }}</h2>
             <button type="button" class="btn btn--outline btn--sm qr-section__preview"
                     (click)="openPublicProfile()">
-              Ver ficha pública ↗
+              {{ t('admin.detail.view_public') }}
             </button>
           </div>
           <div class="qr-block">
             <div class="qr-block__img">
               <img [src]="account()!.qrDataUrl"
-                   alt="QR de emergencia de {{ account()!.email }}"
+                   [alt]="t('admin.detail.qr_title') + ' ' + account()!.email"
                    width="160" height="160" />
             </div>
             <div class="qr-block__meta">
               <div class="qr-block__row">
-                <span class="qr-block__label">URL codificada</span>
+                <span class="qr-block__label">{{ t('admin.detail.encoded_url') }}</span>
                 <a class="qr-block__link" (click)="openPublicProfile()">{{ publicUrl }}</a>
               </div>
               <div class="qr-block__row">
-                <span class="qr-block__label">Security Account</span>
+                <span class="qr-block__label">{{ t('admin.detail.security_account') }}</span>
                 <code class="qr-block__code">{{ account()!.securityAccount }}</code>
               </div>
               <button class="btn btn--secondary btn--sm" (click)="downloadQr()">
-                ⬇️ Descargar QR
+                ⬇️ {{ t('admin.detail.download_qr') }}
               </button>
             </div>
           </div>
@@ -102,7 +103,7 @@
 
     @if (!profile()) {
       <section class="card no-profile">
-        <p>📭 Este usuario aún no ha completado su perfil.</p>
+        <p>📭 {{ t('admin.detail.no_profile') }}</p>
       </section>
     }
 
@@ -116,39 +117,39 @@
         <section class="card">
           <div class="card__header">
             <div class="card__icon card__icon--primary">👤</div>
-            <h2>Datos personales</h2>
+            <h2>{{ t('admin.detail.personal_data') }}</h2>
           </div>
           <div class="info-grid">
             <div class="info-item">
-              <span class="info-item__label">Nombre completo</span>
+              <span class="info-item__label">{{ t('admin.detail.full_name') }}</span>
               <span class="info-item__value">{{ profile()!.personal.fullName || '—' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-item__label">Sexo</span>
+              <span class="info-item__label">{{ t('admin.detail.sex') }}</span>
               <span class="info-item__value">{{ sexLabel(profile()!.personal.sex) }}</span>
             </div>
             <div class="info-item">
-              <span class="info-item__label">Fecha de nacimiento</span>
+              <span class="info-item__label">{{ t('admin.detail.birth_date') }}</span>
               <span class="info-item__value">{{ profile()!.personal.birthDate || '—' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-item__label">Teléfono</span>
+              <span class="info-item__label">{{ t('admin.detail.phone') }}</span>
               <span class="info-item__value">{{ profile()!.personal.phone || '—' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-item__label">Correo personal</span>
+              <span class="info-item__label">{{ t('admin.detail.personal_email') }}</span>
               <span class="info-item__value">{{ profile()!.personal.personalEmail || '—' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-item__label">Correo trabajo</span>
+              <span class="info-item__label">{{ t('admin.detail.work_email') }}</span>
               <span class="info-item__value">{{ profile()!.personal.workEmail || '—' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-item__label">Ciudad</span>
+              <span class="info-item__label">{{ t('admin.detail.city') }}</span>
               <span class="info-item__value">{{ profile()!.personal.city || '—' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-item__label">Distrito</span>
+              <span class="info-item__label">{{ t('admin.detail.district') }}</span>
               <span class="info-item__value">{{ profile()!.personal.district || '—' }}</span>
             </div>
           </div>
@@ -157,20 +158,20 @@
         <section class="card">
           <div class="card__header">
             <div class="card__icon card__icon--secondary">🏥</div>
-            <h2>Datos médicos</h2>
+            <h2>{{ t('admin.detail.medical_data') }}</h2>
           </div>
           <div class="medical-grid">
             <div class="medical-item">
-              <h4 class="medical-item__title">Enfermedades</h4>
-              <p class="medical-item__text">{{ profile()!.medical.diseases || 'No registrado' }}</p>
+              <h4 class="medical-item__title">{{ t('admin.detail.diseases') }}</h4>
+              <p class="medical-item__text">{{ profile()!.medical.diseases || t('admin.detail.not_registered') }}</p>
             </div>
             <div class="medical-item">
-              <h4 class="medical-item__title">Alergias</h4>
-              <p class="medical-item__text">{{ profile()!.medical.allergies || 'No registrado' }}</p>
+              <h4 class="medical-item__title">{{ t('admin.detail.allergies') }}</h4>
+              <p class="medical-item__text">{{ profile()!.medical.allergies || t('admin.detail.not_registered') }}</p>
             </div>
             <div class="medical-item medical-item--full">
-              <h4 class="medical-item__title">Otros / Medicamentos</h4>
-              <p class="medical-item__text">{{ profile()!.medical.others || 'No registrado' }}</p>
+              <h4 class="medical-item__title">{{ t('admin.detail.others') }}</h4>
+              <p class="medical-item__text">{{ profile()!.medical.others || t('admin.detail.not_registered') }}</p>
             </div>
           </div>
         </section>
@@ -183,12 +184,12 @@
       <section class="card">
         <div class="card__header">
           <div class="card__icon card__icon--accent">📞</div>
-          <h2>Contactos de emergencia</h2>
+          <h2>{{ t('admin.detail.contacts') }}</h2>
           <span class="contact-count">{{ profile()!.contacts.length }}</span>
         </div>
 
         @if (profile()!.contacts.length === 0) {
-          <p class="no-contacts">Sin contactos registrados.</p>
+          <p class="no-contacts">{{ t('admin.detail.no_contacts') }}</p>
         } @else {
           <div class="contacts-list">
             @for (c of profile()!.contacts; track c.phone + c.fullName) {
@@ -214,3 +215,4 @@
 
   }
 </div>
+</ng-container>

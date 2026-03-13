@@ -1,21 +1,22 @@
+<ng-container *transloco="let t">
 <div class="login-wrapper">
 
   <!-- ── Panel izquierdo: branding + features ──────────────────── -->
   <div class="login-panel">
-    <p class="lp-tagline">Plataforma de Identidad Inteligente para Emergencias</p>
+    <p class="lp-tagline">{{ t('auth.login.tagline') }}</p>
 
     <ul class="lp-features">
       <li class="lp-features__item">
         <span class="lp-features__icon" aria-hidden="true">🔐</span>
-        <span>Perfil digital con información médica en segundos</span>
+        <span>{{ t('auth.login.feature_medical') }}</span>
       </li>
       <li class="lp-features__item">
         <span class="lp-features__icon" aria-hidden="true">📱</span>
-        <span>QR universal — funciona en cualquier smartphone</span>
+        <span>{{ t('auth.login.feature_qr') }}</span>
       </li>
       <li class="lp-features__item">
         <span class="lp-features__icon" aria-hidden="true">📞</span>
-        <span>Mostramos y notificamos a tus contactos para notificar una emergencia</span>
+        <span>{{ t('auth.login.feature_notify') }}</span>
       </li>
     </ul>
   </div>
@@ -23,13 +24,13 @@
   <!-- ── Panel derecho: formulario de login ───────────────────── -->
   <div class="auth-card">
     <div class="auth-card__header">
-      <h1 class="auth-card__title">Iniciar sesión</h1>
-      <p class="auth-card__subtitle">Accede a tu cuenta VitaLink</p>
+      <h1 class="auth-card__title">{{ t('auth.login.title') }}</h1>
+      <p class="auth-card__subtitle">{{ t('auth.login.subtitle') }}</p>
     </div>
 
     @if (activatedBanner()) {
       <div class="alert alert--success" role="alert">
-        ¡Cuenta activada correctamente! Ya puedes iniciar sesión.
+        {{ t('auth.login.activated_banner') }}
       </div>
     }
 
@@ -41,11 +42,11 @@
 
     @if (showResend()) {
       <div class="resend-wrap">
-        <p class="resend-wrap__label">Reenviar enlace de activación:</p>
+        <p class="resend-wrap__label">{{ t('auth.login.resend_label') }}</p>
         <input
           type="email"
           class="field__input"
-          placeholder="tu@correo.com"
+          [placeholder]="t('common.email_placeholder')"
           [value]="resendEmail()"
           (input)="onResendEmailChange($event)"
           autocomplete="email"
@@ -56,9 +57,9 @@
           [disabled]="resendLoading()"
           (click)="resend()">
           @if (resendLoading()) {
-            <span class="btn__spinner" aria-hidden="true"></span> Enviando…
+            <span class="btn__spinner" aria-hidden="true"></span> {{ t('common.sending') }}
           } @else {
-            Reenviar enlace
+            {{ t('auth.login.resend_btn') }}
           }
         </button>
         @if (resendSuccess()) {
@@ -73,25 +74,25 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-card__form">
 
       <div class="field">
-        <label class="field__label" for="login-email">Correo electrónico</label>
+        <label class="field__label" for="login-email">{{ t('common.email_label') }}</label>
         <input
           id="login-email"
           type="email"
           class="field__input"
           [class.is-invalid]="email.invalid && email.touched"
           formControlName="email"
-          placeholder="tu@correo.com"
+          [placeholder]="t('common.email_placeholder')"
           autocomplete="email"
         />
         @if (email.hasError('required') && email.touched) {
-          <span class="field__error">El correo es obligatorio.</span>
+          <span class="field__error">{{ t('common.email_required') }}</span>
         } @else if (email.hasError('email') && email.touched) {
-          <span class="field__error">Ingresa un correo válido.</span>
+          <span class="field__error">{{ t('common.email_invalid') }}</span>
         }
       </div>
 
       <div class="field">
-        <label class="field__label" for="login-pass">Contraseña</label>
+        <label class="field__label" for="login-pass">{{ t('common.password_label') }}</label>
         <div class="field__pass-wrap">
           <input
             id="login-pass"
@@ -106,35 +107,44 @@
             type="button"
             class="field__pass-toggle"
             (click)="togglePassword()"
-            [attr.aria-label]="showPass() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            [attr.aria-label]="showPass() ? t('common.hide_pass') : t('common.show_pass')">
             {{ showPass() ? '🙈' : '👁️' }}
           </button>
         </div>
         @if (password.hasError('required') && password.touched) {
-          <span class="field__error">La contraseña es obligatoria.</span>
+          <span class="field__error">{{ t('common.password_required') }}</span>
         } @else if (password.hasError('minlength') && password.touched) {
-          <span class="field__error">Mínimo 6 caracteres.</span>
+          <span class="field__error">{{ t('common.password_min6') }}</span>
         }
+      </div>
+
+      <!-- Desafío anti-bot Cloudflare Turnstile -->
+      <div class="turnstile-wrap">
+        <app-turnstile
+          theme="dark"
+          (resolved)="onTurnstileResolved($event)"
+          (errored)="onTurnstileError()">
+        </app-turnstile>
       </div>
 
       <div class="login-form__actions">
         <button
           type="submit"
           class="btn btn--primary btn--full"
-          [disabled]="loading()">
+          [disabled]="loading() || !cfToken()">
           @if (loading()) {
-            <span class="btn__spinner" aria-hidden="true"></span> Iniciando…
+            <span class="btn__spinner" aria-hidden="true"></span> {{ t('auth.login.submitting') }}
           } @else {
-            Iniciar sesión
+            {{ t('auth.login.submit') }}
           }
         </button>
-        <a routerLink="/forgot-password" class="forgot-link">¿Olvidaste tu contraseña?</a>
+        <a routerLink="/forgot-password" class="forgot-link">{{ t('auth.login.forgot_password') }}</a>
       </div>
     </form>
 
     <p class="auth-card__footer">
-      ¿No tienes cuenta?
-      <a routerLink="/auth/register" class="auth-card__link">Crear cuenta</a>
+      {{ t('auth.login.no_account') }}
+      <a routerLink="/auth/register" class="auth-card__link">{{ t('auth.login.create_account') }}</a>
     </p>
   </div>
 
@@ -248,3 +258,4 @@
   </div>
 
 </div>
+</ng-container>

@@ -1,0 +1,558 @@
+
+ ▐▛███▜▌   Claude Code v2.1.71
+▝▜█████▛▘  Sonnet 4.6 · Claude Pro
+  ▘▘ ▝▝    D:\Danilo\Data Danilo\Proyectos\VitaLink\Software\web-app
+
+> el estado debe estar debajo de datos de la cuenta y arriba del email en la    
+pagina de /admin/account/                                                       
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(src\app\modules\admin\account-detail\account-detail.component.html)
+  ⎿  Added 4 lines, removed 4 lines
+      43          </div>
+      44          <div class="info-grid">
+      45            <div class="info-item">
+      46 +            <span class="info-item__label">Estado</span>
+      47 +            <span class="account-status" [class]="statusClass">
+         +{{ account()!.status }}</span>
+      48 +          </div>
+      49 +          <div class="info-item">
+      50              <span class="info-item__label">Email</span>
+      51              <span class="info-item__value">{{ account()!.email
+          }}</span>
+      52            </div>
+     ...
+      62              <span class="info-item__label">Creado el</span>
+      63              <span class="info-item__value">{{ account()!.create
+          dAt | date:'dd/MM/yyyy, HH:mm' }}</span>
+      64            </div>
+      61 -          <div class="info-item">                              
+      62 -            <span class="info-item__label">Estado</span>       
+      63 -            <span class="account-status" [class]="statusClass">
+         -{{ account()!.status }}</span>                                 
+      64 -          </div>                                               
+      65          </div>
+      66        </section>
+      67 
+
+● Listo. El campo Estado ahora aparece primero en la grilla, justo debajo del
+  encabezado "Datos de la cuenta" y arriba de Email.
+
+> cambia de posicion email por creado el                                        
+
+● Update(src\app\modules\admin\account-detail\account-detail.component.html)
+  ⎿  Added 4 lines, removed 4 lines
+      47              <span class="account-status" [class]="statusClass">
+          {{ account()!.status }}</span>
+      48            </div>
+      49            <div class="info-item">
+      50 -            <span class="info-item__label">Email</span>        
+      51 -            <span class="info-item__value">{{ account()!.email 
+         -}}</span>                                                      
+      50 +            <span class="info-item__label">Creado el</span>
+      51 +            <span class="info-item__value">{{ account()!.create
+         +dAt | date:'dd/MM/yyyy, HH:mm' }}</span>
+      52            </div>
+      53            <div class="info-item info-item--full">
+      54              <span class="info-item__label">Security Account</sp
+          an>
+     ...
+      59              <span class="info-item__value">{{ account()!.role }
+          }</span>
+      60            </div>
+      61            <div class="info-item">
+      62 -            <span class="info-item__label">Creado el</span>    
+      63 -            <span class="info-item__value">{{ account()!.create
+         -dAt | date:'dd/MM/yyyy, HH:mm' }}</span>                       
+      62 +            <span class="info-item__label">Email</span>
+      63 +            <span class="info-item__value">{{ account()!.email
+         +}}</span>
+      64            </div>
+      65          </div>
+      66        </section>
+
+● Listo. El orden ahora es: Estado → Creado el → Security Account → Rol → Email.
+
+> buscame un skill para civerseguridad y poder probar mi aplicativo             
+
+● No hay ningún skill de ciberseguridad disponible en la configuración actual.
+  Los skills disponibles son:
+
+  - keybindings-help — atajos de teclado
+  - simplify — revisión y limpieza de código
+  - loop — tareas recurrentes
+  - claude-api — integración con la API de Anthropic
+  - angular-http — HTTP con signals en Angular
+  - angular-module-design — diseño de módulos Angular
+  - performance — optimización de rendimiento web
+
+  Para probar la seguridad de tu aplicativo puedo ayudarte directamente sin un
+  skill. ¿Qué tipo de prueba tienes en mente? Por ejemplo:
+
+  - Revisar vulnerabilidades en el código (XSS, CSRF, inyección)
+  - Auditar la autenticación y manejo de tokens
+  - Revisar headers de seguridad
+  - Validación de inputs en formularios
+
+> crea 4 agentes para realizar   - Revisar vulnerabilidades en el código (XSS,  
+CSRF, inyección)                                                                
+  - Auditar la autenticación y manejo de tokens                                 
+  - Revisar headers de seguridad                                                
+  - Validación de inputs en formularios y generame un informe                   
+
+● Lanzando 3 agentes exploradores en paralelo para cubrir las 4 áreas de
+  seguridad.
+
+● 3 Explore agents launched (ctrl+o to expand)
+   ├─ Auditar XSS, CSRF e inyección
+   │  ⎿  Running in the background
+   ├─ Auditar autenticación y tokens
+   │  ⎿  Running in the background
+   └─ Auditar headers de seguridad y validación de formularios
+      ⎿  Running in the background
+
+● Los 3 agentes están analizando en paralelo:
+
+  ┌─────────────┬──────────────────────────────────────────────────┐
+  │   Agente    │                       Área                       │
+  ├─────────────┼──────────────────────────────────────────────────┤
+  │ 🔍 Agente 1 │ XSS, CSRF e inyección de código                  │
+  ├─────────────┼──────────────────────────────────────────────────┤
+  │ 🔐 Agente 2 │ Autenticación, tokens y localStorage             │
+  ├─────────────┼──────────────────────────────────────────────────┤
+  │ 🛡️ Agente 3 │ Headers de seguridad y validación de formularios │
+  └─────────────┴──────────────────────────────────────────────────┘
+
+  Esperando resultados para consolidar el informe completo...
+
+✻ Brewed for 36s
+
+● Agent "Auditar XSS, CSRF e inyección" completed
+
+● Agente 1 completado ✅. Esperando agentes 2 y 3...
+
+● Agent "Auditar headers de seguridad y validación de formularios" completed
+
+● Agente 3 completado ✅. Esperando agente 2 (autenticación y tokens)...
+
+● Agent "Auditar autenticación y tokens" completed
+  ⎿  You've hit your limit · resets 2am (America/Lima)
+     /upgrade or /extra-usage to finish what you’re working on.
+
+> continue                                                                      
+
+● Los 3 agentes completaron. Ahora consolido todos los hallazgos en el informe
+  final.
+
+● Updated plan
+  ⎿  /plan to preview
+  ⎿  User rejected Claude's plan:
+     ╭─────────────────────────────────────────────────────────────────────────╮
+     │ Plan: Informe de Auditoría de Seguridad — VitaLink Web App (Angular 19) │
+     │                                                                         │
+     │ Contexto                                                                │
+     │                                                                         │
+     │ Se realizó una auditoría de seguridad completa sobre la aplicación      │
+     │ Angular 19 de VitaLink mediante 3 agentes especializados ejecutados en  │
+     │ paralelo. El objetivo es identificar vulnerabilidades antes de          │
+     │ producción y establecer un plan de corrección priorizado.               │
+     │                                                                         │
+     │ ---                                                                     │
+     │ INFORME DE AUDITORÍA DE SEGURIDAD — VitaLink Web App                    │
+     │                                                                         │
+     │ Fecha: 7 de marzo de 2026                                               │
+     │ Rama analizada: feature/version02                                       │
+     │ Agentes auditores: 3 (XSS/CSRF/Inyección | Autenticación/Tokens |       │
+     │ Headers/Formularios)                                                    │
+     │                                                                         │
+     │ ---                                                                     │
+     │ PUNTUACIÓN GLOBAL: 5.5 / 10                                             │
+     │                                                                         │
+     │ ┌──────────────────────┬─────────────────────────────────────────────── │
+     │ ───┐                                                                    │
+     │ │         Área         │                    Puntuación                  │
+     │    │                                                                    │
+     │ ├──────────────────────┼─────────────────────────────────────────────── │
+     │ ───┤                                                                    │
+     │ │ Protección XSS       │ 9/10 — Sin innerHTML ni eval()                 │
+     │    │                                                                    │
+     │ ├──────────────────────┼─────────────────────────────────────────────── │
+     │ ───┤                                                                    │
+     │ │ Autenticación        │ 4/10 — Sesiones sin expiración, rol en         │
+     │    │                                                                    │
+     │ │                      │ localStorage                                   │
+     │    │                                                                    │
+     │ ├──────────────────────┼─────────────────────────────────────────────── │
+     │ ───┤                                                                    │
+     │ │ Headers de seguridad │ 6/10 — Headers básicos presentes, faltan HSTS  │
+     │ y  │                                                                    │
+     │ │                      │ Permissions-Policy                             │
+     │    │                                                                    │
+     │ ├──────────────────────┼─────────────────────────────────────────────── │
+     │ ───┤                                                                    │
+     │ │ Validación de        │ 5/10 — Contraseñas débiles, sin maxLength      │
+     │    │                                                                    │
+     │ │ formularios          │                                                │
+     │    │                                                                    │
+     │ ├──────────────────────┼─────────────────────────────────────────────── │
+     │ ───┤                                                                    │
+     │ │ Control de acceso    │ 6/10 — Guards correctos, pero confianza en     │
+     │    │                                                                    │
+     │ │                      │ localStorage                                   │
+     │    │                                                                    │
+     │ └──────────────────────┴─────────────────────────────────────────────── │
+     │ ───┘                                                                    │
+     │                                                                         │
+     │ ---                                                                     │
+     │ HALLAZGOS POR NIVEL DE RIESGO                                           │
+     │                                                                         │
+     │ RIESGO ALTO (4 hallazgos)                                               │
+     │                                                                         │
+     │ H1 — Sesiones sin expiración                                            │
+     │                                                                         │
+     │ - Archivo: src/app/core/services/auth.service.ts línea 85-94            │
+     │ - Problema: loadCurrentUser() no valida expiración. La sesión persiste  │
+     │ indefinidamente en localStorage. No hay expiresAt, refreshToken ni      │
+     │ sessionId en el modelo Account.                                         │
+     │ - Impacto: Un token robado nunca expira; imposible revocar sesiones     │
+     │ remotamente.                                                            │
+     │ - Corrección: Agregar expiresAt: number al modelo; validar en           │
+     │ loadCurrentUser(); implementar refresh token.                           │
+     │                                                                         │
+     │ H2 — Contraseñas hasheadas almacenadas en localStorage                  │
+     │                                                                         │
+     │ - Archivo: src/app/core/services/auth.service.ts línea 80 |             │
+     │ src/app/core/models/account.model.ts línea 15                           │
+     │ - Problema: El backend devuelve el objeto Account completo (incluye     │
+     │ campo password) y se almacena íntegro con JSON.stringify(account) en    │
+     │ localStorage.                                                           │
+     │ - Impacto: Robo de hash de contraseña ante cualquier XSS o acceso       │
+     │ físico al navegador.                                                    │
+     │ - Corrección: El backend no debería devolver password en la respuesta.  │
+     │ Excluir el campo antes de almacenar o eliminar del modelo Account en    │
+     │ frontend.                                                               │
+     │                                                                         │
+     │ H3 — Sin protección contra fuerza bruta                                 │
+     │                                                                         │
+     │ - Archivo: src/app/modules/auth/login/login.component.ts líneas 54-81   │
+     │ - Problema: El frontend solo deshabilita el botón (loading.set(true)),  │
+     │ pero no hay throttling, bloqueo tras N intentos, ni CAPTCHA.            │
+     │ - Impacto: Ataque de diccionario ilimitado contra cuentas.              │
+     │ - Corrección (frontend): Contador de intentos fallidos con bloqueo      │
+     │ temporal y mensaje de espera. El backend DEBE implementar rate limiting │
+     │  por IP.                                                                │
+     │                                                                         │
+     │ H4 — Sin CSP en index.html                                              │
+     │                                                                         │
+     │ - Archivo: src/index.html                                               │
+     │ - Problema: No hay <meta http-equiv="Content-Security-Policy">. Aunque  │
+     │ staticwebapp.config.json tiene CSP para Azure, no hay fallback local ni │
+     │  CSP en desarrollo.                                                     │
+     │ - Impacto: XSS más fácil de explotar en entornos locales o si Azure     │
+     │ falla.                                                                  │
+     │ - Corrección: Agregar meta CSP en index.html.                           │
+     │                                                                         │
+     │ ---                                                                     │
+     │ RIESGO MEDIO (7 hallazgos)                                              │
+     │                                                                         │
+     │ H5 — Elevación de privilegios vía localStorage                          │
+     │                                                                         │
+     │ - Archivo: src/app/core/services/auth.service.ts líneas 120-130         │
+     │ - Problema: isValidAccount() valida que role sea 'ADMIN' o 'USER', pero │
+     │  no verifica integridad contra el servidor. Un usuario puede abrir      │
+     │ DevTools y cambiar role: "USER" a role: "ADMIN".                        │
+     │ - Impacto: Acceso a /admin y todas sus operaciones por cualquier        │
+     │ usuario autenticado.                                                    │
+     │ - Corrección: El backend debe validar el rol en cada endpoint protegido │
+     │  mediante JWT firmado.                                                  │
+     │                                                                         │
+     │ H6 — Enumeración de usuarios en login                                   │
+     │                                                                         │
+     │ - Archivo: src/app/modules/auth/login/login.component.ts líneas 69-77   │
+     │ - Problema: Si el error es 401 + message === 'Account is not active',   │
+     │ se muestra mensaje diferenciado, revelando que el email SÍ existe en el │
+     │  sistema.                                                               │
+     │ - Impacto: Un atacante puede identificar qué correos están registrados. │
+     │ - Corrección: Devolver siempre "Correo o contraseña incorrectos"        │
+     │ independientemente del motivo.                                          │
+     │                                                                         │
+     │ H7 — Sin CSRF protection en interceptor                                 │
+     │                                                                         │
+     │ - Archivo: src/app/core/interceptors/http.interceptor.ts líneas 1-22    │
+     │ - Problema: El interceptor solo maneja el error 401. No agrega          │
+     │ X-CSRF-Token ni headers de autenticación Bearer.                        │
+     │ - Impacto: Ataques CSRF pueden modificar datos si el backend no         │
+     │ implementa protección.                                                  │
+     │ - Corrección: Coordinar con backend para implementar CSRF tokens;       │
+     │ agregarlos en el interceptor.                                           │
+     │                                                                         │
+     │ H8 — Tokens de activación/reset en query params                         │
+     │                                                                         │
+     │ - Archivos:                                                             │
+     │ src/app/modules/auth/activate-account/activate-account.component.ts     │
+     │ línea 36 |                                                              │
+     │ src/app/modules/auth/reset-password/reset-password.component.ts línea   │
+     │ 68                                                                      │
+     │ - Problema: Los tokens sensibles llegan como ?token=... en la URL,      │
+     │ quedando en el historial del navegador y logs del servidor.             │
+     │ - Impacto: Robo de tokens de activación/reset por acceso al historial.  │
+     │ - Corrección: El servidor debería aceptar el token via POST body en     │
+     │ lugar de query param.                                                   │
+     │                                                                         │
+     │ H9 — CSP con unsafe-inline para estilos                                 │
+     │                                                                         │
+     │ - Archivo: src/staticwebapp.config.json                                 │
+     │ - Problema: style-src 'self' 'unsafe-inline' permite estilos inline que │
+     │  pueden ser aprovechados en ataques CSS injection.                      │
+     │ - Corrección: Eliminar 'unsafe-inline'; usar nonces o hashes para       │
+     │ estilos inline necesarios.                                              │
+     │                                                                         │
+     │ H10 — Sin validación de máximo en campos de formulario                  │
+     │                                                                         │
+     │ - Archivo: src/app/modules/perfil/perfil/perfil.component.ts líneas     │
+     │ 96-127                                                                  │
+     │ - Problema: Campos fullName, phone, city, district, diseases,           │
+     │ allergies, others sin Validators.maxLength(). Tampoco hay límite de     │
+     │ contactos de emergencia.                                                │
+     │ - Impacto: Potencial DoS con inputs muy grandes; datos malformados en   │
+     │ BD.                                                                     │
+     │ - Corrección: Agregar Validators.maxLength(N) apropiado a cada campo.   │
+     │                                                                         │
+     │ H11 — Contraseñas con longitud mínima insuficiente                      │
+     │                                                                         │
+     │ - Archivos: login.component.ts (minLength: 6) | register.component.ts   │
+     │ (minLength: 8) | reset-password.component.ts (minLength: 8)             │
+     │ - Problema: OWASP recomienda mínimo 12 caracteres para aplicaciones con │
+     │  datos sensibles de salud.                                              │
+     │ - Corrección: Aumentar minLength a 12 y agregar validación de           │
+     │ complejidad.                                                            │
+     │                                                                         │
+     │ ---                                                                     │
+     │ RIESGO BAJO (5 hallazgos)                                               │
+     │                                                                         │
+     │ H12 — Headers de seguridad faltantes en Azure                           │
+     │                                                                         │
+     │ - Archivo: src/staticwebapp.config.json                                 │
+     │ - Faltantes: Strict-Transport-Security (HSTS) y Permissions-Policy.     │
+     │ - Corrección: Agregar ambos headers al archivo de configuración.        │
+     │                                                                         │
+     │ H13 — URL del backend expuesta en código fuente                         │
+     │                                                                         │
+     │ - Archivo: src/environments/environment.prod.ts                         │
+     │ - Problema: La URL completa del backend Azure es pública en el repo.    │
+     │ - Corrección: Usar variables de entorno en CI/CD; no hardcodear en      │
+     │ código.                                                                 │
+     │                                                                         │
+     │ H14 — Sin logout remoto                                                 │
+     │                                                                         │
+     │ - Archivo: src/app/core/services/auth.service.ts líneas 51-55           │
+     │ - Problema: logout() solo limpia localStorage. Un token robado sigue    │
+     │ siendo válido en el servidor.                                           │
+     │ - Corrección: Llamar a un endpoint /auth/logout en el servidor al       │
+     │ cerrar sesión.                                                          │
+     │                                                                         │
+     │ H15 — Sin validación de formato de ID en account-detail                 │
+     │                                                                         │
+     │ - Archivo:                                                              │
+     │ src/app/modules/admin/account-detail/account-detail.component.ts línea  │
+     │ 42                                                                      │
+     │ - Problema: El id del parámetro de ruta se usa directamente sin validar │
+     │  formato (UUID, etc.).                                                  │
+     │ - Corrección: Validar con regex antes de llamar al servicio.            │
+     │                                                                         │
+     │ H16 — Error messages del backend expuestos en UI                        │
+     │                                                                         │
+     │ - Archivos: activate-account.component.ts línea 54 |                    │
+     │ reset-password.component.ts línea 92                                    │
+     │ - Problema: err?.error?.message se muestra directamente al usuario sin  │
+     │ sanitizar.                                                              │
+     │ - Corrección: Usar siempre mensajes genéricos hardcodeados; ignorar     │
+     │ err.error.message.                                                      │
+     │                                                                         │
+     │ ---                                                                     │
+     │ ASPECTOS POSITIVOS DESTACADOS                                           │
+     │                                                                         │
+     │ ┌──────────────────────────────┬──────────────────────────────┬──────── │
+     │ ───┐                                                                    │
+     │ │           Control            │           Archivo            │         │
+     │ Evaluacio │                                                             │
+     │ │                              │                              │     n   │
+     │    │                                                                    │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ Sin innerHTML / eval() /     │ Toda la app                  │         │
+     │ Excelente │                                                             │
+     │ │ bypassSecurityTrust*         │                              │         │
+     │    │                                                                    │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ isValidAccount() previene    │ auth.service.ts:120          │         │
+     │ Excelente │                                                             │
+     │ │ escalado estructural         │                              │         │
+     │    │                                                                    │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ Regex /^[0-9a-f]{32}$/ en    │ account-public.component.ts: │         │
+     │ Excelente │                                                             │
+     │ │ ruta publica                 │ 23                           │         │
+     │    │                                                                    │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ Mensajes genericos en        │ login/register components    │ Bien    │
+     │    │                                                                    │
+     │ │ login/register               │                              │         │
+     │    │                                                                    │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ HttpParams en lugar de       │ auth.service.ts              │         │
+     │ Excelente │                                                             │
+     │ │ concatenacion                │                              │         │
+     │    │                                                                    │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ Guards funcionales correctos │ auth.guard.ts, role.guard.ts │         │
+     │ Correcto  │                                                             │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ takeUntilDestroyed en todos  │ Toda la app                  │         │
+     │ Excelente │                                                             │
+     │ │ los subscribe                │                              │         │
+     │    │                                                                    │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ X-Content-Type-Options,      │                              │         │
+     │    │                                                                    │
+     │ │ X-Frame-Options,             │ staticwebapp.config.json     │ Bien    │
+     │    │                                                                    │
+     │ │ Referrer-Policy              │                              │         │
+     │    │                                                                    │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ ChangeDetectionStrategy.OnPu │ Todos los componentes        │         │
+     │ Excelente │                                                             │
+     │ │ sh                           │                              │         │
+     │    │                                                                    │
+     │ ├──────────────────────────────┼──────────────────────────────┼──────── │
+     │ ───┤                                                                    │
+     │ │ Strict mode TypeScript       │ tsconfig.json                │         │
+     │ Excelente │                                                             │
+     │ │ habilitado                   │                              │         │
+     │    │                                                                    │
+     │ └──────────────────────────────┴──────────────────────────────┴──────── │
+     │ ───┘                                                                    │
+     │                                                                         │
+     │ ---                                                                     │
+     │ PLAN DE CORRECCIONES PRIORIZADAS                                        │
+     │                                                                         │
+     │ Sprint 1 — Critico (antes de produccion)                                │
+     │                                                                         │
+     │ 1. H11 — Aumentar minLength de contraseñas a 12 + validacion de         │
+     │ complejidad                                                             │
+     │   - login.component.ts, register.component.ts,                          │
+     │ reset-password.component.ts                                             │
+     │ 2. H2 — Excluir campo password del objeto almacenado en localStorage    │
+     │   - auth.service.ts: omitir password antes de JSON.stringify            │
+     │ 3. H6 — Unificar mensaje de error de login (eliminar diferenciacion)    │
+     │   - login.component.ts lineas 69-77                                     │
+     │ 4. H16 — Eliminar err?.error?.message directo en UI                     │
+     │   - activate-account.component.ts, reset-password.component.ts          │
+     │ 5. H10 — Agregar Validators.maxLength() en formulario de perfil         │
+     │   - perfil.component.ts                                                 │
+     │                                                                         │
+     │ Sprint 2 — Importante                                                   │
+     │                                                                         │
+     │ 6. H1 — Agregar expiresAt al modelo y validacion en loadCurrentUser()   │
+     │ 7. H9 — Eliminar 'unsafe-inline' de CSP en staticwebapp.config.json     │
+     │ 8. H12 — Agregar HSTS y Permissions-Policy en staticwebapp.config.json  │
+     │ 9. H15 — Validar formato de ID en account-detail.component.ts           │
+     │ 10. H4 — Agregar meta CSP en src/index.html                             │
+     │                                                                         │
+     │ Sprint 3 — Mejora continua                                              │
+     │                                                                         │
+     │ 11. H3 — Contador de intentos fallidos en login con bloqueo temporal    │
+     │ 12. H5 — Coordinar con backend: JWT firmado para validacion de rol      │
+     │ 13. H7 — Coordinar con backend: CSRF tokens en interceptor              │
+     │ 14. H8 — Coordinar con backend: tokens via POST body en lugar de query  │
+     │ param                                                                   │
+     │ 15. H14 — Implementar llamada a endpoint /auth/logout en servidor       │
+     │                                                                         │
+     │ ---                                                                     │
+     │ ARCHIVOS A MODIFICAR                                                    │
+     │                                                                         │
+     │ ┌──────────────────────────────────────────────────────────────┬─────── │
+     │ ───┐                                                                    │
+     │ │                           Archivo                            │        │
+     │ Hallazgo │                                                              │
+     │ │                                                              │    s   │
+     │    │                                                                    │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/app/core/services/auth.service.ts                        │ H1,    │
+     │ H2,  │                                                                  │
+     │ │                                                              │ H5,    │
+     │ H14  │                                                                  │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/app/core/interceptors/http.interceptor.ts                │ H7     │
+     │    │                                                                    │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/app/core/models/account.model.ts                         │ H1, H2 │
+     │    │                                                                    │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/app/modules/auth/login/login.component.ts                │ H3,    │
+     │ H6,  │                                                                  │
+     │ │                                                              │ H11    │
+     │    │                                                                    │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/app/modules/auth/register/register.component.ts          │ H11    │
+     │    │                                                                    │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/app/modules/auth/reset-password/reset-password.component │ H8,    │
+     │ H11, │                                                                  │
+     │ │ .ts                                                          │  H16   │
+     │    │                                                                    │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/app/modules/auth/activate-account/activate-account.compo │ H8,    │
+     │ H16  │                                                                  │
+     │ │ nent.ts                                                      │        │
+     │    │                                                                    │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/app/modules/perfil/perfil/perfil.component.ts            │ H10    │
+     │    │                                                                    │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/app/modules/admin/account-detail/account-detail.componen │ H15    │
+     │    │                                                                    │
+     │ │ t.ts                                                         │        │
+     │    │                                                                    │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/staticwebapp.config.json                                 │ H9,    │
+     │ H12  │                                                                  │
+     │ ├──────────────────────────────────────────────────────────────┼─────── │
+     │ ───┤                                                                    │
+     │ │ src/index.html                                               │ H4     │
+     │    │                                                                    │
+     │ └──────────────────────────────────────────────────────────────┴─────── │
+     │ ───┘                                                                    │
+     │                                                                         │
+     │ ---                                                                     │
+     │ VERIFICACION                                                            │
+     │                                                                         │
+     │ Tras implementar las correcciones:                                      │
+     │ 1. ng build sin errores de compilacion                                  │
+     │ 2. Probar login con credenciales incorrectas → mensaje siempre generico │
+     │ 3. Verificar que localStorage no contiene campo password                │
+     │ 4. Verificar que campos de formulario rechazan inputs > maxLength       │
+     │ 5. Verificar que contrasenas < 12 caracteres son rechazadas en          │
+     │ register/reset                                                          │
+     │ 6. Revisar headers HTTP en produccion con curl -I https://[url] o       │
+     │ DevTools > Network                                                      │
+     ╰─────────────────────────────────────────────────────────────────────────╯

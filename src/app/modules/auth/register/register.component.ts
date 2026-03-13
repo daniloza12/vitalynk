@@ -1,7 +1,7 @@
 // ============================================================
 //  register.component.ts
 // ============================================================
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -12,7 +12,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../../../core/services/auth.service';
+import { TurnstileComponent } from '../../../shared/turnstile/turnstile.component';
 
 /** Validador: confirmar contraseña coincide con password */
 const passwordMatchValidator: ValidatorFn = (
@@ -26,14 +28,20 @@ const passwordMatchValidator: ValidatorFn = (
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslocoModule, TurnstileComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent {
-  private fb   = inject(FormBuilder);
-  private auth = inject(AuthService);
+  /** Widget del formulario de registro */
+  @ViewChild('registerTurnstile') registerTurnstile!: TurnstileComponent;
+  /** Widget de la pantalla de reenvío */
+  @ViewChild('resendTurnstile')   resendTurnstile!:   TurnstileComponent;
+
+  private fb        = inject(FormBuilder);
+  private auth      = inject(AuthService);
+  private transloco = inject(TranslocoService);
 
   form: FormGroup = this.fb.group(
     {
@@ -52,6 +60,10 @@ export class RegisterComponent {
   resendLoading   = signal(false);
   resendSuccess   = signal('');
   resendError     = signal('');
+  /** Token del widget de registro */
+  cfToken         = signal('');
+  /** Token del widget de reenvío */
+  cfTokenResend   = signal('');
 
   get email()           { return this.form.get('email')!; }
   get password()        { return this.form.get('password')!; }
@@ -60,8 +72,13 @@ export class RegisterComponent {
   togglePassword(): void  { this.showPass.update(v => !v); }
   toggleConfirm():  void  { this.showConfirm.update(v => !v); }
 
+  onTurnstileResolved(token: string):       void { this.cfToken.set(token); }
+  onTurnstileError():                       void { this.cfToken.set(''); }
+  onResendTurnstileResolved(token: string): void { this.cfTokenResend.set(token); }
+  onResendTurnstileError():                 void { this.cfTokenResend.set(''); }
+
   async onSubmit(): Promise<void> {
-    if (this.form.invalid || this.loading()) {
+    if (this.form.invalid || this.loading() || !this.cfToken()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -70,11 +87,16 @@ export class RegisterComponent {
     this.errorMsg.set('');
 
     try {
-      await this.auth.register(this.form.getRawValue());
+      await this.auth.register({
+        ...this.form.getRawValue(),
+        cfToken: this.cfToken(),
+      });
       this.registeredEmail.set(this.form.get('email')!.value);
     } catch {
       // Mensaje genérico — no revela detalles del error del backend
-      this.errorMsg.set('No fue posible crear la cuenta. Intenta de nuevo.');
+      this.errorMsg.set(this.transloco.translate('auth.register.error_create'));
+      this.cfToken.set('');
+      this.registerTurnstile?.reset();
     } finally {
       this.loading.set(false);
     }
@@ -82,18 +104,25 @@ export class RegisterComponent {
 
   resend(): void {
     const email = this.registeredEmail();
-    if (!email) return;
+    if (!email || !this.cfTokenResend()) return;
+
     this.resendLoading.set(true);
     this.resendSuccess.set('');
     this.resendError.set('');
-    this.auth.resendActivationEmail(email).subscribe({
+
+    this.auth.resendActivationEmail(email, this.cfTokenResend()).subscribe({
       next: (res) => {
-        this.resendSuccess.set(res.message || 'Email reenviado. Revisa tu bandeja.');
+        this.resendSuccess.set(res.message || this.transloco.translate('auth.register.resend_success'));
         this.resendLoading.set(false);
+        // Invalidar token usado
+        this.cfTokenResend.set('');
+        this.resendTurnstile?.reset();
       },
       error: () => {
-        this.resendError.set('No se pudo reenviar. Intenta de nuevo.');
+        this.resendError.set(this.transloco.translate('auth.register.resend_error'));
         this.resendLoading.set(false);
+        this.cfTokenResend.set('');
+        this.resendTurnstile?.reset();
       },
     });
   }

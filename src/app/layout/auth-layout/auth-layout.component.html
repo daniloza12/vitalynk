@@ -1,8 +1,14 @@
+<ng-container *transloco="let t">
 <div class="auth-shell">
   <!-- Fondo decorativo -->
   <div class="auth-shell__bg" aria-hidden="true">
     <div class="auth-shell__glow auth-shell__glow--blue"></div>
     <div class="auth-shell__glow auth-shell__glow--green"></div>
+  </div>
+
+  <!-- Selector de idioma — esquina superior derecha -->
+  <div class="auth-shell__lang">
+    <app-lang-switcher />
   </div>
 
   <!-- Panel central -->
@@ -18,6 +24,7 @@
 
   <!-- Footer mínimo -->
   <footer class="auth-shell__footer">
-    <p>© {{ year }} VitaLink — Identidad Inteligente para Emergencias</p>
+    <p>{{ t('footer.copyright', { year: year }) }}</p>
   </footer>
 </div>
+</ng-container>

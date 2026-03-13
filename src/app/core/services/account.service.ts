@@ -8,7 +8,7 @@
 //    DELETE /accounts/{id}                  → void
 // ============================================================
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Account, AccountStatus } from '../models/account.model';
@@ -26,11 +26,12 @@ export class AccountService {
 
   // ── Consultas ─────────────────────────────────────────────────
 
-  getAll(from?: string, to?: string): Observable<Account[]> {
-    const params = from && to
-      ? new HttpParams().set('from', from).set('to', to)
-      : undefined;
-    return this.http.get<Account[]>(this.api, { params });
+  getAll(dateFrom?: string, dateTo?: string): Observable<Account[]> {
+    let params = '';
+    if (dateFrom) params += `dateFrom=${encodeURIComponent(dateFrom)}`;
+    if (dateTo)   params += `${params ? '&' : ''}dateTo=${encodeURIComponent(dateTo)}`;
+    const url = params ? `${this.api}?${params}` : this.api;
+    return this.http.get<Account[]>(url);
   }
 
   getById(id: string): Observable<Account> {

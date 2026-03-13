@@ -9,12 +9,13 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-activate-account',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoModule],
   templateUrl: './activate-account.component.html',
   styleUrl: './activate-account.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,6 +24,7 @@ export class ActivateAccountComponent implements OnInit {
   private route       = inject(ActivatedRoute);
   private router      = inject(Router);
   private authService = inject(AuthService);
+  private transloco   = inject(TranslocoService);
 
   state        = signal<'loading' | 'success' | 'error'>('loading');
   errorMsg     = signal('');
@@ -37,7 +39,7 @@ export class ActivateAccountComponent implements OnInit {
     const token = this.route.snapshot.queryParamMap.get('token');
     if (!token) {
       this.state.set('error');
-      this.errorMsg.set('El enlace de activación no es válido.');
+      this.errorMsg.set(this.transloco.translate('auth.activate.error_no_token'));
       this.showResend.set(true);
       return;
     }
@@ -51,7 +53,7 @@ export class ActivateAccountComponent implements OnInit {
       },
       error: (err) => {
         this.state.set('error');
-        this.errorMsg.set(err?.error?.message ?? 'El enlace expiró o no es válido.');
+        this.errorMsg.set(err?.error?.message ?? this.transloco.translate('auth.activate.error_expired'));
         this.showResend.set(true);
       },
     });
@@ -69,11 +71,11 @@ export class ActivateAccountComponent implements OnInit {
     this.resendError.set('');
     this.authService.resendActivationEmail(email).subscribe({
       next: (res) => {
-        this.resendSuccess.set(res.message || 'Email reenviado. Revisa tu bandeja.');
+        this.resendSuccess.set(res.message || this.transloco.translate('auth.activate.resend_success'));
         this.resendLoading.set(false);
       },
       error: () => {
-        this.resendError.set('No se pudo reenviar. Verifica el correo ingresado.');
+        this.resendError.set(this.transloco.translate('auth.activate.resend_error'));
         this.resendLoading.set(false);
       },
     });
